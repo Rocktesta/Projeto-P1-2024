@@ -1,1 +1,23 @@
+import pygame #importa livraria do pygame
 
+pygame.init() #inicializa o sistema
+
+
+tela = pygame.display.set_mode((800,600)) #cria uma janela para o programa
+
+# Loop principal do jogo
+running = True
+while running:
+    for event in pygame.event.get():   # Loop para lidar com eventos
+        if event.type == pygame.QUIT:
+            running = False    # jogo para de rodar se apertar o x da aba do jogo
+        elif event.type == pygame.KEYDOWN:   # Se houver evento de pressionar tecla
+            if event.key == pygame.K_SPACE:   # Se for tecla espaco, jogo para de rodar
+                running = False 
+   
+    tela.fill((0, 0, 0))       
+    pygame.display.flip()
+
+
+
+pygame.quit()
