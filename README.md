@@ -11,7 +11,3 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean tristique aliqua
 TODO, a definir
 ## Divisão de tarefas: 
 TODO, a definir (membros fiquem ligados na aba project do repositório, vamos trabalhar a organização por lá)
-## Conceitos: 
-TODO
-## Desafios/erros:
-TODO
