@@ -1,5 +1,5 @@
 #Titulo do projeto (TODO, a definir)
-#Membros: João Henrique S. Ebbers (jhse), Luiz Miguel, João Victor, Marcelo Melo, Vinicious Lidignton, Carlos Eduardo
+#Membros: João Henrique S. Ebbers (jhse), Luiz Miguel (lmgra), João Victor (jvca2), Marcelo Melo (), Vinicious Lidignton (), Carlos Eduardo (ceft)
 #Ferramentas, Frameworks e bibliotecas: TODO, a definir
 #Divisão de tarefas: TODO, a definir (membros fiquem ligados na aba project do repositório, vamos trabalhar a organização por lá)
 #Conceitos: TODO
