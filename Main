@@ -8,7 +8,7 @@ largura_tela = info.current_w
 altura_tela = info.current_h
 
 tela = pygame.display.set_mode((largura_tela * 0.8, altura_tela * 0.8)) #cria uma janela para o programa
-obj_player = player(largura_tela // 8, altura_tela // 8, 50, 50) #objeto jogador da classe player
+obj_player = player(largura_tela // 2, altura_tela // 2, 50, 50) #objeto jogador da classe player
 
 
 # Loop principal do jogo
@@ -22,11 +22,20 @@ while running:
                 running = False 
 
     obj_player.movimento(0,0) #metodo de movimento
+    font =  pygame.font.SysFont("Arial", 36)
+    white = (255, 255, 255)
 
-    pygame.draw.rect(tela, (0, 0, 255), obj_player.rect) #desenho de um rectangulo, com base no rect do obj player
     tela.fill((0, 0, 0))      # fundo 0, 0, 0
+    pygame.draw.rect(tela, (0, 0, 255), obj_player.rect) #desenho de um rectangulo, com base no rect do obj player
+    x_position_text = font.render(f"X Position: {obj_player.rect.x}", True, white) # posicao do player
+    y_position_text = font.render(f"Y Position: {obj_player.rect.y}", True, white) # posicao do player
+    tela.blit(x_position_text, (10, 10))  # Posição do texto X
+    tela.blit(y_position_text, (10, 50))   # Posição do texto Y
     pygame.display.flip()     # updates da tela
+    
+    
 
     pygame.time.Clock().tick(60)    # taxa de quadros 60 fps
+    
 
 pygame.quit()
