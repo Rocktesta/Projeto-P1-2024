@@ -1,0 +1,25 @@
+import pygame
+#Script do player
+
+altura = 50
+largura = 50
+
+class player:  #classe do jogador
+    def __init__(self, x, y, largura, altura):  #inicializa o objeto jogador
+        self.rect  = pygame.Rect(x, y, largura, altura)
+
+    def movimento(self, dx, dy):
+        self.rect.x += dx;
+        self.rect.y += dy;
+
+        tecla_pressionada = pygame.key.get_pressed()
+        if (tecla_pressionada[pygame.K_LEFT] or tecla_pressionada[pygame.K_a]):
+            player.movimento(self, -3, 0)
+        if  (tecla_pressionada[pygame.K_RIGHT] or tecla_pressionada[pygame.K_d]):
+            player.movimento(self, +3, 0)
+        if (tecla_pressionada[pygame.K_UP] or tecla_pressionada[pygame.K_w]):
+            player.movimento(self, 0, +3)
+        if (tecla_pressionada[pygame.K_DOWN] or tecla_pressionada[pygame.K_s]):
+            player.movimento(self, 0, -3)
+
+
