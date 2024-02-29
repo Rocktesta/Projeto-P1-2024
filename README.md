@@ -26,4 +26,6 @@ TO DO
 ## Desafios e Experiência:
 TO DO
 
-[^1]: Projeto referente a cadeira de Programação 1/CIN-UFPE no período 2023.2
+<!-- isso aqui era p ser um rodapé, mas n consegui fzr, F -->
+<sub> _Projeto referente a cadeira de Programação 1/CIN-UFPE no período 2023.2._ </sub>
+
