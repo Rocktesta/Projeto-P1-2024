@@ -4,11 +4,11 @@ pygame.init() #inicializa o sistema
 
 # Obtendo as dimensões da tela do sistema
 info = pygame.display.Info()
-largura_tela = info.current_w
-altura_tela = info.current_h
+largura_tela = 1280
+altura_tela = 720
 
-tela = pygame.display.set_mode((largura_tela * 0.8, altura_tela * 0.8)) #cria uma janela para o programa
-obj_player = player(largura_tela // 2, altura_tela // 2, 50, 50) #objeto jogador da classe player
+tela = pygame.display.set_mode((largura_tela, altura_tela)) #cria uma janela para o programa
+obj_player = player(largura_tela//2, altura_tela //2, 40, 40) #objeto jogador da classe player
 
 
 # Loop principal do jogo
