@@ -4,9 +4,9 @@ import pygame
 altura = 50
 largura = 50
 
-class player:  #classe do jogador
+class Player:  #classe do jogador
     def __init__(self, x, y, largura, altura):  #inicializa o objeto jogador
-        self.rect  = pygame.Rect(x, y, largura, altura)
+        self.rect = pygame.Rect(x, y, largura, altura)
 
     def movimento(self, dx, dy):
         self.rect.x += dx
@@ -21,4 +21,3 @@ class player:  #classe do jogador
             self.rect.y -= 3
         if tecla_pressionada[pygame.K_DOWN] or tecla_pressionada[pygame.K_s]:
             self.rect.y += 3
-
