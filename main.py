@@ -1,5 +1,5 @@
 import pygame
-from player import Player
+from player_script import Player
 from weapons import Pistol
 
 pygame.init()
@@ -24,7 +24,7 @@ while running:
                 running = False 
 
     obj_player.movimento(0,0) #metodo de movimento
-    obj_pistol.update_position(obj_player.rect.x, obj_player.rect.y + 20) #metodo de movimento para acompanhar o player
+    obj_pistol.update_position(obj_player.rect.x, obj_player.rect.y + 20) 
 
     font = pygame.font.SysFont("Arial", 36)
     white = (255, 255, 255)
