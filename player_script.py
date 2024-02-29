@@ -7,6 +7,8 @@ largura = 50
 class Player:  #classe do jogador
     def __init__(self, x, y, largura, altura):  #inicializa o objeto jogador
         self.rect = pygame.Rect(x, y, largura, altura)
+        self.vida = 100
+        self.municao = 30
 
     def movimento(self, dx, dy):
         self.rect.x += dx
