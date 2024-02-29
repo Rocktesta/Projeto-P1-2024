@@ -1,23 +1,32 @@
 import pygame #importa livraria do pygame
-
+from Player import player
 pygame.init() #inicializa o sistema
 
+# Obtendo as dimensões da tela do sistema
+info = pygame.display.Info()
+largura_tela = info.current_w
+altura_tela = info.current_h
 
-tela = pygame.display.set_mode((800,600)) #cria uma janela para o programa
+tela = pygame.display.set_mode((largura_tela * 0.8, altura_tela * 0.8)) #cria uma janela para o programa
+obj_player = player(largura_tela // 8, altura_tela // 8, 50, 50) #objeto jogador da classe player
+
 
 # Loop principal do jogo
 running = True
 while running:
     for event in pygame.event.get():   # Loop para lidar com eventos
         if event.type == pygame.QUIT:
-            running = False    # jogo para de rodar se apertar o x da aba do jogo
+            running = False                 # jogo para de rodar se apertar o x da aba do jogo
         elif event.type == pygame.KEYDOWN:   # Se houver evento de pressionar tecla
             if event.key == pygame.K_SPACE:   # Se for tecla espaco, jogo para de rodar
                 running = False 
-   
-    tela.fill((0, 0, 0))       
-    pygame.display.flip()
 
+    obj_player.movimento(0,0) #metodo de movimento
 
+    pygame.draw.rect(tela, (0, 0, 255), obj_player.rect) #desenho de um rectangulo, com base no rect do obj player
+    tela.fill((0, 0, 0))      # fundo 0, 0, 0
+    pygame.display.flip()     # updates da tela
+
+    pygame.time.Clock().tick(60)    # taxa de quadros 60 fps
 
 pygame.quit()
