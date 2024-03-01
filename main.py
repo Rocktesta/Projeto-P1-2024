@@ -12,11 +12,12 @@ info = pygame.display.Info()
 largura_tela = 1280
 altura_tela = 720
 
+gravidade = 0.4
 tela = pygame.display.set_mode((largura_tela, altura_tela))
-obj_municao = Municao(300, 350)
-obj_pistol = Pistol(500, 500, 20, 10)  # Corrigido para Pistol
-obj_coxinha = Coxinha(250, 250)
 obj_piso = Piso(0, 600)
+obj_municao = Municao(300, obj_piso.rect.top - 50)
+obj_pistol = Pistol(500, 500, 20, 10)  # Corrigido para Pistol
+obj_coxinha = Coxinha(250, obj_municao.rect.top - 60)
 obj_player = Player(largura_tela//2, obj_piso.rect.top - 70, 32, 64)  # Corrigido para Player
 vida = obj_player.vida
 municao = obj_player.municao 
@@ -34,14 +35,14 @@ while running:
         elif event.type == pygame.KEYDOWN:   # Se houver evento de pressionar tecla
             if event.key == pygame.K_ESCAPE:   # Se for tecla escape, jogo para de rodar
                 running = False 
-
-    if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_a or event.key == pygame.K_LEFT and obj_player.velocidade_x > - 10:
-            obj_player.velocidade_x -= 1
-        if event.key == pygame.K_d or event.key == pygame.K_RIGHT and obj_player.velocidade_x < 10:
-            obj_player.velocidade_x += 1
-        if  event.key == pygame.K_SPACE and obj_player.pulo == False:
-            obj_player.velocidade_y -= 120
+    tecla_press = pygame.key.get_pressed( )     # Obtem os teclas
+    if tecla_press[pygame.K_a] or tecla_press[pygame.K_LEFT] and obj_player.velocidade_x > - 10:
+        obj_player.velocidade_x -= 1
+    if tecla_press[pygame.K_d] or tecla_press[pygame.K_RIGHT] and obj_player.velocidade_x < 10:
+        obj_player.velocidade_x += 1
+    if  tecla_press[pygame.K_SPACE] and obj_player.pulo == False:
+        obj_player.velocidade_y -= 10
+        obj_player.pulo = True
     if obj_player.velocidade_x != 0:
         if obj_player.velocidade_x > 0:
             obj_player.velocidade_x -= 0.4
@@ -68,8 +69,8 @@ while running:
         pygame.draw.rect(tela, (230, 139, 39), obj_coxinha) #desenho do item coxinha(vida)
     if obj_municao in lista_game_objs:
         pygame.draw.rect(tela, (255, 201, 39), obj_municao) #desenho do item municao
-    x_position_text = fonte.render(f"X Position: {obj_player.velocidade_x}", True, white) # posicao do player
-    y_position_text = fonte.render(f"Y Position: {obj_player.velocidade_y}", True, white) # posicao do player
+    x_position_text = fonte.render(f"X Position: {obj_player.rect.x}", True, white) # posicao do player
+    y_position_text = fonte.render(f"Y Position: {obj_player.rect.y}", True, white) # posicao do player
     vida_text = fonte.render(f"Vida: {vida}", True, white) # vida do player
     municao_text = fonte.render(f"Municão: {municao}", True, white) # municao do jogador
     arma_equip_text = fonte.render(f"Arma: Pistola",  True, white) # Arma que esta sendo usado
@@ -95,7 +96,7 @@ while running:
         obj_player.velocidade_y = 0
         obj_player.pulo = False
     else:
-        obj_player.velocidade_y += 0.3
+        obj_player.velocidade_y += gravidade
    
         
 
