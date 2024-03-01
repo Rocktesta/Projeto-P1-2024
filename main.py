@@ -1,10 +1,11 @@
 import pygame
+import time
 from player_script import Player
 from weapons import Pistol
 from Item_vida_script import Coxinha
 from Municao_script import Municao
 from piso_script import Piso
-
+from camera import Camera
 pygame.init()
 
 # Obtendo as dimensões da tela do sistema
@@ -19,6 +20,7 @@ obj_municao = Municao(300, obj_piso.rect.top - 50)
 obj_pistol = Pistol(500, 500, 20, 10)  # Corrigido para Pistol
 obj_coxinha = Coxinha(250, obj_municao.rect.top - 60)
 obj_player = Player(largura_tela//2, obj_piso.rect.top - 70, 32, 64)  # Corrigido para Player
+obj_camera = Camera(obj_player)
 vida = obj_player.vida
 municao = obj_player.municao 
 
@@ -51,7 +53,7 @@ while running:
             obj_player.velocidade_x += 0.4
             round(obj_player.velocidade_x)
     obj_player.movimento() #metodo de movimento
-            
+   
 
 
 
