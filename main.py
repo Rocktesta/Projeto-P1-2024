@@ -3,6 +3,7 @@ from player_script import Player
 from weapons import Pistol
 from Item_vida_script import Coxinha
 from Municao_script import Municao
+from piso_script import Piso
 
 pygame.init()
 
@@ -13,9 +14,10 @@ altura_tela = 720
 
 tela = pygame.display.set_mode((largura_tela, altura_tela))
 obj_municao = Municao(300, 350)
-obj_player = Player(largura_tela//2, altura_tela //2, 40, 40)  # Corrigido para Player
+obj_player = Player(largura_tela//2, altura_tela //2, 32, 64)  # Corrigido para Player
 obj_pistol = Pistol(500, 500, 20, 10)  # Corrigido para Pistol
 obj_coxinha = Coxinha(250, 250)
+obj_piso = Piso(0, 600)
 vida = obj_player.vida
 municao = obj_player.municao 
 
@@ -34,6 +36,13 @@ while running:
                 running = False 
 
     obj_player.movimento(0,0) #metodo de movimento
+    if event.type == pygame.KEYDOWN:
+        if event.key in [pygame.K_a, pygame.K_LEFT] and obj_player.velocidade_x < 10:
+            obj_player.velocidade_x += 1
+    else:
+        obj_player.velocidade_x = 5
+
+
     if arma_equipada == True:
         obj_pistol.update_position(obj_player.rect.x, obj_player.rect.y + 20) 
 
@@ -43,6 +52,7 @@ while running:
     tela.fill((0, 0, 0))      # fundo 0, 0, 0
     pygame.draw.rect(tela, (0, 0, 255), obj_player.rect) #desenho de um rectangulo, com base no rect do obj player
     pygame.draw.rect(tela, (255, 0, 0), obj_pistol.rect) #desenho de um retangulo na cor vermelha
+    pygame.draw.rect(tela, (255, 255, 255), obj_piso.rect)
     if obj_coxinha in lista_game_objs:
         pygame.draw.rect(tela, (230, 139, 39), obj_coxinha) #desenho do item coxinha(vida)
     if obj_municao in lista_game_objs:
@@ -70,6 +80,10 @@ while running:
         lista_game_objs.remove(obj_municao)
     if obj_pistol.rect.colliderect(obj_player) == 1:
         arma_equipada = True
+    if obj_piso.rect.colliderect(obj_player) == 0:
+        obj_player.rect.y += 10
+        obj_player.pulo == True
+   
         
 
 
