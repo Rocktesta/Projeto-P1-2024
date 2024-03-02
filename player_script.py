@@ -11,9 +11,15 @@ class Player:  #classe do jogador
         self.pulo = False
 
     def movimento(self):
+        tela_scroll = 0
         round(self.velocidade_x)
-
         self.rect.x += self.velocidade_x
         self.rect.y += self.velocidade_y
+        if self.rect.right > 1280 - 200 or self.rect.left < 200:
+            self.rect.x -= self.velocidade_x
+            tela_scroll = -self.velocidade_x
+        return tela_scroll
+
+             
 
         

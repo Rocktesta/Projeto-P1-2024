@@ -11,6 +11,7 @@ pygame.init()
 # Obtendo as dimensões da tela do sistema
 largura_tela = 1280
 altura_tela = 720
+tela_scroll = 0
 tela = pygame.display.set_mode((largura_tela, altura_tela))
 pygame.display.set_caption('MENU')
 
@@ -90,24 +91,25 @@ def play():
                     obj_player.velocidade_x += 0.4
                     round(obj_player.velocidade_x)
             
+            
+        
 
-
-
-            obj_player.movimento() #metodo de movimento
-            obj_pistol.rect.x += camera.posicao_x
+            tela_scroll = obj_player.movimento() #metodo de movimento
+            print(tela_scroll)
+            obj_pistol.rect.x += tela_scroll
             obj_pistol.rect.y += camera.posicao_y
 
-            obj_piso.rect.x += camera.posicao_x
+            obj_piso.rect.x += tela_scroll
             obj_piso.rect.y += camera.posicao_y
 
-            obj_coxinha.rect.x += camera.posicao_x
+            obj_coxinha.rect.x += tela_scroll
             obj_coxinha.rect.y += camera.posicao_y
 
-            obj_municao.rect.x += camera.posicao_x
+            obj_municao.rect.x += tela_scroll
             obj_municao.rect.y += camera.posicao_y
 
-            obj_player.rect.x += camera.posicao_x
-            obj_player.rect.y += camera.posicao_y
+            
+
 
 
            
@@ -140,7 +142,7 @@ def play():
             tela.blit(vida_text, (10, 100)) # posicao texto vida
             tela.blit(municao_text, (10, 150)) # posicao texto vida
             if arma_equipada == True:   # apenas se arma estiver equipada o texto aparece (pre-alpha)
-                tela.blit(arma_equip_text, (750, 600))
+                tela.blit(arma_equip_text, (750, 650))
 
             #colisoes  entre os objetos (remove objetos apos uso ou equipa)
             if obj_coxinha.rect.colliderect(obj_player) == 1 and obj_coxinha in lista_game_objs: 
