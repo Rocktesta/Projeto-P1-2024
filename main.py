@@ -1,8 +1,7 @@
 import pygame
 from player_script import Player
-from weapons import Pistol
-from Item_vida_script import Coxinha
-from Municao_script import Municao
+import weapons
+from item_vida_script import Coxinha
 from piso_script import Piso
 
 pygame.init()
@@ -15,8 +14,8 @@ altura_tela = 720
 gravidade = 0.4
 tela = pygame.display.set_mode((largura_tela, altura_tela))
 obj_piso = Piso(0, 600)
-obj_municao = Municao(300, obj_piso.rect.top - 50)
-obj_pistol = Pistol(500, 500, 20, 10)  # Corrigido para Pistol
+obj_municao = weapons.Municao(300, obj_piso.rect.top - 50)
+obj_pistol = weapons.Pistol(500, 500, 20, 10)  # Corrigido para Pistol
 obj_coxinha = Coxinha(250, obj_municao.rect.top - 60)
 obj_player = Player(largura_tela//2, obj_piso.rect.top - 70, 32, 64)  # Corrigido para Player
 vida = obj_player.vida
