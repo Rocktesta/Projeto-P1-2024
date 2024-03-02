@@ -56,7 +56,8 @@ def play():
         obj_municao = weapons.Municao(300, obj_piso.rect.top - 50)
         obj_coxinha = Coxinha(250, obj_municao.rect.top - 60)
         obj_player = Player(largura_tela//2, obj_piso.rect.top - 70, 32, 64)  # Corrigido para Player
-        camera = Camera(obj_player)
+        obj_pistol = weapons.Pistol(500 , 500 , 20, 10)  # Corrigido para Pistol
+        camera = Camera()
         vida = obj_player.vida
         municao = obj_player.municao 
 
@@ -88,8 +89,28 @@ def play():
                 else:
                     obj_player.velocidade_x += 0.4
                     round(obj_player.velocidade_x)
+            
+
+
+
             obj_player.movimento() #metodo de movimento
-            obj_pistol = weapons.Pistol(500 - camera.posicao_x, 500 - camera.posicao_y, 20, 10)  # Corrigido para Pistol
+            obj_pistol.rect.x += camera.posicao_x
+            obj_pistol.rect.y += camera.posicao_y
+
+            obj_piso.rect.x += camera.posicao_x
+            obj_piso.rect.y += camera.posicao_y
+
+            obj_coxinha.rect.x += camera.posicao_x
+            obj_coxinha.rect.y += camera.posicao_y
+
+            obj_municao.rect.x += camera.posicao_x
+            obj_municao.rect.y += camera.posicao_y
+
+            obj_player.rect.x += camera.posicao_x
+            obj_player.rect.y += camera.posicao_y
+
+
+           
 
             if arma_equipada == True:
                 obj_pistol.update_position(obj_player.rect.x, obj_player.rect.y + 20) 
