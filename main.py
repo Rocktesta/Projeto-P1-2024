@@ -1,7 +1,7 @@
 import pygame
 from player_script import Player
 import weapons
-from item_vida_script import Coxinha
+from Item_vida_script import Coxinha
 from piso_script import Piso
 from botao import Botao
 
