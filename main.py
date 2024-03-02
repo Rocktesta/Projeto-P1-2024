@@ -1,9 +1,10 @@
 import pygame
 from player_script import Player
 import weapons
-from item_vida_script import Coxinha
+from Item_vida_script import Coxinha
 from piso_script import Piso
 from botao import Botao
+from camera import Camera
 
 pygame.init()
 
@@ -25,9 +26,12 @@ def main_menu(): # tela do menu principal
         play_botao = Botao(imagem = None, texto_input='Jogar', pos=(640, 250), fonte=pygame.font.SysFont('Arial', 36), cor_base='#d7fcd4', cor_hoover='White')
         quit_botao = Botao(imagem = None, texto_input='Sair', pos=(640, 400), fonte=pygame.font.SysFont('Arial', 36), cor_base='#d7fcd4', cor_hoover='White')
 
+        
         for botao in [play_botao, quit_botao]:
             botao.mudarcor(menu_mouse_pos)
-            botao.update(tela)
+            botao.update(tela, menu_mouse_pos)
+
+        pygame.display.update()
 
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -38,7 +42,7 @@ def main_menu(): # tela do menu principal
                 if quit_botao.checarinput(menu_mouse_pos):
                     pygame.quit()
 
-        pygame.display.update()
+
 
 def play():
     pygame.display.set_caption('Play')
@@ -50,13 +54,13 @@ def play():
 
         obj_piso = Piso(0, 600)
         obj_municao = weapons.Municao(300, obj_piso.rect.top - 50)
-        obj_pistol = weapons.Pistol(500, 500, 20, 10)  # Corrigido para Pistol
         obj_coxinha = Coxinha(250, obj_municao.rect.top - 60)
         obj_player = Player(largura_tela//2, obj_piso.rect.top - 70, 32, 64)  # Corrigido para Player
+        camera = Camera(obj_player)
         vida = obj_player.vida
         municao = obj_player.municao 
 
-        lista_game_objs = [obj_coxinha, obj_player, obj_pistol, obj_municao] # lista de objetos, usada para o consumo de itens
+        lista_game_objs = [obj_coxinha, obj_player, obj_municao] # lista de objetos, usada para o consumo de itens
 
         arma_equipada = False  # booleana para armas
 
@@ -85,14 +89,16 @@ def play():
                     obj_player.velocidade_x += 0.4
                     round(obj_player.velocidade_x)
             obj_player.movimento() #metodo de movimento
-                    
+            obj_pistol = weapons.Pistol(500 - camera.posicao_x, 500 - camera.posicao_y, 20, 10)  # Corrigido para Pistol
 
             if arma_equipada == True:
                 obj_pistol.update_position(obj_player.rect.x, obj_player.rect.y + 20) 
 
             fonte = pygame.font.SysFont("Arial", 36)
             white = (255, 255, 255)
-
+            camera.scroll()
+            
+            
             tela.fill((0, 0, 0))      # fundo 0, 0, 0
             pygame.draw.rect(tela, (0, 0, 255), obj_player.rect) #desenho de um rectangulo, com base no rect do obj player
             pygame.draw.rect(tela, (255, 0, 0), obj_pistol.rect) #desenho de um retangulo na cor vermelha
@@ -101,7 +107,7 @@ def play():
                 pygame.draw.rect(tela, (230, 139, 39), obj_coxinha) #desenho do item coxinha(vida)
             if obj_municao in lista_game_objs:
                 pygame.draw.rect(tela, (255, 201, 39), obj_municao) #desenho do item municao
-            x_position_text = fonte.render(f"X Position: {obj_player.rect.x}", True, white) # posicao do player
+            x_position_text = fonte.render(f"X Position: {camera.posicao_x}", True, white) # posicao do player
             y_position_text = fonte.render(f"Y Position: {obj_player.rect.y}", True, white) # posicao do player
             vida_text = fonte.render(f"Vida: {vida}", True, white) # vida do player
             municao_text = fonte.render(f"Municão: {municao}", True, white) # municao do jogador

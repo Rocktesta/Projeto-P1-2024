@@ -14,11 +14,18 @@ class Botao():
         self.rect = self.imagem.get_rect(center = (self.x_pos, self.y_pos))
         self.texto_rect = self.texto.get_rect(center = (self.x_pos, self.y_pos))
 
-    def update(self, tela):
-        if self.imagem is not None:
-            tela.blit(self.imagem, self.rect)
+    def update(self, tela, mouse_pos):
+        # Muda a cor do botão quando passar o mouse por cima
+        if self.rect.collidepoint(mouse_pos):
+            cor_atual = self.cor_hoover
         else:
-            tela.blit(self.texto, self.texto_input)
+            cor_atual = self.cor_base
+
+        # Renderiza o texto com a cor atual
+        self.texto = self.fonte.render(self.texto_input, True, cor_atual)
+
+        # Desenha o botão na tela
+        tela.blit(self.texto, self.rect)
 
     def checarinput(self, posicao):
         # Checa se clicou ou não no botão
@@ -28,7 +35,7 @@ class Botao():
             return False
     
     def mudarcor(self, posicao):
-        # Muda a cor do botão quando passar o mouse por cima
+    # Muda a cor do botão quando passar o mouse por cima
         if posicao[0] in range(self.rect.left, self.rect.right) and posicao[1] in range(self.rect.top, self.rect.bottom):
             self.texto = self.fonte.render(self.texto_input, True, self.cor_hoover)
         else:
