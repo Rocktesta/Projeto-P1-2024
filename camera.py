@@ -4,8 +4,8 @@ vector = pygame.math.Vector2
 class Camera:
     def __init__(self):
         self.offset = vector(0, 0)
-        self.velocidade_x = 0.5
-        self.velocidade_y = 0.5
+        self.velocidade_x = 0.1
+        self.velocidade_y = 0.1
         self.posicao_x = 0
         self.posicao_y = 0
     def scroll(self):
