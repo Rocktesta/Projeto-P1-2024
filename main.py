@@ -1,10 +1,8 @@
 import pygame
-import time
 from player_script import Player
 import weapons
 from item_vida_script import Coxinha
 from piso_script import Piso
-from camera import Camera
 from botao import Botao
 
 pygame.init()
@@ -13,14 +11,6 @@ pygame.init()
 largura_tela = 1280
 altura_tela = 720
 tela = pygame.display.set_mode((largura_tela, altura_tela))
-obj_piso = Piso(0, 600)
-obj_municao = Municao(300, obj_piso.rect.top - 50)
-obj_pistol = Pistol(500, 500, 20, 10)  # Corrigido para Pistol
-obj_coxinha = Coxinha(250, obj_municao.rect.top - 60)
-obj_player = Player(largura_tela//2, obj_piso.rect.top - 70, 32, 64)  # Corrigido para Player
-obj_camera = Camera(obj_player)
-vida = obj_player.vida
-municao = obj_player.municao 
 pygame.display.set_caption('MENU')
 
 def main_menu(): # tela do menu principal 
@@ -28,34 +18,6 @@ def main_menu(): # tela do menu principal
         tela.fill((0, 0, 0)) #tela preta, pode ser colocado algum outro fundo
 
         menu_mouse_pos = pygame.mouse.get_pos()
-
-
-# Loop principal do jogo
-running = True
-while running:
-    for event in pygame.event.get():   # Loop para lidar com eventos
-        if event.type == pygame.QUIT:
-            running = False                 # jogo para de rodar se apertar o x da aba do jogo
-        elif event.type == pygame.KEYDOWN:   # Se houver evento de pressionar tecla
-            if event.key == pygame.K_ESCAPE:   # Se for tecla escape, jogo para de rodar
-                running = False 
-    tecla_press = pygame.key.get_pressed( )     # Obtem os teclas
-    if tecla_press[pygame.K_a] or tecla_press[pygame.K_LEFT] and obj_player.velocidade_x > - 10:
-        obj_player.velocidade_x -= 1
-    if tecla_press[pygame.K_d] or tecla_press[pygame.K_RIGHT] and obj_player.velocidade_x < 10:
-        obj_player.velocidade_x += 1
-    if  tecla_press[pygame.K_SPACE] and obj_player.pulo == False:
-        obj_player.velocidade_y -= 10
-        obj_player.pulo = True
-    if obj_player.velocidade_x != 0:
-        if obj_player.velocidade_x > 0:
-            obj_player.velocidade_x -= 0.4
-            round(obj_player.velocidade_x)
-        else:
-            obj_player.velocidade_x += 0.4
-            round(obj_player.velocidade_x)
-    obj_player.movimento() #metodo de movimento
-   
 
         #menu_texto = pygame.font.SysFont('Arial', 50)
 
@@ -172,6 +134,6 @@ def play():
             
             pygame.time.Clock().tick(60)    # taxa de quadros 60 fps
 
-    pygame.quit()
+        pygame.quit()
 
 main_menu()
