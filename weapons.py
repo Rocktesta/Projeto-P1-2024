@@ -4,9 +4,14 @@ import pygame
 altura = 10
 largura = 20
 
+class Municao:
+    def __init__(self, x, y): # incializa objeto municao com quantidade = 10
+        self.rect = pygame.Rect(x, y,  40, 12)
+        self.qnt = 10
+
 class Pistol: #pistola
-    def __init__(self, x, y, largura, altura):
-        self.rect = pygame.Rect(x, y, largura, altura)
+    def __init__(self, x, y, altura, largura):
+        self.rect = pygame.Rect(x, y, 20, 10)
 
     def update_position(self, x, y):
         # Atualiza a posição da pistola para acompanhar o jogador
