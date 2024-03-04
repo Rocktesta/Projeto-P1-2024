@@ -4,7 +4,7 @@ import weapons
 from Item_vida_script import Coxinha
 from piso_script import Piso
 from botao import Botao
-from camera import Camera
+from Bar_vida_script import healthBar
 
 pygame.init()
 
@@ -12,6 +12,7 @@ pygame.init()
 largura_tela = 1280
 altura_tela = 720
 tela_scroll = 0
+background = pygame.image.load("Trecho_teste.png")
 tela = pygame.display.set_mode((largura_tela, altura_tela))
 pygame.display.set_caption('MENU')
 
@@ -47,19 +48,18 @@ def main_menu(): # tela do menu principal
 
 def play():
     pygame.display.set_caption('Play')
-
+    
     while True:
-        tela.fill((0, 0, 0))
    
         gravidade = 0.4
-
+        background_1 = 0
         obj_piso = Piso(0, 600)
         obj_municao = weapons.Municao(300, obj_piso.rect.top - 50)
         obj_coxinha = Coxinha(250, obj_municao.rect.top - 60)
         obj_player = Player(largura_tela//2, obj_piso.rect.top - 70, 32, 64)  # Corrigido para Player
         obj_pistol = weapons.Pistol(500 , 500 , 20, 10)  # Corrigido para Pistol
-        camera = Camera()
         vida = obj_player.vida
+        obj_health = healthBar(10, 100, 5, 25, vida)
         municao = obj_player.municao 
 
         lista_game_objs = [obj_coxinha, obj_player, obj_municao] # lista de objetos, usada para o consumo de itens
@@ -97,16 +97,17 @@ def play():
             tela_scroll = obj_player.movimento() #metodo de movimento
             print(tela_scroll)
             obj_pistol.rect.x += tela_scroll
-            obj_pistol.rect.y += camera.posicao_y
+           
 
             obj_piso.rect.x += tela_scroll
-            obj_piso.rect.y += camera.posicao_y
+            
 
             obj_coxinha.rect.x += tela_scroll
-            obj_coxinha.rect.y += camera.posicao_y
+            
 
             obj_municao.rect.x += tela_scroll
-            obj_municao.rect.y += camera.posicao_y
+            background_1 += tela_scroll
+           
 
             
 
@@ -119,18 +120,20 @@ def play():
 
             fonte = pygame.font.SysFont("Arial", 36)
             white = (255, 255, 255)
-            camera.scroll()
             
             
-            tela.fill((0, 0, 0))      # fundo 0, 0, 0
+            tela.fill((0, 0, 0))
+            tela.blit((background), (background_1 , 0))
             pygame.draw.rect(tela, (0, 0, 255), obj_player.rect) #desenho de um rectangulo, com base no rect do obj player
             pygame.draw.rect(tela, (255, 0, 0), obj_pistol.rect) #desenho de um retangulo na cor vermelha
             pygame.draw.rect(tela, (255, 255, 255), obj_piso.rect)
+            pygame.draw.rect(tela, (23, 230, 0), obj_health.rect)
+            pygame.draw.rect(tela, (0, 230, 0), obj_health.rect_remain)
             if obj_coxinha in lista_game_objs:
                 pygame.draw.rect(tela, (230, 139, 39), obj_coxinha) #desenho do item coxinha(vida)
             if obj_municao in lista_game_objs:
                 pygame.draw.rect(tela, (255, 201, 39), obj_municao) #desenho do item municao
-            x_position_text = fonte.render(f"X Position: {camera.posicao_x}", True, white) # posicao do player
+            x_position_text = fonte.render(f"X Position: {obj_player.velocidade_x}", True, white) # posicao do player
             y_position_text = fonte.render(f"Y Position: {obj_player.rect.y}", True, white) # posicao do player
             vida_text = fonte.render(f"Vida: {vida}", True, white) # vida do player
             municao_text = fonte.render(f"Municão: {municao}", True, white) # municao do jogador
@@ -140,7 +143,7 @@ def play():
             tela.blit(x_position_text, (10, 10))  # Posição do texto X
             tela.blit(y_position_text, (10, 50))   # Posição do texto Y
             tela.blit(vida_text, (10, 100)) # posicao texto vida
-            tela.blit(municao_text, (10, 150)) # posicao texto vida
+            tela.blit(municao_text, (500, 100)) # posicao texto vida
             if arma_equipada == True:   # apenas se arma estiver equipada o texto aparece (pre-alpha)
                 tela.blit(arma_equip_text, (750, 650))
 
