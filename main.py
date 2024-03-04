@@ -4,7 +4,7 @@ import weapons
 from Item_vida_script import Coxinha
 from piso_script import Piso
 from botao import Botao
-from Bar_vida_script import healthBar
+from Bar_vida_script import HealthBar
 
 pygame.init()
 
@@ -12,8 +12,8 @@ pygame.init()
 largura_tela = 1280
 altura_tela = 720
 tela_scroll = 0
-background = pygame.image.load("Trecho_teste.png")
 tela = pygame.display.set_mode((largura_tela, altura_tela))
+background = pygame.image.load("Trecho_teste.png").convert_alpha()
 pygame.display.set_caption('MENU')
 
 def main_menu(): # tela do menu principal 
@@ -59,7 +59,7 @@ def play():
         obj_player = Player(largura_tela//2, obj_piso.rect.top - 70, 32, 64)  # Corrigido para Player
         obj_pistol = weapons.Pistol(500 , 500 , 20, 10)  # Corrigido para Pistol
         vida = obj_player.vida
-        obj_health = healthBar(10, 100, 5, 25, vida)
+        obj_health = HealthBar(10, 100, 150, 25, vida)
         municao = obj_player.municao 
 
         lista_game_objs = [obj_coxinha, obj_player, obj_municao] # lista de objetos, usada para o consumo de itens
@@ -109,6 +109,7 @@ def play():
             background_1 += tela_scroll
            
 
+            obj_health.update(vida)
             
 
 
@@ -124,11 +125,11 @@ def play():
             
             tela.fill((0, 0, 0))
             tela.blit((background), (background_1 , 0))
+            pygame.draw.rect(tela, (128, 128, 128), (0,0,350, 150))
             pygame.draw.rect(tela, (0, 0, 255), obj_player.rect) #desenho de um rectangulo, com base no rect do obj player
             pygame.draw.rect(tela, (255, 0, 0), obj_pistol.rect) #desenho de um retangulo na cor vermelha
             pygame.draw.rect(tela, (255, 255, 255), obj_piso.rect)
-            pygame.draw.rect(tela, (23, 230, 0), obj_health.rect)
-            pygame.draw.rect(tela, (0, 230, 0), obj_health.rect_remain)
+            obj_health.draw(tela)
             if obj_coxinha in lista_game_objs:
                 pygame.draw.rect(tela, (230, 139, 39), obj_coxinha) #desenho do item coxinha(vida)
             if obj_municao in lista_game_objs:
@@ -143,7 +144,7 @@ def play():
             tela.blit(x_position_text, (10, 10))  # Posição do texto X
             tela.blit(y_position_text, (10, 50))   # Posição do texto Y
             tela.blit(vida_text, (10, 100)) # posicao texto vida
-            tela.blit(municao_text, (500, 100)) # posicao texto vida
+            tela.blit(municao_text, (180, 100)) # posicao texto vida
             if arma_equipada == True:   # apenas se arma estiver equipada o texto aparece (pre-alpha)
                 tela.blit(arma_equip_text, (750, 650))
 
