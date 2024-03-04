@@ -5,6 +5,7 @@ from Item_vida_script import Coxinha
 from piso_script import Piso
 from botao import Botao
 from Bar_vida_script import HealthBar
+from weapons import Balas
 
 pygame.init()
 
@@ -14,6 +15,7 @@ altura_tela = 720
 tela_scroll = 0
 tela = pygame.display.set_mode((largura_tela, altura_tela))
 background = pygame.image.load("Trecho_teste.png").convert_alpha()
+player_sprite =  pygame.image.load("Player_sprite_k.png").convert_alpha()
 pygame.display.set_caption('MENU')
 
 def main_menu(): # tela do menu principal 
@@ -50,16 +52,17 @@ def play():
     pygame.display.set_caption('Play')
     
     while True:
-   
+        player_dir ='right'
         gravidade = 0.4
         background_1 = 0
         obj_piso = Piso(0, 600)
         obj_municao = weapons.Municao(300, obj_piso.rect.top - 50)
         obj_coxinha = Coxinha(250, obj_municao.rect.top - 60)
-        obj_player = Player(largura_tela//2, obj_piso.rect.top - 70, 32, 64)  # Corrigido para Player
+        obj_player = Player(largura_tela//2, obj_piso.rect.top - 70, 32, 64, player_sprite)  # Corrigido para Player
         obj_pistol = weapons.Pistol(500 , 500 , 20, 10)  # Corrigido para Pistol
         vida = obj_player.vida
         obj_health = HealthBar(10, 100, 150, 25, vida)
+        obj_bala = Balas(obj_player.rect.x + 40 ,obj_player.rect.y, tela)
         municao = obj_player.municao 
 
         lista_game_objs = [obj_coxinha, obj_player, obj_municao] # lista de objetos, usada para o consumo de itens
@@ -69,6 +72,8 @@ def play():
         # Loop principal do jogo
         running = True
         while running:
+            tela.fill((0, 0, 0))
+            tela.blit((background), (background_1 , 0))
             for event in pygame.event.get():   # Loop para lidar com eventos
                 if event.type == pygame.QUIT:
                     running = False                 # jogo para de rodar se apertar o x da aba do jogo
@@ -77,9 +82,11 @@ def play():
                         running = False 
             tecla_press = pygame.key.get_pressed( )     # Obtem os teclas
             if tecla_press[pygame.K_a] or tecla_press[pygame.K_LEFT] and obj_player.velocidade_x > - 10:
-                obj_player.velocidade_x -= 1
+                obj_player.velocidade_x -= 0.8
+                player_dir = 'left'
             if tecla_press[pygame.K_d] or tecla_press[pygame.K_RIGHT] and obj_player.velocidade_x < 10:
-                obj_player.velocidade_x += 1
+                obj_player.velocidade_x += 0.8
+                player_dir = 'right'
             if  tecla_press[pygame.K_SPACE] and obj_player.pulo == False:
                 obj_player.velocidade_y -= 10
                 obj_player.pulo = True
@@ -90,12 +97,17 @@ def play():
                 else:
                     obj_player.velocidade_x += 0.4
                     round(obj_player.velocidade_x)
-            
+            if tecla_press[pygame.K_f] and municao > 0 and arma_equipada:
+                municao = obj_bala.fogo(obj_pistol.rect.x + 100, obj_pistol.rect.y, municao, player_dir)
+                
+
+
+
             
         
 
             tela_scroll = obj_player.movimento() #metodo de movimento
-            print(tela_scroll)
+            
             obj_pistol.rect.x += tela_scroll
            
 
@@ -117,16 +129,18 @@ def play():
            
 
             if arma_equipada == True:
-                obj_pistol.update_position(obj_player.rect.x, obj_player.rect.y + 20) 
+                if player_dir == 'right' :
+                    obj_pistol.update_position(obj_player.rect.x, obj_player.rect.y + 20) 
+                else:
+                     obj_pistol.update_position(obj_player.rect.x - 60, obj_player.rect.y + 20) 
 
             fonte = pygame.font.SysFont("Arial", 36)
             white = (255, 255, 255)
             
             
-            tela.fill((0, 0, 0))
-            tela.blit((background), (background_1 , 0))
+            
+            pygame.draw.rect(tela, (0, 128, 0), obj_player.rect)
             pygame.draw.rect(tela, (128, 128, 128), (0,0,350, 150))
-            pygame.draw.rect(tela, (0, 0, 255), obj_player.rect) #desenho de um rectangulo, com base no rect do obj player
             pygame.draw.rect(tela, (255, 0, 0), obj_pistol.rect) #desenho de um retangulo na cor vermelha
             pygame.draw.rect(tela, (255, 255, 255), obj_piso.rect)
             obj_health.draw(tela)
