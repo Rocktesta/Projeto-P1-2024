@@ -13,7 +13,6 @@ class Player:  #classe do jogador
 
     def movimento(self):
         tela_scroll = 0
-        round(self.velocidade_x)
         self.rect.x += self.velocidade_x
         self.rect.y += self.velocidade_y
         if self.rect.right > 1280 - 200 or self.rect.left < 200:

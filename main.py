@@ -81,21 +81,21 @@ def play():
                     if event.key == pygame.K_ESCAPE:   # Se for tecla escape, jogo para de rodar
                         running = False 
             tecla_press = pygame.key.get_pressed( )     # Obtem os teclas
-            if tecla_press[pygame.K_a] or tecla_press[pygame.K_LEFT] and obj_player.velocidade_x > - 10:
-                obj_player.velocidade_x -= 0.8
+            if tecla_press[pygame.K_a] or tecla_press[pygame.K_LEFT] and obj_player.velocidade_x > - 6:
+                obj_player.velocidade_x -= 3
                 player_dir = 'left'
-            if tecla_press[pygame.K_d] or tecla_press[pygame.K_RIGHT] and obj_player.velocidade_x < 10:
-                obj_player.velocidade_x += 0.8
+            if tecla_press[pygame.K_d] or tecla_press[pygame.K_RIGHT] and obj_player.velocidade_x < 6:
+                obj_player.velocidade_x += 3
                 player_dir = 'right'
             if  tecla_press[pygame.K_SPACE] and obj_player.pulo == False:
                 obj_player.velocidade_y -= 10
                 obj_player.pulo = True
             if obj_player.velocidade_x != 0:
                 if obj_player.velocidade_x > 0:
-                    obj_player.velocidade_x -= 0.4
+                    obj_player.velocidade_x -= 1
                     round(obj_player.velocidade_x)
                 else:
-                    obj_player.velocidade_x += 0.4
+                    obj_player.velocidade_x += 1
                     round(obj_player.velocidade_x)
             if tecla_press[pygame.K_f] and municao > 0 and arma_equipada:
                 municao = obj_bala.fogo(obj_pistol.rect.x + 100, obj_pistol.rect.y, municao, player_dir)
