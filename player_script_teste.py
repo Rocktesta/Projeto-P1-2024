@@ -45,6 +45,7 @@ class Boneco(pygame.sprite.Sprite):
 
     def move(self, mooving_left, mooving_right):
         # reset as variáveis de movimento
+        tela_scroll = 0
         dx = 0
         dy = 0
         # checando se o player se move para a direita ou esquerda
@@ -73,6 +74,10 @@ class Boneco(pygame.sprite.Sprite):
         # updade da posição do player_rect
         self.player_rect.x += dx
         self.player_rect.y += dy
+
+        if self.rect.right > 1280 - 200 or self.rect.left < 200:
+            self.rect.x -= dx
+            tela_scroll = -dx
 
     def shoot(self):
         if self.shoot_cooldown == 0:

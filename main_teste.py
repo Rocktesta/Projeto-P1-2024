@@ -57,7 +57,9 @@ def play():
                 player.update_action(1) # animação de corrida
             else:
                 player.update_action(0) # retorna para o idle'''
-            player.move(mooving_left, mooving_right) 
+            tela_scroll = player.move(mooving_left, mooving_right) 
+
+            
 
         for event in pygame.event.get():   # Loop para lidar com eventos
             if event.type == pygame.QUIT:
