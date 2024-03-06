@@ -33,15 +33,14 @@ class Boneco(pygame.sprite.Sprite):
                 temp_list.append(img_player)
             self.lista_animacoes.append(temp_list)
         self.img_player = self.lista_animacoes[self.action][self.frame_index]
-        self.player_rect = self.img_player.get_rect()
-        self.player_rect.center = (x, y)
+        self.rect = self.img_player.get_rect()
+        self.rect.center = (x, y)
 
     def update(self):
         self.update_animacao()
         # update cooldown
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
-
 
     def move(self, mooving_left, mooving_right):
         # reset as variáveis de movimento
@@ -67,17 +66,17 @@ class Boneco(pygame.sprite.Sprite):
             self.velocidade_y
         dy += self.velocidade_y
         # checando colisão com o chão
-        if self.player_rect.bottom + dy > 700:
-            dy = 700 - self.player_rect.bottom
+        if self.rect.bottom + dy > 700:
+            dy = 700 - self.rect.bottom
             self.no_ar = False
-        # updade da posição do player_rect
-        self.player_rect.x += dx
-        self.player_rect.y += dy
+        # updade da posição do rect do player
+        self.rect.x += dx
+        self.rect.y += dy
 
     def shoot(self):
         if self.shoot_cooldown == 0:
             self.shoot_cooldown = 40
-            bullet = Bullet(self.player_rect.centerx + (0.32 * self.player_rect.size[0] * self.dirececao), self.player_rect.centery - 45, self.dirececao, 10)
+            bullet = Bullet(self.rect.centerx + (0.32 * self.rect.size[0] * self.dirececao), self.rect.centery - 45, self.dirececao, 10)
             bullet_group.add(bullet)
 
     def update_animacao(self):
@@ -102,7 +101,7 @@ class Boneco(pygame.sprite.Sprite):
             self.update_tempo = pygame.time.get_ticks()
 
     def draw(self, tela):
-        tela.blit(pygame.transform.flip(self.img_player, self.flip, False), self.player_rect)
+        tela.blit(pygame.transform.flip(self.img_player, self.flip, False), self.rect)
     
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direcao, velocidade):
@@ -113,12 +112,23 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.center = (x, y)
         self.direcao = direcao
 
-    def update(self):
+    def update(self, entrada, entrada_tipo):
         # mover a bala
         self.rect.x += (self.direcao * self.velocidade)
         # checar se a bala saiu da tela
         if self.rect.right < 0 or self.rect.left > 1280:
             self.kill()
+        # check collision with caracters
+        if entrada_tipo:
+            player = entrada
+            if pygame.sprite.spritecollide(player, bullet_group, False):
+                if player.alive:
+                    self.kill()
+        else:
+            inimigo = entrada
+            if pygame.sprite.spritecollide(inimigo, bullet_group, False):
+                if inimigo.alive:
+                    self.kill()
 
 # Sprite Groups
 bullet_group = pygame.sprite.Group()

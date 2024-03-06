@@ -28,6 +28,7 @@ def play():
     shoot = False
 
     player = player_script_teste.Boneco('player_Kiev', 200, 600, 3, gravidade, 3)
+    inimigo = player_script_teste.Boneco('player_Kiev', 600, 500, 3, gravidade, 3)
 
     # Loop Principal do Jogo
     running = True
@@ -36,13 +37,14 @@ def play():
         clock.tick(fps)
 
         draw_bg()
-
         player.update()
         player.draw(tela)
+        inimigo.update()
+        inimigo.draw(tela)
 
         # updade e draw sprite groups
         bullet_group = player_script_teste.bullet_group
-        bullet_group.update()
+        bullet_group.update(inimigo, 'inimigo')
         bullet_group.draw(tela)
 
         # updade das ações do player
