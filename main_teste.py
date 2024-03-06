@@ -37,7 +37,7 @@ def play():
 
         draw_bg()
 
-        player.update_animacao()
+        player.update()
         player.draw(tela)
 
         # updade e draw sprite groups
