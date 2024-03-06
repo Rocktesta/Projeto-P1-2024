@@ -1,9 +1,11 @@
 import pygame
 import os
+from pygame.sprite import Group
 
-class Player(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, velocidade, escala, gravidade):
+class Boneco(pygame.sprite.Sprite):
+    def __init__(self, char_type, x, y, velocidade, gravidade, escala=1):
         pygame.sprite.Sprite.__init__(self)
+        self.escala = escala
         self.gravidade = gravidade
         self.vivo = True
         self.char_type = char_type
@@ -15,10 +17,9 @@ class Player(pygame.sprite.Sprite):
         self.flip = False
         self.lista_animacoes = []
         self.frame_index = 0
-        # 0 = Idle | 1 = Run | 2 = Jump
+        # 0 = Idle | 1 = Run | 2 = Jump | 3 = Death
         self.action = 0
         self.update_tempo = pygame.time.get_ticks()
-
         animacao_types = ['Idle', 'Run', 'Jump']
         for animacao in animacao_types:
             # reset da lista temporária de imagens
@@ -26,8 +27,8 @@ class Player(pygame.sprite.Sprite):
             # contar o número de arquivos na pasta
             num_frames = len(os.listdir(f'imagens\Sprites\{self.char_type}\{animacao}'))
             for i in range(num_frames):
-                img_player = pygame.image.load(f'imagens\Sprites\{self.char_type}\{animacao}\{self.char_type}{i}.png')
-                img_player = pygame.transform.scale(img_player, (img_player.get_width() / 4, img_player.get_height() / 4))
+                img_player = pygame.image.load(f'imagens\Sprites\{self.char_type}\{animacao}\{self.char_type}{i}.png').convert_alpha()
+                img_player = pygame.transform.scale(img_player, (img_player.get_width() * escala, img_player.get_height() * escala))
                 temp_list.append(img_player)
             self.lista_animacoes.append(temp_list)
         self.img_player = self.lista_animacoes[self.action][self.frame_index]
@@ -65,6 +66,10 @@ class Player(pygame.sprite.Sprite):
         self.player_rect.x += dx
         self.player_rect.y += dy
 
+    def shoot(self):
+        bullet = Bullet(self.player_rect.centerx + (0.32 * self.player_rect.size[0] * self.dirececao), self.player_rect.centery - 45, self.dirececao, 10)
+        bullet_group.add(bullet)
+
     def update_animacao(self):
         # tempo de update da animação
         cooldown_animacao = 700
@@ -89,3 +94,21 @@ class Player(pygame.sprite.Sprite):
     def draw(self, tela):
         tela.blit(pygame.transform.flip(self.img_player, self.flip, False), self.player_rect)
     
+class Bullet(pygame.sprite.Sprite):
+    def __init__(self, x, y, direcao, velocidade):
+        pygame.sprite.Sprite.__init__(self)
+        self.velocidade = velocidade
+        self.image = pygame.image.load('imagens/bullet/bullet0.png')
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.direcao = direcao
+
+    def update(self):
+        # mover a bala
+        self.rect.x += (self.direcao * self.velocidade)
+        # checar se a bala saiu da tela
+        if self.rect.right < 0 or self.rect.left > 1280:
+            self.kill()
+
+# Sprite Groups
+bullet_group = pygame.sprite.Group()
