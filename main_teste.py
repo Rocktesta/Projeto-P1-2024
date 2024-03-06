@@ -1,5 +1,5 @@
 import pygame
-from player_script_teste import Player
+import player_script_teste
 pygame.init()
 
 largura_tela = 1280
@@ -25,8 +25,9 @@ def play():
     # Movimentações do Player
     mooving_left = False
     mooving_right = False
+    shoot = False
 
-    player = Player('player_Kiev', 200, 600, 3, 5, gravidade)
+    player = player_script_teste.Boneco('player_Kiev', 200, 600, 3, gravidade, 3)
 
     # Loop Principal do Jogo
     running = True
@@ -38,16 +39,25 @@ def play():
 
         player.update_animacao()
         player.draw(tela)
+
+        # updade e draw sprite groups
+        bullet_group = player_script_teste.bullet_group
+        bullet_group.update()
+        bullet_group.draw(tela)
+
         # updade das ações do player
-        '''
+        
         if player.alive:
-            if player.no_ar:
+            # shoot bullets
+            if shoot:
+                player.shoot()
+            '''if player.no_ar:
                 player.updade_action(2) # animação de pulo
             elif mooving_left or mooving_right:
                 player.update_action(1) # animação de corrida
             else:
                 player.update_action(0) # retorna para o idle'''
-        player.move(mooving_left, mooving_right) 
+            player.move(mooving_left, mooving_right) 
 
         for event in pygame.event.get():   # Loop para lidar com eventos
             if event.type == pygame.QUIT:
@@ -61,6 +71,8 @@ def play():
                     mooving_left = True
                 if event.key == pygame.K_d:
                     mooving_right = True
+                if event.key == pygame.K_RETURN:
+                    shoot = True
                 if event.key == pygame.K_SPACE and player.alive:
                     player.jump = True
             # Soltar teclas no teclado
@@ -69,6 +81,8 @@ def play():
                     mooving_left = False
                 if event.key == pygame.K_d:
                     mooving_right = False
+                if event.key == pygame.K_RETURN:
+                    shoot = False
 
         pygame.display.update()
 
