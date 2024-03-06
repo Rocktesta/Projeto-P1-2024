@@ -10,6 +10,7 @@ class Boneco(pygame.sprite.Sprite):
         self.vivo = True
         self.char_type = char_type
         self.velocidade = velocidade
+        self.shoot_cooldown = 0
         self.velocidade_y = 0
         self.dirececao = 1
         self.jump = False
@@ -34,7 +35,14 @@ class Boneco(pygame.sprite.Sprite):
         self.img_player = self.lista_animacoes[self.action][self.frame_index]
         self.player_rect = self.img_player.get_rect()
         self.player_rect.center = (x, y)
-        
+
+    def update(self):
+        self.update_animacao()
+        # update cooldown
+        if self.shoot_cooldown > 0:
+            self.shoot_cooldown -= 1
+
+
     def move(self, mooving_left, mooving_right):
         # reset as variáveis de movimento
         dx = 0
@@ -67,8 +75,10 @@ class Boneco(pygame.sprite.Sprite):
         self.player_rect.y += dy
 
     def shoot(self):
-        bullet = Bullet(self.player_rect.centerx + (0.32 * self.player_rect.size[0] * self.dirececao), self.player_rect.centery - 45, self.dirececao, 10)
-        bullet_group.add(bullet)
+        if self.shoot_cooldown == 0:
+            self.shoot_cooldown = 40
+            bullet = Bullet(self.player_rect.centerx + (0.32 * self.player_rect.size[0] * self.dirececao), self.player_rect.centery - 45, self.dirececao, 10)
+            bullet_group.add(bullet)
 
     def update_animacao(self):
         # tempo de update da animação
