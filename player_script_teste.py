@@ -3,14 +3,15 @@ import os
 from pygame.sprite import Group
 
 class Boneco(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, velocidade, gravidade, escala=1, vida=100):
+    def __init__(self, char_type, x, y, velocidade, gravidade, escala=1, vida=100, cooldown_animacao=100):
         pygame.sprite.Sprite.__init__(self)
         self.escala = escala
         self.gravidade = gravidade
         self.vivo = True
         self.char_type = char_type
         self.velocidade = velocidade
-        self.shoot_cooldown = 0
+        self.shoot_cooldown = 0 
+        self.cooldown_animacao = cooldown_animacao # tempo de update da animação
         self.vida = vida
         self.max_vida = self.vida
         self.velocidade_y = 0
@@ -23,7 +24,7 @@ class Boneco(pygame.sprite.Sprite):
         # 0 = Idle | 1 = Run | 2 = Jump | 3 = Death
         self.action = 0
         self.update_tempo = pygame.time.get_ticks()
-        animacao_types = ['Idle', 'Run', 'Jump']
+        animacao_types = ['Idle', 'Run', 'Jump', 'Death']
         for animacao in animacao_types:
             # reset da lista temporária de imagens
             temp_list = []
@@ -83,22 +84,32 @@ class Boneco(pygame.sprite.Sprite):
             bullet_group.add(bullet)
 
     def update_animacao(self):
-        # tempo de update da animação
-        cooldown_animacao = 700
         # update da imagem dependendo do frame
         self.img_player = self.lista_animacoes[self.action][self.frame_index]
         # check se passou tempo suficiente desde o último update
-        if pygame.time.get_ticks() - self.update_tempo > cooldown_animacao:
+        if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
             self.update_tempo = pygame.time.get_ticks()
             self.frame_index += 1
         # se a animação chegar no final ela reinicia
         if self.frame_index >= len(self.lista_animacoes[self.action]):
-            self.frame_index = 0
+            if self.action == 3:
+                self.frame_index = len(self.lista_animacoes[self.action]) - 1 # último sprite da pasta, personagem vai ficar morto no chão
+            else:
+                self.frame_index = 0
     
     def update_action(self, nova_acao):
         # checa se a nova ação é deferente da ação anterior
         if nova_acao != self.action:
             self.action = nova_acao
+            # update do cooldown da animação
+            if self.action == 0:
+                self.cooldown_animacao = 700 # cooldown da ação de Idle
+            elif self.action == 1:
+                self.cooldown_animacao = 100 # cooldown da ação de Run
+            elif self.action == 2:
+                self.cooldown_animacao = 100 # cooldown da ação de Jump
+            elif self.action == 3:
+                self.cooldown_animacao = 100 # cooldown da ação de Death
             # updade das configs da animação, para trocar para o começo da próxima animação
             self.frame_index = 0
             self.update_tempo = pygame.time.get_ticks()
@@ -132,13 +143,13 @@ class Bullet(pygame.sprite.Sprite):
         if entrada_tipo:
             player = entrada
             if pygame.sprite.spritecollide(player, bullet_group, False):
-                if player.alive:
+                if player.vivo:
                     player.vida -= 10 # dano que a bala causa
                     self.kill()
         else:
             inimigo = entrada
             if pygame.sprite.spritecollide(inimigo, bullet_group, False):
-                if inimigo.alive:
+                if inimigo.vivo:
                     inimigo.vida -= 15 # dano que a bala causa
                     self.kill()
 

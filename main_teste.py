@@ -27,8 +27,8 @@ def play():
     mooving_right = False
     shoot = False
 
-    player = player_script_teste.Boneco('player_Kiev', 200, 600, 3, gravidade, 3)
-    inimigo = player_script_teste.Boneco('player_Kiev', 600, 500, 3, gravidade, 3)
+    player = player_script_teste.Boneco('soldier', 200, 600, 3, gravidade, 3)
+    inimigo = player_script_teste.Boneco('soldier', 600, 600, 3, gravidade, 3)
 
     # Loop Principal do Jogo
     running = True
@@ -53,12 +53,12 @@ def play():
             # shoot bullets
             if shoot:
                 player.shoot()
-            '''if player.no_ar:
-                player.updade_action(2) # animação de pulo
+            if player.no_ar:
+                player.update_action(2) # animação de pulo
             elif mooving_left or mooving_right:
                 player.update_action(1) # animação de corrida
             else:
-                player.update_action(0) # retorna para o idle'''
+                player.update_action(0) # retorna para o idle
             player.move(mooving_left, mooving_right) 
 
         for event in pygame.event.get():   # Loop para lidar com eventos
