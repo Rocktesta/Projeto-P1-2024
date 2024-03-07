@@ -3,7 +3,7 @@ import os
 from pygame.sprite import Group
 
 class Boneco(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, velocidade, gravidade, escala=1):
+    def __init__(self, char_type, x, y, velocidade, gravidade, escala=1, vida=100):
         pygame.sprite.Sprite.__init__(self)
         self.escala = escala
         self.gravidade = gravidade
@@ -11,6 +11,8 @@ class Boneco(pygame.sprite.Sprite):
         self.char_type = char_type
         self.velocidade = velocidade
         self.shoot_cooldown = 0
+        self.vida = vida
+        self.max_vida = self.vida
         self.velocidade_y = 0
         self.dirececao = 1
         self.jump = False
@@ -38,6 +40,7 @@ class Boneco(pygame.sprite.Sprite):
 
     def update(self):
         self.update_animacao()
+        self.check_vivo()
         # update cooldown
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
@@ -100,6 +103,13 @@ class Boneco(pygame.sprite.Sprite):
             self.frame_index = 0
             self.update_tempo = pygame.time.get_ticks()
 
+    def check_vivo(self):
+        if self.vida <= 0:
+            self.vida = 0
+            self.velocidade = 0
+            self.vivo = False
+            self.update_action(3) # ação de morrer
+
     def draw(self, tela):
         tela.blit(pygame.transform.flip(self.img_player, self.flip, False), self.rect)
     
@@ -123,11 +133,13 @@ class Bullet(pygame.sprite.Sprite):
             player = entrada
             if pygame.sprite.spritecollide(player, bullet_group, False):
                 if player.alive:
+                    player.vida -= 10 # dano que a bala causa
                     self.kill()
         else:
             inimigo = entrada
             if pygame.sprite.spritecollide(inimigo, bullet_group, False):
                 if inimigo.alive:
+                    inimigo.vida -= 15 # dano que a bala causa
                     self.kill()
 
 # Sprite Groups
