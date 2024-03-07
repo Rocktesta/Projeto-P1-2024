@@ -103,7 +103,7 @@ class Boneco(pygame.sprite.Sprite):
             self.action = nova_acao
             # update do cooldown da animação
             if self.action == 0:
-                self.cooldown_animacao = 700 # cooldown da ação de Idle
+                self.cooldown_animacao = 100 # cooldown da ação de Idle
             elif self.action == 1:
                 self.cooldown_animacao = 100 # cooldown da ação de Run
             elif self.action == 2:
