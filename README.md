@@ -6,7 +6,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean tristique aliqua
 * João Victor (jvca2) - Desenvolvedor/Programador
 * Marcelo Melo (mcapm) - Desenvolvedor/Programador
 * Carlos Eduardo (ceft) - Art & Sound Director and Game Desingner
-* Luiz Miguel (lmgra) - QA tester
+* Luiz Miguel (lmgra) - QA tester and Art & Sound
 ## Divisão de tarefas:
 | **Equipe** | **Tarefas** |
 | :---: | :--: |
