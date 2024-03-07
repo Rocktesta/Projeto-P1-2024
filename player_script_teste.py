@@ -1,8 +1,9 @@
 import pygame
 import os
+from random import randint
 from pygame.sprite import Group
 
-class Boneco(pygame.sprite.Sprite):
+class Player(pygame.sprite.Sprite):
     def __init__(self, char_type, x, y, velocidade, gravidade, escala=1, vida=100, cooldown_animacao=100):
         pygame.sprite.Sprite.__init__(self)
         self.escala = escala
@@ -83,11 +84,14 @@ class Boneco(pygame.sprite.Sprite):
             tela_scroll = -dx
         return tela_scroll
 
-    def shoot(self):
+    def shoot(self, alvo):
         if self.shoot_cooldown == 0:
             self.shoot_cooldown = 40
             bullet = Bullet(self.rect.centerx + (0.32 * self.rect.size[0] * self.dirececao), self.rect.centery - 45, self.dirececao, 10)
-            bullet_group.add(bullet)
+            if alvo == 'inimigo': 
+                player_bullet_group.add(bullet)
+            else:
+                inimigo_bullet_group.add(bullet)
 
     def update_animacao(self):
         # update da imagem dependendo do frame
@@ -129,7 +133,51 @@ class Boneco(pygame.sprite.Sprite):
 
     def draw(self, tela):
         tela.blit(pygame.transform.flip(self.img_player, self.flip, False), self.rect)
+
+class Inimigo(Player, pygame.sprite.Sprite):
+    # classe inimigo que herdeira da classe Player
+    def __init__(self, char_type, x, y, velocidade, gravidade, escala=1, vida=100, cooldown_animacao=100):
+        pygame.sprite.Sprite.__init__(self)
+        super().__init__(char_type, x, y, velocidade, gravidade, escala, vida, cooldown_animacao)
+        self.move_counter = 0
+        self.campo_visao = pygame.Rect(0, 0, 400, 40)
+        self.idling = False
+        self.idling_counter = 0
     
+    def ai(self, player):
+        if self.vivo and player.vivo:
+            # fazendo o inimigo ficar parado
+            if self.idling == False and randint(1, 200) == 1:
+                self.update_action(0) # ação de idle
+                self.idling = True
+                self.idling_counter = 50
+            # check se o inimigo está perto de um player
+            if self.campo_visao.colliderect(player.rect):
+                # parar de se mover e encarar o player
+                self.update_action(0) # ação de idle
+                self.shoot('player')
+            else:
+                if self.idling == False:
+                    # movendo o inimigo
+                    if self.dirececao == 1:
+                        ai_movendo_direita = True
+                    else:
+                        ai_movendo_direita = False
+                    ai_movendo_esquerda = not ai_movendo_direita
+                    self.move(ai_movendo_esquerda, ai_movendo_direita)
+                    self.update_action(1) # ação de correr
+                    self.move_counter += 1
+                    # update visão do inimigo quando ele se move
+                    self.campo_visao.center = (self.rect.centerx + 200 * self.dirececao, self.rect.centery) # posição do campo de visão
+                    # mudando a direção
+                    if self.move_counter > 50:
+                        self.dirececao *= -1
+                        self.move_counter *= -1
+                else:
+                    self.idling_counter -= 1
+                    if self.idling_counter <= 0:
+                        self.idling = False
+
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direcao, velocidade):
         pygame.sprite.Sprite.__init__(self)
@@ -148,16 +196,18 @@ class Bullet(pygame.sprite.Sprite):
         # check collision with caracters
         if entrada_tipo:
             player = entrada
-            if pygame.sprite.spritecollide(player, bullet_group, False):
+            if pygame.sprite.spritecollide(player, inimigo_bullet_group, False):
                 if player.vivo:
                     player.vida -= 10 # dano que a bala causa
                     self.kill()
         else:
             inimigo = entrada
-            if pygame.sprite.spritecollide(inimigo, bullet_group, False):
+            if pygame.sprite.spritecollide(inimigo, player_bullet_group, False):
                 if inimigo.vivo:
                     inimigo.vida -= 15 # dano que a bala causa
                     self.kill()
 
 # Sprite Groups
-bullet_group = pygame.sprite.Group()
+player_bullet_group = pygame.sprite.Group()
+inimigo_bullet_group = pygame.sprite.Group()
+inimigo_group = pygame.sprite.Group()

@@ -29,10 +29,16 @@ def play():
     mooving_right = False
     shoot = False
 
-    player = player_script_teste.Boneco('soldier', 200, 600, 3, gravidade, 3)
-    inimigo = player_script_teste.Boneco('soldier', 600, 600, 3, gravidade, 3)
+    player = player_script_teste.Player('soldier', 200, 600, 3, gravidade, 3)
     barra_vida = HealthBar(50, 50, 150, 20, 90)
     coxinha = Coxinha(1300, 500, 20, 20)
+
+    # inimigos
+    inimigo_group = player_script_teste.inimigo_group
+    inimigo1 = player_script_teste.Inimigo('soldier', 700, 700, 3, gravidade, 3)
+    inimigo2 = player_script_teste.Inimigo('soldier', 400, 700, 3, gravidade, 3)
+    inimigo_group.add(inimigo1)
+    inimigo_group.add(inimigo2)
 
     # Loop Principal do Jogo
     running = True
@@ -45,20 +51,24 @@ def play():
         player.draw(tela)
         barra_vida.draw(tela)
         coxinha.draw(tela)
-        inimigo.update()
-        inimigo.draw(tela)
+        for inimigo in inimigo_group:
+            inimigo.ai(player)
+            inimigo.update()
+            inimigo.draw(tela)
 
         # updade e draw sprite groups
-        bullet_group = player_script_teste.bullet_group
-        bullet_group.update(inimigo, 'inimigo')
-        bullet_group.draw(tela)
+        player_bullet_group = player_script_teste.player_bullet_group
+        player_bullet_group.update(inimigo, 'inimigo')
+        player_bullet_group.draw(tela)
+        inimigo_bullet_group = player_script_teste.inimigo_bullet_group
+        inimigo_bullet_group.update(player, 'player')
+        inimigo_bullet_group.draw(tela)
 
         # updade das ações do player
-        
         if player.alive:
             # shoot bullets
             if shoot:
-                player.shoot()
+                player.shoot('inimigo')
             if player.no_ar:
                 player.update_action(2) # animação de pulo
             elif mooving_left or mooving_right:
