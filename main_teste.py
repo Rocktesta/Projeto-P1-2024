@@ -1,5 +1,6 @@
 import pygame
 import player_script_teste
+import pygame_gui
 from Bar_vida_script import HealthBar
 from Item_vida_script import Coxinha
 pygame.init()
@@ -8,10 +9,43 @@ largura_tela = 1280
 altura_tela = 720
 
 tela = pygame.display.set_mode((largura_tela, altura_tela))
+manager = pygame_gui.UIManager((largura_tela, altura_tela))
+botao_play = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 50, altura_tela//2), (100, 50)),text='Play', manager=manager)
+botao_quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 50, altura_tela//2 + 100), (100, 50)),text='Exit', manager=manager)
 
 # framerate
 clock = pygame.time.Clock()
 fps = 60
+
+def menu():
+    running = True
+    while running:
+        clock.tick(fps)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return  # Saindo da função e encerrando o loop do jogo
+            if event.type == pygame.USEREVENT:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                    if event.ui_element == botao_play:
+                        play()
+                    elif event.ui_element == botao_quit:
+                        pygame.quit()
+                        return
+
+        manager.process_events(event)  # Processa eventos da GUI
+
+        # Atualiza e desenha a GUI
+        
+        manager.update(fps)
+        manager.draw_ui(tela)
+
+        pygame.display.update()
+
+
+
+
 
 BG = (152, 152, 152) 
 def draw_bg():
@@ -29,8 +63,8 @@ def play():
     mooving_right = False
     shoot = False
 
-    player = player_script_teste.Player('soldier', 200, 600, 3, gravidade, 3)
-    barra_vida = HealthBar(50, 50, 150, 20, 90)
+    player = player_script_teste.Player('soldier', 250, 600, 3, gravidade, 3)
+    barra_vida = HealthBar(50, 50, 190, 20, 100)
     coxinha = Coxinha(1300, 500, 20, 20)
 
     # inimigos
@@ -62,7 +96,13 @@ def play():
         player_bullet_group.draw(tela)
         inimigo_bullet_group = player_script_teste.inimigo_bullet_group
         inimigo_bullet_group.update(player, 'player')
+
+
         inimigo_bullet_group.draw(tela)
+        if coxinha.render == True:
+            vida = coxinha.update(player.rect)
+            player.vida += vida
+        barra_vida.update(player.vida)
 
         # updade das ações do player
         if player.alive:
@@ -76,17 +116,21 @@ def play():
             else:
                 player.update_action(0) # retorna para o idle
             tela_scroll =  player.move(mooving_left, mooving_right) 
+            
 
-            inimigo.rect.x += tela_scroll
+            inimigo1.rect.x += tela_scroll
+            inimigo2.rect.x += tela_scroll
             coxinha.rect.x += tela_scroll
 
 
         for event in pygame.event.get():   # Loop para lidar com eventos
             if event.type == pygame.QUIT:
-                running = False                 # jogo para de rodar se apertar o x da aba do jogo
+                running = False
+                pygame.quit()                 # jogo para de rodar se apertar o x da aba do jogo
             elif event.type == pygame.KEYDOWN:   # Se houver evento de pressionar tecla
                 if event.key == pygame.K_ESCAPE:   # Se for tecla escape, jogo para de rodar
                     running = False 
+                    pygame.quit()
             # Pressionar teclas no teclado
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a:
@@ -108,4 +152,4 @@ def play():
 
         pygame.display.update()
 
-play()
+menu()

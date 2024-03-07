@@ -4,7 +4,7 @@ from random import randint
 from pygame.sprite import Group
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, velocidade, gravidade, escala=1, vida=100, cooldown_animacao=100):
+    def __init__(self, char_type, x, y, velocidade, gravidade, escala=1, vida=90, cooldown_animacao=100):
         pygame.sprite.Sprite.__init__(self)
         self.escala = escala
         self.gravidade = gravidade
@@ -198,7 +198,7 @@ class Bullet(pygame.sprite.Sprite):
             player = entrada
             if pygame.sprite.spritecollide(player, inimigo_bullet_group, False):
                 if player.vivo:
-                    player.vida -= 10 # dano que a bala causa
+                    player.vida -= 5 # dano que a bala causa
                     self.kill()
         else:
             inimigo = entrada

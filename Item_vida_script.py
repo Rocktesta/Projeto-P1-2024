@@ -5,8 +5,18 @@ class Coxinha:
         self.vida = 10
         self.largura = largura
         self.altura = altura
+        self.render = True
         
     def draw(self, tela):
-        pygame.draw.rect(tela, (255, 255, 255), (self.rect.x, self.rect.y, self.largura, self.altura))
+        if self.render:
+            pygame.draw.rect(tela, (255, 255, 255), (self.rect.x, self.rect.y, self.largura, self.altura))
+
+    def update(self, player):
+        vida = 0
+        if self.rect.colliderect(player) == 1:
+            vida += self.vida
+            self.render = False
+        return vida
+
 
         
