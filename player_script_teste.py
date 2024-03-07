@@ -81,6 +81,7 @@ class Boneco(pygame.sprite.Sprite):
         if self.rect.right > 1280 - 200 or self.rect.left < 200:
             self.rect.x -= dx
             tela_scroll = -dx
+        return tela_scroll
 
     def shoot(self):
         if self.shoot_cooldown == 0:

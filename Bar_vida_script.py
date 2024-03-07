@@ -13,11 +13,11 @@ class HealthBar:
         self.vida_atual = nova_vida
 
     def draw(self, tela):
-        # Draw the background of the health bar (entire bar)
+        #barra inteira vida max
         pygame.draw.rect(tela, (255, 0, 0), (self.x, self.y, self.largura, self.altura))
         
-        # Calculate the width of the remaining health bar based on the current health
+        # tamanho restante
         largura_restante = (self.vida_atual / self.vida_max) * self.largura
         
-        # Draw the remaining health bar
+        # barra de vida atual
         pygame.draw.rect(tela, (0, 255, 0), (self.x, self.y, largura_restante, self.altura))

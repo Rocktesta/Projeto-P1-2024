@@ -7,6 +7,7 @@ from botao import Botao
 from Bar_vida_script import HealthBar
 from weapons import Balas
 
+
 pygame.init()
 
 # Obtendo as dimensões da tela do sistema

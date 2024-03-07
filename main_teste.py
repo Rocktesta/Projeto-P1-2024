@@ -1,5 +1,7 @@
 import pygame
 import player_script_teste
+from Bar_vida_script import HealthBar
+from Item_vida_script import Coxinha
 pygame.init()
 
 largura_tela = 1280
@@ -29,6 +31,8 @@ def play():
 
     player = player_script_teste.Boneco('soldier', 200, 600, 3, gravidade, 3)
     inimigo = player_script_teste.Boneco('soldier', 600, 600, 3, gravidade, 3)
+    barra_vida = HealthBar(50, 50, 150, 20, 90)
+    coxinha = Coxinha(1300, 500, 20, 20)
 
     # Loop Principal do Jogo
     running = True
@@ -39,6 +43,8 @@ def play():
         draw_bg()
         player.update()
         player.draw(tela)
+        barra_vida.draw(tela)
+        coxinha.draw(tela)
         inimigo.update()
         inimigo.draw(tela)
 
@@ -59,7 +65,11 @@ def play():
                 player.update_action(1) # animação de corrida
             else:
                 player.update_action(0) # retorna para o idle
-            player.move(mooving_left, mooving_right) 
+            tela_scroll =  player.move(mooving_left, mooving_right) 
+
+            inimigo.rect.x += tela_scroll
+            coxinha.rect.x += tela_scroll
+
 
         for event in pygame.event.get():   # Loop para lidar com eventos
             if event.type == pygame.QUIT:
