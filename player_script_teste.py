@@ -4,7 +4,7 @@ from random import randint
 from pygame.sprite import Group
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, velocidade, gravidade, escala=1, vida=90, cooldown_animacao=100):
+    def __init__(self, char_type, x, y, velocidade, gravidade, escala=10, vida=90, cooldown_animacao=100):
         pygame.sprite.Sprite.__init__(self)
         self.escala = escala
         self.gravidade = gravidade
@@ -33,7 +33,7 @@ class Player(pygame.sprite.Sprite):
             num_frames = len(os.listdir(f'imagens\Sprites\{self.char_type}\{animacao}'))
             for i in range(num_frames):
                 img_player = pygame.image.load(f'imagens\Sprites\{self.char_type}\{animacao}\{self.char_type}{i}.png').convert_alpha()
-                img_player = pygame.transform.scale(img_player, (img_player.get_width() * escala, img_player.get_height() * escala))
+                img_player = pygame.transform.scale(img_player, (img_player.get_width() * 5, img_player.get_height() * 6))
                 temp_list.append(img_player)
             self.lista_animacoes.append(temp_list)
         self.img_player = self.lista_animacoes[self.action][self.frame_index]
@@ -49,45 +49,49 @@ class Player(pygame.sprite.Sprite):
 
     def move(self, mooving_left, mooving_right):
         # reset as variáveis de movimento
-        tela_scroll = 0
-        dx = 0
-        dy = 0
-        # checando se o player se move para a direita ou esquerda
-        if mooving_left:
-            dx = -self.velocidade
-            self.flip = True
-            self.dirececao = -1
-        if mooving_right:
-            dx = +self.velocidade
-            self.flip = False
-            self.dirececao = 1
-        # Pulo
-        if self.jump == True and self.no_ar == False:
-            self.velocidade_y = -15 # altura do pulo
-            self.jump = False
-            self.no_ar = True
-        self.velocidade_y += self.gravidade
-        # ação da gravidade
-        if self.velocidade_y > 10: # velocidade máxima
-            self.velocidade_y
-        dy += self.velocidade_y
-        # checando colisão com o chão
-        if self.rect.bottom + dy > 700:
-            dy = 700 - self.rect.bottom
-            self.no_ar = False
-        # updade da posição do rect do player
-        self.rect.x += dx
-        self.rect.y += dy
+        if self.vivo:
+            tela_scroll = 0
+            dx = 0
+            dy = 0
+            # checando se o player se move para a direita ou esquerda
+            if mooving_left:
+                dx = -self.velocidade
+                self.flip = True
+                self.dirececao = -1
+            if mooving_right:
+                dx = +self.velocidade
+                self.flip = False
+                self.dirececao = 1
+            # Pulo
+            if self.jump == True and self.no_ar == False:
+                self.velocidade_y = -15 # altura do pulo
+                self.jump = False
+                self.no_ar = True
+            self.velocidade_y += self.gravidade
+            # ação da gravidade
+            if self.velocidade_y > 10: # velocidade máxima
+                self.velocidade_y
+            dy += self.velocidade_y
+            # checando colisão com o chão
+            if self.rect.bottom + dy > 700:
+                dy = 700 - self.rect.bottom
+                self.no_ar = False
+            # updade da posição do rect do player
+            self.rect.x += dx
+            self.rect.y += dy
 
-        if self.rect.right > 1280 - 200 or self.rect.left < 200:
-            self.rect.x -= dx
-            tela_scroll = -dx
-        return tela_scroll
+            if self.rect.right > 1280 - 200 or self.rect.left < 200:
+                self.rect.x -= dx
+                tela_scroll = -dx
+            return tela_scroll
+        else:
+            return 0
+
 
     def shoot(self, alvo):
         if self.shoot_cooldown == 0:
             self.shoot_cooldown = 40
-            bullet = Bullet(self.rect.centerx + (0.32 * self.rect.size[0] * self.dirececao), self.rect.centery - 45, self.dirececao, 10)
+            bullet = Bullet(self.rect.centerx + (0.32 * self.rect.size[0] * self.dirececao), self.rect.centery - 20, self.dirececao, 10)
             if alvo == 'inimigo': 
                 player_bullet_group.add(bullet)
             else:
@@ -125,7 +129,7 @@ class Player(pygame.sprite.Sprite):
             self.update_tempo = pygame.time.get_ticks()
 
     def check_vivo(self):
-        if self.vida <= 0:
+        if self.vida <= 0 or self.vivo == False:
             self.vida = 0
             self.velocidade = 0
             self.vivo = False
@@ -136,7 +140,7 @@ class Player(pygame.sprite.Sprite):
 
 class Inimigo(Player, pygame.sprite.Sprite):
     # classe inimigo que herdeira da classe Player
-    def __init__(self, char_type, x, y, velocidade, gravidade, escala=1, vida=100, cooldown_animacao=100):
+    def __init__(self, char_type, x, y, velocidade, gravidade, escala=2, vida=100, cooldown_animacao=100):
         pygame.sprite.Sprite.__init__(self)
         super().__init__(char_type, x, y, velocidade, gravidade, escala, vida, cooldown_animacao)
         self.move_counter = 0
@@ -183,6 +187,7 @@ class Bullet(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.velocidade = velocidade
         self.image = pygame.image.load('imagens/bullet/bullet0.png')
+        self.image = pygame.transform.scale(self.image, (self.image.get_width() * 2, self.image.get_height() * 2))
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.direcao = direcao
@@ -194,7 +199,7 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.right < 0 or self.rect.left > 1280:
             self.kill()
         # check collision with caracters
-        if entrada_tipo:
+        if entrada_tipo == 'player':
             player = entrada
             if pygame.sprite.spritecollide(player, inimigo_bullet_group, False):
                 if player.vivo:
@@ -204,7 +209,7 @@ class Bullet(pygame.sprite.Sprite):
             inimigo = entrada
             if pygame.sprite.spritecollide(inimigo, player_bullet_group, False):
                 if inimigo.vivo:
-                    inimigo.vida -= 15 # dano que a bala causa
+                    inimigo.vida -= 30 # dano que a bala causa
                     self.kill()
 
 # Sprite Groups

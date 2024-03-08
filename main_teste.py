@@ -12,6 +12,7 @@ tela = pygame.display.set_mode((largura_tela, altura_tela))
 manager = pygame_gui.UIManager((largura_tela, altura_tela))
 botao_play = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 50, altura_tela//2), (100, 50)),text='Play', manager=manager)
 botao_quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 50, altura_tela//2 + 100), (100, 50)),text='Exit', manager=manager)
+background = pygame.image.load("Trecho_teste.png").convert_alpha()
 
 # framerate
 clock = pygame.time.Clock()
@@ -49,7 +50,6 @@ def menu():
 
 BG = (152, 152, 152) 
 def draw_bg():
-    tela.fill(BG)
     pygame.draw.line(tela, (0, 0, 0), (0, 600), (largura_tela, 600))
 
 def play():
@@ -57,30 +57,39 @@ def play():
 
     # Variáveis do jogo
     gravidade = 0.75
+    back_x = 0
+    fonte = pygame.font.SysFont("Arial", 36)
+    white = (255, 255, 255)
+    
 
     # Movimentações do Player
     mooving_left = False
     mooving_right = False
     shoot = False
 
-    player = player_script_teste.Player('soldier', 250, 600, 3, gravidade, 3)
+    player = player_script_teste.Player('soldier', 300, 600, 3, gravidade, 3)
     barra_vida = HealthBar(50, 50, 190, 20, 100)
     coxinha = Coxinha(1300, 500, 20, 20)
 
     # inimigos
     inimigo_group = player_script_teste.inimigo_group
-    inimigo1 = player_script_teste.Inimigo('soldier', 700, 700, 3, gravidade, 3)
-    inimigo2 = player_script_teste.Inimigo('soldier', 400, 700, 3, gravidade, 3)
+    inimigo1 = player_script_teste.Inimigo('soldier', 700, 600, 3, gravidade, 3)
+    inimigo2 = player_script_teste.Inimigo('soldier', 400, 600, 3, gravidade, 3)
     inimigo_group.add(inimigo1)
     inimigo_group.add(inimigo2)
 
+    
     # Loop Principal do Jogo
     running = True
     while running:
         
         clock.tick(fps)
 
-        draw_bg()
+        pygame.Surface.fill(tela, BG)
+        tela.blit((background), (back_x, 0))
+        player_bullet_group = player_script_teste.player_bullet_group
+        player_text = fonte.render(f"Player {inimigo1.vida}", True, (0, 0, 0))
+        tela.blit(player_text, (player.rect.x + 10, player.rect.y - 50))
         player.update()
         player.draw(tela)
         barra_vida.draw(tela)
@@ -89,10 +98,11 @@ def play():
             inimigo.ai(player)
             inimigo.update()
             inimigo.draw(tela)
+            player_bullet_group.update(inimigo, 'inimigo')
 
         # updade e draw sprite groups
-        player_bullet_group = player_script_teste.player_bullet_group
-        player_bullet_group.update(inimigo, 'inimigo')
+        
+        
         player_bullet_group.draw(tela)
         inimigo_bullet_group = player_script_teste.inimigo_bullet_group
         inimigo_bullet_group.update(player, 'player')
@@ -105,7 +115,7 @@ def play():
         barra_vida.update(player.vida)
 
         # updade das ações do player
-        if player.alive:
+        if player.vivo:
             # shoot bullets
             if shoot:
                 player.shoot('inimigo')
@@ -121,8 +131,10 @@ def play():
             inimigo1.rect.x += tela_scroll
             inimigo2.rect.x += tela_scroll
             coxinha.rect.x += tela_scroll
-
-
+            back_x += tela_scroll
+        
+        else:
+            player
         for event in pygame.event.get():   # Loop para lidar com eventos
             if event.type == pygame.QUIT:
                 running = False
@@ -149,7 +161,7 @@ def play():
                     mooving_right = False
                 if event.key == pygame.K_RETURN:
                     shoot = False
-
+            
         pygame.display.update()
 
 menu()
