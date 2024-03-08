@@ -1,8 +1,11 @@
 import pygame
 import player_script_teste
 import pygame_gui
+import weapons
 from Bar_vida_script import HealthBar
 from Item_vida_script import Coxinha
+from weapons import Shotgun
+
 pygame.init()
 
 largura_tela = 1280
@@ -66,10 +69,16 @@ def play():
     mooving_left = False
     mooving_right = False
     shoot = False
+    equipada = True
 
     player = player_script_teste.Player('soldier', 300, 600, 3, gravidade, 3)
     barra_vida = HealthBar(50, 50, 190, 20, 100)
     coxinha = Coxinha(1300, 500, 20, 20)
+    shotgun = Shotgun(1200, 300)
+    
+    #armas
+    weapons_group = weapons.weapons_group
+    weapons_group.add(shotgun)
 
     # inimigos
     inimigo_group = player_script_teste.inimigo_group
@@ -92,8 +101,11 @@ def play():
         tela.blit(player_text, (player.rect.x + 10, player.rect.y - 50))
         player.update()
         player.draw(tela)
+        shotgun.draw(tela)
+        shotgun.update(player)
         barra_vida.draw(tela)
         coxinha.draw(tela)
+
         for inimigo in inimigo_group:
             inimigo.ai(player)
             inimigo.update()
@@ -132,6 +144,7 @@ def play():
             inimigo2.rect.x += tela_scroll
             coxinha.rect.x += tela_scroll
             back_x += tela_scroll
+            shotgun.rect.x += tela_scroll
         
         else:
             player
