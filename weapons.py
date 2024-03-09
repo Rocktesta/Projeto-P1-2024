@@ -17,6 +17,7 @@ class Shotgun(pygame.sprite.Sprite):
     def update(self, player):
         if self.rect.colliderect(player):
             self.equipada = True
+            #player.char_type = 'player_Kiev_shotgun' # mudar o sprite do player
             self.kill()
          
         
