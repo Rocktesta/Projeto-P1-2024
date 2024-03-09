@@ -110,7 +110,7 @@ def play():
             inimigo.ai(player)
             inimigo.update()
             inimigo.draw(tela)
-            player_bullet_group.update(inimigo, 'inimigo')
+            player_bullet_group.update(inimigo, 'inimigo') # update de colisão tiro com inimigo
 
         # updade e draw sprite groups
         
@@ -130,7 +130,7 @@ def play():
         if player.vivo:
             # shoot bullets
             if shoot:
-                player.shoot('inimigo')
+                player.shoot('inimigo', 'bullet0')
             if player.no_ar:
                 player.update_action(2) # animação de pulo
             elif mooving_left or mooving_right:

@@ -16,7 +16,7 @@ class Player(pygame.sprite.Sprite):
         self.vida = vida
         self.max_vida = self.vida
         self.velocidade_y = 0
-        self.dirececao = 1
+        self.direcao = 1
         self.jump = False
         self.no_ar = True
         self.flip = False
@@ -57,11 +57,11 @@ class Player(pygame.sprite.Sprite):
             if mooving_left:
                 dx = -self.velocidade
                 self.flip = True
-                self.dirececao = -1
+                self.direcao = -1
             if mooving_right:
                 dx = +self.velocidade
                 self.flip = False
-                self.dirececao = 1
+                self.direcao = 1
             # Pulo
             if self.jump == True and self.no_ar == False:
                 self.velocidade_y = -15 # altura do pulo
@@ -88,10 +88,10 @@ class Player(pygame.sprite.Sprite):
             return 0
 
 
-    def shoot(self, alvo):
+    def shoot(self, alvo, bullet_type):
         if self.shoot_cooldown == 0:
             self.shoot_cooldown = 40
-            bullet = Bullet(self.rect.centerx + (0.32 * self.rect.size[0] * self.dirececao), self.rect.centery - 20, self.dirececao, 10)
+            bullet = Bullet(bullet_type, self.rect.centerx + (0.32 * self.rect.size[0] * self.direcao), self.rect.centery - 20, self.direcao, 10)
             if alvo == 'inimigo': 
                 player_bullet_group.add(bullet)
             else:
@@ -159,11 +159,11 @@ class Inimigo(Player, pygame.sprite.Sprite):
             if self.campo_visao.colliderect(player.rect):
                 # parar de se mover e encarar o player
                 self.update_action(0) # ação de idle
-                self.shoot('player')
+                self.shoot('player', 'bullet_laser')
             else:
                 if self.idling == False:
                     # movendo o inimigo
-                    if self.dirececao == 1:
+                    if self.direcao == 1:
                         ai_movendo_direita = True
                     else:
                         ai_movendo_direita = False
@@ -172,10 +172,10 @@ class Inimigo(Player, pygame.sprite.Sprite):
                     self.update_action(1) # ação de correr
                     self.move_counter += 1
                     # update visão do inimigo quando ele se move
-                    self.campo_visao.center = (self.rect.centerx + 200 * self.dirececao, self.rect.centery) # posição do campo de visão
+                    self.campo_visao.center = (self.rect.centerx + 200 * self.direcao, self.rect.centery) # posição do campo de visão
                     # mudando a direção
                     if self.move_counter > 50:
-                        self.dirececao *= -1
+                        self.direcao *= -1
                         self.move_counter *= -1
                 else:
                     self.idling_counter -= 1
@@ -183,15 +183,18 @@ class Inimigo(Player, pygame.sprite.Sprite):
                         self.idling = False
 
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, direcao, velocidade):
+    def __init__(self, bullet_type, x, y, direcao, velocidade):
         pygame.sprite.Sprite.__init__(self)
+        self.bullet_type = bullet_type
+        self.direcao = direcao
         self.velocidade = velocidade
-        self.image = pygame.image.load('imagens/bullet/bullet0.png')
+        self.image = pygame.image.load(f'imagens/bullet/{self.bullet_type}.png')
         self.image = pygame.transform.scale(self.image, (self.image.get_width() * 2, self.image.get_height() * 2))
+        if self.direcao == -1:
+            self.image = pygame.transform.flip(self.image, True, False)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.direcao = direcao
-
+    
     def update(self, entrada, entrada_tipo):
         # mover a bala
         self.rect.x += (self.direcao * self.velocidade)
