@@ -1,7 +1,14 @@
 import pygame
+from pygame import mixer
 import os
 from random import randint
 from pygame.sprite import Group
+
+mixer.init()
+# carregando sons
+pistol_sound = mixer.Sound('Audio\pistol_sound.wav')
+pistol_sound.set_volume(0.3)
+bullet_laser_sound = mixer.Sound('Audio\\bullet_laser.mp3')
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, char_type, x, y, velocidade, gravidade, escala=10, vida=90, cooldown_animacao=100):
@@ -22,7 +29,7 @@ class Player(pygame.sprite.Sprite):
         self.flip = False
         self.lista_animacoes = []
         self.frame_index = 0
-        self.sprite_sheet = pygame.image.load("imagens\Sprites\Sprite_sheet_main.png").convert_alpha()
+        self.sprite_sheet = pygame.image.load("Image\Sprites\Sprite_sheet_Kiev.png").convert_alpha()
         frames = self.sprite_sheet.get_width() // 128
         linhas = self.sprite_sheet.get_height() // 128
         # 0 = Idle | 1 = Run | 2 = Jump | 3 = Death
@@ -110,8 +117,10 @@ class Player(pygame.sprite.Sprite):
             bullet = Bullet(bullet_type, self.rect.centerx + (0.32 * self.rect.size[0] * self.direcao), self.rect.centery - 20, self.direcao, 10)
             if alvo == 'inimigo': 
                 player_bullet_group.add(bullet)
+                pistol_sound.play()
             else:
                 inimigo_bullet_group.add(bullet)
+                bullet_laser_sound.play()
 
     def update_animacao(self):
         if self.action == 0: # idle
@@ -218,7 +227,7 @@ class Bullet(pygame.sprite.Sprite):
         self.bullet_type = bullet_type
         self.direcao = direcao
         self.velocidade = velocidade
-        self.image = pygame.image.load(f'imagens/bullet/{self.bullet_type}.png')
+        self.image = pygame.image.load(f'Image/bullet/{self.bullet_type}.png')
         self.image = pygame.transform.scale(self.image, (self.image.get_width() * 2, self.image.get_height() * 2))
         if self.direcao == -1:
             self.image = pygame.transform.flip(self.image, True, False)
