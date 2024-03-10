@@ -1,7 +1,14 @@
 import pygame
+from pygame import mixer
 import os
 from random import randint
 from pygame.sprite import Group
+
+mixer.init()
+# sons
+pistol_sound = pygame.mixer.Sound('Audio\pistol_sound.wav')
+pistol_sound.set_volume(0.3)
+laser_sound = pygame.mixer.Sound('Audio\\bullet_laser.mp3')
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, char_type, x, y, velocidade, gravidade, escala=10, vida=90, cooldown_animacao=100):
@@ -30,9 +37,9 @@ class Player(pygame.sprite.Sprite):
             # reset da lista temporária de imagens
             temp_list = []
             # contar o número de arquivos na pasta
-            num_frames = len(os.listdir(f'imagens\Sprites\{self.char_type}\{animacao}'))
+            num_frames = len(os.listdir(f'Image\Sprites\{self.char_type}\{animacao}'))
             for i in range(num_frames):
-                img_player = pygame.image.load(f'imagens\Sprites\{self.char_type}\{animacao}\{self.char_type}{i}.png').convert_alpha()
+                img_player = pygame.image.load(f'Image\Sprites\{self.char_type}\{animacao}\{self.char_type}{i}.png').convert_alpha()
                 img_player = pygame.transform.scale(img_player, (img_player.get_width() * 5, img_player.get_height() * 6))
                 temp_list.append(img_player)
             self.lista_animacoes.append(temp_list)
@@ -94,8 +101,10 @@ class Player(pygame.sprite.Sprite):
             bullet = Bullet(bullet_type, self.rect.centerx + (0.32 * self.rect.size[0] * self.direcao), self.rect.centery - 20, self.direcao, 10)
             if alvo == 'inimigo': 
                 player_bullet_group.add(bullet)
+                pistol_sound.play()
             else:
                 inimigo_bullet_group.add(bullet)
+                laser_sound.play()
 
     def update_animacao(self):
         # update da imagem dependendo do frame
@@ -188,7 +197,7 @@ class Bullet(pygame.sprite.Sprite):
         self.bullet_type = bullet_type
         self.direcao = direcao
         self.velocidade = velocidade
-        self.image = pygame.image.load(f'imagens/bullet/{self.bullet_type}.png')
+        self.image = pygame.image.load(f'Image/bullet/{self.bullet_type}.png')
         self.image = pygame.transform.scale(self.image, (self.image.get_width() * 2, self.image.get_height() * 2))
         if self.direcao == -1:
             self.image = pygame.transform.flip(self.image, True, False)

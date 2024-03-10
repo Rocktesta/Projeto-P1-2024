@@ -14,7 +14,7 @@ tela = pygame.display.set_mode((largura_tela, altura_tela))
 manager = pygame_gui.UIManager((largura_tela, altura_tela))
 botao_play = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 50, altura_tela//2), (100, 50)),text='Play', manager=manager)
 botao_quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 50, altura_tela//2 + 100), (100, 50)),text='Exit', manager=manager)
-background = pygame.image.load("imagens\\background.png").convert_alpha()
+background = pygame.image.load("Image\\background.png").convert_alpha()
 background = pygame.transform.scale(background, (background.get_width() * 4, background.get_height() * 4))
 
 # framerate

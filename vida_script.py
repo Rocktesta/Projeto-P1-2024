@@ -36,7 +36,7 @@ class Coxinha(pygame.sprite.Sprite):
         self.pos = nova_posicao_item(player)
         self.x = self.pos[0]
         self.y = self.pos[1]
-        image = pygame.image.load('imagens\itens\health_box.png')
+        image = pygame.image.load('Image\itens\health_box.png')
         self.image = pygame.transform.scale(image, (image.get_width() * 2, image.get_height() * 2))
         self.rect = self.image.get_rect()
         self.rect.x = self.x
