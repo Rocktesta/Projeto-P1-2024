@@ -22,22 +22,34 @@ class Player(pygame.sprite.Sprite):
         self.flip = False
         self.lista_animacoes = []
         self.frame_index = 0
+        self.sprite_sheet = pygame.image.load("imagens\Sprites\Sprite_sheet_main.png").convert_alpha()
+        frames = self.sprite_sheet.get_width() // 128
+        linhas = self.sprite_sheet.get_height() // 128
         # 0 = Idle | 1 = Run | 2 = Jump | 3 = Death
         self.action = 0
         self.update_tempo = pygame.time.get_ticks()
-        animacao_types = ['Idle', 'Run', 'Jump', 'Death']
-        for animacao in animacao_types:
-            # reset da lista temporária de imagens
-            temp_list = []
-            # contar o número de arquivos na pasta
-            num_frames = len(os.listdir(f'imagens\Sprites\{self.char_type}\{animacao}'))
-            for i in range(num_frames):
-                img_player = pygame.image.load(f'imagens\Sprites\{self.char_type}\{animacao}\{self.char_type}{i}.png').convert_alpha()
-                img_player = pygame.transform.scale(img_player, (img_player.get_width() * 5, img_player.get_height() * 6))
-                temp_list.append(img_player)
-            self.lista_animacoes.append(temp_list)
-        self.img_player = self.lista_animacoes[self.action][self.frame_index]
-        self.rect = self.img_player.get_rect()
+        self.idle_t = []
+        self.idle_p = []
+        self.run_t_pistol = []
+        self.run_p = []
+        for i in range(linhas):
+            for j in range(frames):
+                imagem = pygame.Surface((128, 128)).convert_alpha()
+                imagem.fill((0, 0, 0, 0))
+                imagem.blit(self.sprite_sheet, (0, 0), ((j * 128), (i * 128), 128, 128))
+                imagem = pygame.transform.scale(imagem, (128 * escala, 128 * escala)) 
+                if pygame.transform.average_color(imagem) == ((0, 0, 0, 0)):
+                    imagem == None
+                if j == 0:
+                    self.idle_t.append(imagem)
+                if j == 1: 
+                    self.idle_p.append(imagem)
+                if j == 2:   
+                    self.run_t_pistol.append(imagem)
+                if j == 3:
+                    self.run_p.append(imagem)
+                
+        self.rect = self.idle_t[0].get_rect()
         self.rect.center = (x, y)
 
     def update(self):
@@ -98,18 +110,29 @@ class Player(pygame.sprite.Sprite):
                 inimigo_bullet_group.add(bullet)
 
     def update_animacao(self):
-        # update da imagem dependendo do frame
-        self.img_player = self.lista_animacoes[self.action][self.frame_index]
-        # check se passou tempo suficiente desde o último update
-        if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
-            self.update_tempo = pygame.time.get_ticks()
-            self.frame_index += 1
-        # se a animação chegar no final ela reinicia
-        if self.frame_index >= len(self.lista_animacoes[self.action]):
-            if self.action == 3:
-                self.frame_index = len(self.lista_animacoes[self.action]) - 1 # último sprite da pasta, personagem vai ficar morto no chão
-            else:
+        if self.action == 0: # idle
+            # update da imagem dependendo do frame
+            self.img_player = self.idle_t[self.frame_index]
+            # check se passou tempo suficiente desde o último update
+            if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
+                self.update_tempo = pygame.time.get_ticks()
+                self.frame_index += 1
+            # se a animação chegar no final ela reinicia
+            if self.frame_index >= len(self.idle_t):
                 self.frame_index = 0
+        elif self.action == 1:
+            # update da imagem dependendo do frame
+            self.img_player = self.run_t_pistol[self.frame_index]
+            # check se passou tempo suficiente desde o último update
+            if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
+                self.update_tempo = pygame.time.get_ticks()
+                self.frame_index += 1
+            # se a animação chegar no final ela reinicia
+            if self.frame_index >= len(self.run_t_pistol):
+                self.frame_index = 0
+
+
+            
     
     def update_action(self, nova_acao):
         # checa se a nova ação é deferente da ação anterior

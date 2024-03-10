@@ -17,6 +17,11 @@ botao_quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tel
 background = pygame.image.load("imagens\\background.png").convert_alpha()
 background = pygame.transform.scale(background, (background.get_width() * 4, background.get_height() * 4))
 
+
+
+            
+
+
 # framerate
 clock = pygame.time.Clock()
 fps = 60
@@ -131,8 +136,8 @@ def play():
             # shoot bullets
             if shoot:
                 player.shoot('inimigo', 'bullet0')
-            if player.no_ar:
-                player.update_action(2) # animação de pulo
+            #if player.no_ar:
+                #player.update_action(2) # animação de pulo
             elif mooving_left or mooving_right:
                 player.update_action(1) # animação de corrida
             else:
