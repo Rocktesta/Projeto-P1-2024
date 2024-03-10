@@ -44,6 +44,16 @@ class Coxinha(pygame.sprite.Sprite):
         self.vida = 10
         self.render = True
 
+    @staticmethod
+    def gerar_coxinhas(player):
+        coxinhas_group = pygame.sprite.Group()
+        if randint(1, 25) == 1:
+            quantidade_coxinhas = randint(1, 3)
+            for _ in range(quantidade_coxinhas):
+                coxinha = Coxinha(player) 
+                coxinhas_group.add(coxinha)
+        return coxinhas_group
+    
     def draw(self, tela):
         if self.render:
             tela.blit(self.image, self.rect)

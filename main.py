@@ -17,9 +17,9 @@ botao_quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tel
 background = pygame.image.load("Image\\background.png").convert_alpha()
 background = pygame.transform.scale(background, (background.get_width() * 4, background.get_height() * 4))
 
-
-
-            
+#cooldowns
+tempo_ultima_geracao_coxinhas = 0
+cooldown_novas_coxinhas = 5000
 
 
 # framerate
@@ -81,8 +81,9 @@ def play():
     shotgun = Shotgun(1200, 300)
 
     # criando coxinhas
-    coxinha = vida_script.Coxinha(player)
-    
+    #coxinha = vida_script.Coxinha(player)
+    coxinha_group = vida_script.Coxinha.gerar_coxinhas(player)
+
     #armas
     weapons_group = weapons.weapons_group
     weapons_group.add(shotgun)
@@ -111,7 +112,9 @@ def play():
         shotgun.draw(tela)
         shotgun.update(player)
         barra_vida.draw(tela)
-        coxinha.draw(tela)
+        #coxinha.draw(tela)
+        for coxinha in coxinha_group:
+            coxinha.draw(tela)
 
         for inimigo in inimigo_group:
             inimigo.ai(player)
@@ -123,13 +126,22 @@ def play():
         player_bullet_group.draw(tela)
         inimigo_bullet_group = player_script.inimigo_bullet_group
         inimigo_bullet_group.update(player, 'player')
-
-
         inimigo_bullet_group.draw(tela)
-        if coxinha.render == True:
-            vida = coxinha.update(player.rect)
-            player.vida += vida
+
+        for coxinha in coxinha_group:
+            if coxinha.render == True:
+                vida = coxinha.update(player.rect)
+                player.vida += vida
         barra_vida.update(player.vida)
+        # Gerando mais coxinhas
+        if player.move:
+            tempo_atual = pygame.time.get_ticks()
+            global tempo_ultima_geracao_coxinhas
+            if tempo_atual - tempo_ultima_geracao_coxinhas >= cooldown_novas_coxinhas:
+                print('fim do cooldown')
+                # Gere novas coxinhas
+                coxinha_group.add(vida_script.Coxinha.gerar_coxinhas(player))
+                tempo_ultima_geracao_coxinhas = tempo_atual
 
         # updade das ações do player
         if player.vivo:
@@ -147,7 +159,8 @@ def play():
 
             inimigo1.rect.x += tela_scroll
             inimigo2.rect.x += tela_scroll
-            coxinha.rect.x += tela_scroll
+            for coxinha in coxinha_group:
+                coxinha.rect.x += tela_scroll
             back_x += tela_scroll
             shotgun.rect.x += tela_scroll
         

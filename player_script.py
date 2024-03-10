@@ -146,9 +146,6 @@ class Player(pygame.sprite.Sprite):
             if self.frame_index >= 6:
                 self.frame_index = 0
 
-
-            
-    
     def update_action(self, nova_acao):
         # checa se a nova ação é deferente da ação anterior
         if nova_acao != self.action:
