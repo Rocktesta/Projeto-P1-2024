@@ -166,7 +166,7 @@ class Player(pygame.sprite.Sprite):
 
     def draw(self, tela):
         tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y))
-        tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect_pernas.y))
+        tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y))
 
 class Inimigo(Player, pygame.sprite.Sprite):
     # classe inimigo que herdeira da classe Player
