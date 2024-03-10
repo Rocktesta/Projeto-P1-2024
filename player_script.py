@@ -179,13 +179,17 @@ class Inimigo(Player, pygame.sprite.Sprite):
     def __init__(self, char_type, x, y, velocidade, gravidade, escala=2, vida=100, cooldown_animacao=100):
         pygame.sprite.Sprite.__init__(self)
         super().__init__(char_type, x, y, velocidade, gravidade, escala, vida, cooldown_animacao)
+        self.perseguindo = False
         self.move_counter = 0
-        self.campo_visao = pygame.Rect(0, 0, 400, 40)
+        self.linha_de_fogo = pygame.Rect(0, 0, 400, 40)
+        self.campo_visao = pygame.Rect(0, 0, 600, 40)
         self.idling = False
         self.idling_counter = 0
     
     def ai(self, player):
         if self.vivo and player.vivo:
+            self.linha_de_fogo.center = (self.rect.centerx + 200 * self.direcao, self.rect.centery) # posição do campo de visão
+            self.campo_visao.center = (self.rect.centerx + 200 * self.direcao, self.rect.centery) # posição do campo de visão extendido
             # fazendo o inimigo ficar parado
             if self.idling == False and randint(1, 200) == 1:
                 self.update_action(0) # ação de idle
@@ -193,10 +197,21 @@ class Inimigo(Player, pygame.sprite.Sprite):
                 self.idling_counter = 50
             # check se o inimigo está perto de um player
             if self.campo_visao.colliderect(player.rect):
+                # se o jogador entrar no campo de visão o inimigo o persegue
+                self.perseguindo = True
+            else:
+                self.perseguindo = False
+            if self.linha_de_fogo.colliderect(player.rect) and self.perseguindo:
                 # parar de se mover e encarar o player
                 self.update_action(0) # ação de idle
                 self.shoot('player', 'bullet_laser')
+                self.perseguindo = True
+            elif self.perseguindo:
+                # se o jogador sair da linha de tiro ou entrar no campo de visão o inimigo o persegue até sair do campo de visão
+                self.update_action(1)  # Ação de correr
+                self.move(self.direcao == -1, self.direcao == 1)
             else:
+                self.perseguindo = False
                 if self.idling == False:
                     # movendo o inimigo
                     if self.direcao == 1:
@@ -208,7 +223,8 @@ class Inimigo(Player, pygame.sprite.Sprite):
                     self.update_action(1) # ação de correr
                     self.move_counter += 1
                     # update visão do inimigo quando ele se move
-                    self.campo_visao.center = (self.rect.centerx + 200 * self.direcao, self.rect.centery) # posição do campo de visão
+                    self.linha_de_fogo.center = (self.rect.centerx + 200 * self.direcao, self.rect.centery) # posição do campo de visão
+                    self.campo_visao.center = (self.rect.centerx + 200 * self.direcao, self.rect.centery) # posição do campo de visão extendido
                     # mudando a direção
                     if self.move_counter > 50:
                         self.direcao *= -1

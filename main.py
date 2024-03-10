@@ -129,7 +129,7 @@ def play():
         inimigo_bullet_group.draw(tela)
 
         for coxinha in coxinha_group:
-            if coxinha.render == True:
+           if coxinha.render == True:
                 vida = coxinha.update(player.rect)
                 player.vida += vida
         barra_vida.update(player.vida)
@@ -138,7 +138,6 @@ def play():
             tempo_atual = pygame.time.get_ticks()
             global tempo_ultima_geracao_coxinhas
             if tempo_atual - tempo_ultima_geracao_coxinhas >= cooldown_novas_coxinhas:
-                print('fim do cooldown')
                 # Gere novas coxinhas
                 coxinha_group.add(vida_script.Coxinha.gerar_coxinhas(player))
                 tempo_ultima_geracao_coxinhas = tempo_atual
