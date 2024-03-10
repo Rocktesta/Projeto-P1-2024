@@ -38,19 +38,23 @@ class Player(pygame.sprite.Sprite):
                 imagem.fill((0, 0, 0, 0))
                 imagem.blit(self.sprite_sheet, (0, 0), ((j * 128), (i * 128), 128, 128))
                 imagem = pygame.transform.scale(imagem, (128 * escala, 128 * escala)) 
+                imagem.convert_alpha()
                 if pygame.transform.average_color(imagem) == ((0, 0, 0, 0)):
                     imagem == None
-                if j == 0:
+                if i == 0:
                     self.idle_t.append(imagem)
-                if j == 1: 
+                if i == 1: 
                     self.idle_p.append(imagem)
-                if j == 2:   
+                if i == 2:   
                     self.run_t_pistol.append(imagem)
-                if j == 3:
+                if i == 3:
                     self.run_p.append(imagem)
                 
-        self.rect = self.idle_t[0].get_rect()
+        self.rect = pygame.Rect(x, y, 100, 384)
+        self.rect_pernas = pygame.Rect(self.rect.x, self.rect.y - 290, 100, 64)
         self.rect.center = (x, y)
+        print(len(self.idle_t))
+
 
     def update(self):
         self.update_animacao()
@@ -113,22 +117,24 @@ class Player(pygame.sprite.Sprite):
         if self.action == 0: # idle
             # update da imagem dependendo do frame
             self.img_player = self.idle_t[self.frame_index]
+            self.img_perna = self.idle_p[0]
             # check se passou tempo suficiente desde o último update
             if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
                 self.update_tempo = pygame.time.get_ticks()
                 self.frame_index += 1
             # se a animação chegar no final ela reinicia
-            if self.frame_index >= len(self.idle_t):
+            if self.frame_index >= 2:
                 self.frame_index = 0
         elif self.action == 1:
             # update da imagem dependendo do frame
             self.img_player = self.run_t_pistol[self.frame_index]
+            self.img_perna = self.run_p[self.frame_index]
             # check se passou tempo suficiente desde o último update
             if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
                 self.update_tempo = pygame.time.get_ticks()
                 self.frame_index += 1
             # se a animação chegar no final ela reinicia
-            if self.frame_index >= len(self.run_t_pistol):
+            if self.frame_index >= 6:
                 self.frame_index = 0
 
 
@@ -159,7 +165,8 @@ class Player(pygame.sprite.Sprite):
             self.update_action(3) # ação de morrer
 
     def draw(self, tela):
-        tela.blit(pygame.transform.flip(self.img_player, self.flip, False), self.rect)
+        tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y))
+        tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect_pernas.y))
 
 class Inimigo(Player, pygame.sprite.Sprite):
     # classe inimigo que herdeira da classe Player

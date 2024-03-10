@@ -105,7 +105,7 @@ def play():
         tela.blit((background), (back_x, 0))
         player_bullet_group = player_script.player_bullet_group
         player_text = fonte.render(f"Player {inimigo1.vida}", True, (0, 0, 0))
-        tela.blit(player_text, (player.rect.x + 10, player.rect.y - 50))
+        tela.blit(player_text, (player.rect.x, player.rect.y - 50))
         player.update()
         player.draw(tela)
         shotgun.draw(tela)
