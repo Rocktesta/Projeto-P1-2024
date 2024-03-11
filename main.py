@@ -139,7 +139,7 @@ def play():
             global tempo_ultima_geracao_coxinhas
             if tempo_atual - tempo_ultima_geracao_coxinhas >= cooldown_novas_coxinhas:
                 # Gere novas coxinhas
-                coxinha_group.add(vida_script.Coxinha.gerar_coxinhas(player))
+                coxinha_group.add(vida_script.Coxinha.gerar_coxinhas(player, tela_scroll))
                 tempo_ultima_geracao_coxinhas = tempo_atual
 
         # updade das ações do player

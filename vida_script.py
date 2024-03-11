@@ -1,9 +1,9 @@
 import pygame
 from random import randint
 
-def nova_posicao_item(player):
+def nova_posicao_item(player, tela_scroll):
         # gera uma posição aleatória para o item
-        pos = [randint(400,1200), randint(400, 600)]
+        pos = [randint(400,1200) + tela_scroll, randint(400, 600) + tela_scroll]
         while pos[0] == player.rect.x:
             pos = [randint(100,1200), randint(400, 600)]
         return pos
@@ -31,9 +31,9 @@ class HealthBar:
         pygame.draw.rect(tela, (0, 255, 0), (self.x, self.y, largura_restante, self.altura))
 
 class Coxinha(pygame.sprite.Sprite):
-    def __init__(self, player):  #inicializa o objeto jogador
+    def __init__(self, player, tela_scroll=0):  #inicializa o objeto jogador
         pygame.sprite.Sprite.__init__(self)
-        self.pos = nova_posicao_item(player)
+        self.pos = nova_posicao_item(player, tela_scroll)
         self.x = self.pos[0]
         self.y = self.pos[1]
         image = pygame.image.load('Image\itens\health_box.png')
@@ -45,12 +45,13 @@ class Coxinha(pygame.sprite.Sprite):
         self.render = True
 
     @staticmethod
-    def gerar_coxinhas(player):
+    def gerar_coxinhas(player, tela_scroll=0):
         coxinhas_group = pygame.sprite.Group()
-        if randint(1, 25) == 1:
+        if randint(1, 20) == 1:
             quantidade_coxinhas = randint(1, 3)
+            print(f'gerei {quantidade_coxinhas} coxinhas')
             for _ in range(quantidade_coxinhas):
-                coxinha = Coxinha(player) 
+                coxinha = Coxinha(player, tela_scroll) 
                 coxinhas_group.add(coxinha)
         return coxinhas_group
     
