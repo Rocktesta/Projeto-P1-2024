@@ -3,6 +3,7 @@ import player_script
 import pygame_gui
 import weapons
 import vida_script
+import time
 from weapons import Shotgun
 
 pygame.init()
@@ -75,11 +76,13 @@ def play():
     mooving_right = False
     shoot = False
     equipada = True
+    shoot_anima = False
+    start_time = 0
 
     player = player_script.Player('soldier', 300, 600, 3, gravidade, 3)
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
     shotgun = Shotgun(1200, 300)
-
+    tela_scroll = 0
     # criando coxinhas
     #coxinha = vida_script.Coxinha(player)
     coxinha_group = vida_script.Coxinha.gerar_coxinhas(player)
@@ -90,8 +93,8 @@ def play():
 
     # inimigos
     inimigo_group = player_script.inimigo_group
-    inimigo1 = player_script.Inimigo('soldier', 700, 600, 3, gravidade, 3)
-    inimigo2 = player_script.Inimigo('soldier', 400, 600, 3, gravidade, 3)
+    inimigo1 = player_script.Inimigo('soldier', 700, 700, 3, gravidade, 3)
+    inimigo2 = player_script.Inimigo('soldier', 900, 700, 3, gravidade, 3)
     inimigo_group.add(inimigo1)
     inimigo_group.add(inimigo2)
 
@@ -147,12 +150,6 @@ def play():
             # shoot bullets
             if shoot:
                 player.shoot('inimigo', 'bullet0')
-            #if player.no_ar:
-                #player.update_action(2) # animação de pulo
-            elif mooving_left or mooving_right:
-                player.update_action(1) # animação de corrida
-            else:
-                player.update_action(0) # retorna para o idle
             tela_scroll =  player.move(mooving_left, mooving_right) 
             
 
@@ -173,25 +170,66 @@ def play():
                 if event.key == pygame.K_ESCAPE:   # Se for tecla escape, jogo para de rodar
                     running = False 
                     pygame.quit()
-            # Pressionar teclas no teclado
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_a:
-                    mooving_left = True
-                if event.key == pygame.K_d:
-                    mooving_right = True
-                if event.key == pygame.K_RETURN:
-                    shoot = True
-                if event.key == pygame.K_SPACE and player.alive:
-                    player.jump = True
-            # Soltar teclas no teclado
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_a:
-                    mooving_left = False
-                if event.key == pygame.K_d:
-                    mooving_right = False
-                if event.key == pygame.K_RETURN:
-                    shoot = False
+        # Pressionar teclas no teclado
+        teclas = pygame.key.get_pressed()
+        if teclas[pygame.K_a] and teclas[pygame.K_RETURN]:
+            player.update_action(4)
+            shoot = True
+            mooving_left = True
+            mooving_right = False
+        elif teclas[pygame.K_d] and teclas[pygame.K_RETURN]:
+            player.update_action(4)
+            shoot = True
+            mooving_right = True
+            mooving_left = False
+        elif teclas[pygame.K_d] and not teclas[pygame.K_RETURN]:
+            player.update_action(1)
+            shoot = False
+            mooving_right = True
+            mooving_left = False
+        elif teclas[pygame.K_a] and not teclas[pygame.K_RETURN]:
+            player.update_action(1)
+            shoot = False
+            mooving_left = True
+            mooving_right = False
+        elif teclas[pygame.K_RETURN]:
+            player.update_action(5)
+            shoot = True
+            mooving_left = False
+            mooving_right = False
+        elif not teclas[pygame.K_a] and  not teclas[pygame.K_d]:
+            player.update_action(0)
+            shoot = False
+            mooving_left = False
+            mooving_right = False
+        if teclas[pygame.K_SPACE] and not teclas[pygame.K_a] and not teclas[pygame.K_d]:
+            player.update_action(2)
+            shoot = False
+            mooving_left = False
+            mooving_right = False
+            player.jump = True
+        elif teclas[pygame.K_SPACE] and teclas[pygame.K_a] and not teclas[pygame.K_d]:
+            player.update_action(2)
+            shoot = False
+            mooving_left = True
+            mooving_right = False
+            player.jump = True
+        elif teclas[pygame.K_SPACE] and not teclas[pygame.K_a] and teclas[pygame.K_d]:
+            player.update_action(2)
+            shoot = False
+            mooving_left = False
+            mooving_right = True
+            player.jump = True
+        elif not teclas[pygame.K_SPACE]:
+            player.jump = False
             
+        
+            print("space")
+        
+        
+        
+           
+                        
         pygame.display.update()
 
 menu()
