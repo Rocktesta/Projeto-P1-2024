@@ -19,10 +19,21 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean tristique aliqua
 ## Ferramentas, Frameworks e bibliotecas: 
 * Pygame
 > explicação basica do pygame
+* Pygame_gui
+> explicação basica do pygame_gui
+* Random
+> explicação básica do random
 ## Organização do Código:
 To DO
 ## Conceitos:
-TO DO
+* Programação Orientada a Objetos
+> explicação
+* Laços de Repetição
+> explicação
+* Estruturas Condicionais
+> explicação
+* Funções
+> explicação
 ## Desafios e Experiência:
 TO DO
 
