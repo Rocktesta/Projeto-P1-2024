@@ -39,6 +39,7 @@ class Player(pygame.sprite.Sprite):
         self.idle_p = []
         self.run_t_pistol = []
         self.run_p = []
+        self.shoot_t = []
         for i in range(linhas):
             for j in range(frames):
                 imagem = pygame.Surface((128, 128)).convert_alpha()
@@ -56,9 +57,11 @@ class Player(pygame.sprite.Sprite):
                     self.run_t_pistol.append(imagem)
                 if i == 3:
                     self.run_p.append(imagem)
+                if i == 4:
+                    self.shoot_t.append(imagem)
                 
         self.rect = pygame.Rect(x, y, 100, 384)
-        self.rect_pernas = pygame.Rect(self.rect.x, self.rect.y - 290, 100, 64)
+        self.rect_pernas = pygame.Rect(self.rect.x, self.rect.y - 300, 100, 64)
         self.rect.center = (x, y)
         print(len(self.idle_t))
 
@@ -87,7 +90,7 @@ class Player(pygame.sprite.Sprite):
                 self.direcao = 1
             # Pulo
             if self.jump == True and self.no_ar == False:
-                self.velocidade_y = -15 # altura do pulo
+                self.velocidade_y = -23 # altura do pulo
                 self.jump = False
                 self.no_ar = True
             self.velocidade_y += self.gravidade
@@ -113,8 +116,8 @@ class Player(pygame.sprite.Sprite):
 
     def shoot(self, alvo, bullet_type):
         if self.shoot_cooldown == 0:
-            self.shoot_cooldown = 40
-            bullet = Bullet(bullet_type, self.rect.centerx + (0.32 * self.rect.size[0] * self.direcao), self.rect.centery - 20, self.direcao, 10)
+            self.shoot_cooldown = 60
+            bullet = Bullet(bullet_type, self.rect.centerx + (0.32 * self.rect.size[0] * self.direcao), self.rect.centery - 20, self.direcao, 7)
             if alvo == 'inimigo': 
                 player_bullet_group.add(bullet)
                 pistol_sound.play()
@@ -134,7 +137,7 @@ class Player(pygame.sprite.Sprite):
             # se a animação chegar no final ela reinicia
             if self.frame_index >= 2:
                 self.frame_index = 0
-        elif self.action == 1:
+        elif self.action == 1: # correndo
             # update da imagem dependendo do frame
             self.img_player = self.run_t_pistol[self.frame_index]
             self.img_perna = self.run_p[self.frame_index]
@@ -145,6 +148,32 @@ class Player(pygame.sprite.Sprite):
             # se a animação chegar no final ela reinicia
             if self.frame_index >= 6:
                 self.frame_index = 0
+        elif self.action == 4: # atirando corendo
+            # update da imagem dependendo do frame
+            self.img_player = self.shoot_t[self.frame_index]
+            self.img_perna = self.run_p[self.frame_index]
+            # check se passou tempo suficiente desde o último update
+            if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
+                self.update_tempo = pygame.time.get_ticks()
+                self.frame_index += 1
+            # se a animação chegar no final ela reinicia
+            if self.frame_index >= 6:
+                self.frame_index = 0
+        elif self.action == 5: # atirando corendo
+            self.leg_index = 0
+            # update da imagem dependendo do frame
+            self.img_player = self.shoot_t[self.frame_index]
+            self.img_perna = self.idle_p[self.leg_index]
+            # check se passou tempo suficiente desde o último update
+            if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
+                self.update_tempo = pygame.time.get_ticks()
+                self.frame_index += 1
+            # se a animação chegar no final ela reinicia
+            if self.frame_index >= 6:
+                self.frame_index = 0
+            if self.leg_index >= 1:
+                self.leg_index = 0
+        
 
     def update_action(self, nova_acao):
         # checa se a nova ação é deferente da ação anterior
@@ -152,13 +181,17 @@ class Player(pygame.sprite.Sprite):
             self.action = nova_acao
             # update do cooldown da animação
             if self.action == 0:
-                self.cooldown_animacao = 100 # cooldown da ação de Idle
+                self.cooldown_animacao = 300 # cooldown da ação de Idle
             elif self.action == 1:
                 self.cooldown_animacao = 100 # cooldown da ação de Run
             elif self.action == 2:
                 self.cooldown_animacao = 100 # cooldown da ação de Jump
             elif self.action == 3:
                 self.cooldown_animacao = 100 # cooldown da ação de Death
+            elif self.action == 4:
+                self.cooldown_animacao = 100 # cooldown da ação de Shoot run
+            elif self.action == 5:
+                self.cooldown_animacao = 100 # cooldown da ação de Shoot idle
             # updade das configs da animação, para trocar para o começo da próxima animação
             self.frame_index = 0
             self.update_tempo = pygame.time.get_ticks()
@@ -172,7 +205,7 @@ class Player(pygame.sprite.Sprite):
 
     def draw(self, tela):
         tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y))
-        tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y))
+        tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y - 10))
 
 class Inimigo(Player, pygame.sprite.Sprite):
     # classe inimigo que herdeira da classe Player
@@ -181,8 +214,8 @@ class Inimigo(Player, pygame.sprite.Sprite):
         super().__init__(char_type, x, y, velocidade, gravidade, escala, vida, cooldown_animacao)
         self.perseguindo = False
         self.move_counter = 0
-        self.linha_de_fogo = pygame.Rect(0, 0, 400, 40)
-        self.campo_visao = pygame.Rect(0, 0, 600, 40)
+        self.linha_de_fogo = pygame.Rect(0, 0, 600, 40)
+        self.campo_visao = pygame.Rect(0, 0, 700, 40)
         self.idling = False
         self.idling_counter = 0
     
