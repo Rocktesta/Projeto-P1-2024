@@ -133,7 +133,7 @@ def play():
 
         for coxinha in coxinha_group:
            if coxinha.render == True:
-                vida = coxinha.update(player.rect)
+                vida = coxinha.update(player)
                 player.vida += vida
         barra_vida.update(player.vida)
         # Gerando mais coxinhas
@@ -183,12 +183,18 @@ def play():
             mooving_right = True
             mooving_left = False
         elif teclas[pygame.K_d] and not teclas[pygame.K_RETURN]:
-            player.update_action(1)
+            if not shotgun.equipada:
+                player.update_action(1)
+            else:
+                player.update_action(6)
             shoot = False
             mooving_right = True
             mooving_left = False
         elif teclas[pygame.K_a] and not teclas[pygame.K_RETURN]:
-            player.update_action(1)
+            if not shotgun.equipada:
+                player.update_action(1)
+            else:
+                player.update_action(6)
             shoot = False
             mooving_left = True
             mooving_right = False
@@ -198,7 +204,10 @@ def play():
             mooving_left = False
             mooving_right = False
         elif not teclas[pygame.K_a] and  not teclas[pygame.K_d]:
-            player.update_action(0)
+            if not shotgun.equipada:
+                player.update_action(0)
+            else:
+                player.update_action(7)
             shoot = False
             mooving_left = False
             mooving_right = False
