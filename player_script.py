@@ -45,6 +45,8 @@ class Player(pygame.sprite.Sprite):
         self.shoot_t = []
         self.die = []
         self.jump_sprites = []
+        self.coxinha = []
+        self.keycard = []
         for i in range(linhas):
             for j in range(frames):
                 imagem = pygame.Surface((128, 128)).convert_alpha()
@@ -72,6 +74,11 @@ class Player(pygame.sprite.Sprite):
                     self.die.append(imagem)
                 if i == 8:
                     self.jump_sprites.append(imagem)
+                if i == 9:
+                    self.keycard.append(imagem)
+                if i == 10:
+                    self.coxinha.append(imagem)
+
                 
         self.rect = pygame.Rect(x, y, 100, 384)
         self.rect_pernas = pygame.Rect(self.rect.x, self.rect.y - 300, 100, 64)

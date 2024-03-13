@@ -3,7 +3,7 @@ import numpy
 
 def nova_posicao_item(player, tela_scroll):
         # gera uma posição aleatória para o item
-        pos = [numpy.random.randint(400,1200) + tela_scroll, numpy.random.randint(400, 600) + tela_scroll]
+        pos = [numpy.random.randint(400,1200) + tela_scroll, numpy.random.randint(300, 400) + tela_scroll]
         while pos[0] == player.rect.x:
             pos = [numpy.random.randint(100,1200), numpy.random.randint(400, 600)]
         return pos
@@ -36,13 +36,15 @@ class Coxinha(pygame.sprite.Sprite):
         self.pos = nova_posicao_item(player, tela_scroll)
         self.x = self.pos[0]
         self.y = self.pos[1]
-        image = pygame.image.load('Image\itens\health_box.png')
-        self.image = pygame.transform.scale(image, (image.get_width() * 2, image.get_height() * 2))
-        self.rect = self.image.get_rect()
+        self.images = player.coxinha
+        self.rect = self.rect = pygame.Rect(self.x, self.y, 50, 50)
         self.rect.x = self.x
         self.rect.y = self.y
         self.vida = 10
         self.render = True
+        self.cooldown_animacao = 100
+        self.update_tempo = 0
+        self.frame_index = 0
 
     @staticmethod
     def gerar_coxinhas(player, tela_scroll=0):
@@ -56,7 +58,15 @@ class Coxinha(pygame.sprite.Sprite):
     
     def draw(self, tela):
         if self.render:
-            tela.blit(self.image, self.rect)
+            sprite = self.images[self.frame_index]
+            # check se passou tempo suficiente desde o último update
+            if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
+                self.update_tempo = pygame.time.get_ticks()
+                self.frame_index += 1
+            # se a animação chegar no final ela reinicia
+            if self.frame_index >= 14:
+                self.frame_index = 0
+            tela.blit(sprite, (self.rect.x - 50, self.rect.y - 40))
 
     def update(self, player):
         vida = 0

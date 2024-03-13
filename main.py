@@ -5,6 +5,7 @@ import vida_script
 import time
 from weapons import Shotgun
 from boss import Boss
+import keycard
 
 pygame.init()
 
@@ -82,6 +83,7 @@ def play():
 
     player = player_script.Player('soldier', 300, 600, 3, gravidade, 3)
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
+    cracha = keycard.Keycard(1200, 500, tela, player)
     tela_scroll = 0
 
     # criando armas
@@ -114,6 +116,7 @@ def play():
         player.update()
         player.draw(tela)
         player.check_vivo()
+        cracha.draw()
         for shotgun in shotgun_group:
             shotgun.draw(tela)
             shotgun.update(player)
@@ -172,6 +175,7 @@ def play():
             for shotgun in shotgun_group:
                 shotgun.rect.x += tela_scroll
             boss.rect.x += tela_scroll
+            cracha.rect.x += tela_scroll
         
         elif player.vivo == False:
             player.update_action(3)
