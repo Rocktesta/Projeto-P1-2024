@@ -1,7 +1,6 @@
 import pygame
 import player_script
 import pygame_gui
-import weapons
 import vida_script
 import time
 from weapons import Shotgun
@@ -21,7 +20,8 @@ background = pygame.transform.scale(background, (background.get_width() * 4, bac
 #cooldowns
 tempo_ultima_geracao_coxinhas = 0
 cooldown_novas_coxinhas = 5000
-
+tempo_ultima_geracao_shotgun = 0
+cooldown_nova_shotgun = 5000
 
 # framerate
 clock = pygame.time.Clock()
@@ -81,15 +81,16 @@ def play():
 
     player = player_script.Player('soldier', 300, 600, 3, gravidade, 3)
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
-    shotgun = Shotgun(1200, 300)
     tela_scroll = 0
+    # criando armas
+        #shotgun
+    shotgun_group = pygame.sprite.Group()
     # criando coxinhas
-    #coxinha = vida_script.Coxinha(player)
     coxinha_group = vida_script.Coxinha.gerar_coxinhas(player)
 
-    #armas
+    '''#armas
     weapons_group = weapons.weapons_group
-    weapons_group.add(shotgun)
+    weapons_group.add(shotgun)'''
 
     # inimigos
     inimigo_group = player_script.inimigo_group
@@ -112,13 +113,12 @@ def play():
         tela.blit(player_text, (player.rect.x, player.rect.y - 50))
         player.update()
         player.draw(tela)
-        shotgun.draw(tela)
-        shotgun.update(player)
+        for shotgun in shotgun_group:
+            shotgun.draw(tela)
+            shotgun.update(player)
         barra_vida.draw(tela)
-        #coxinha.draw(tela)
         for coxinha in coxinha_group:
             coxinha.draw(tela)
-
         for inimigo in inimigo_group:
             inimigo.ai(player)
             inimigo.update()
@@ -138,12 +138,21 @@ def play():
         barra_vida.update(player.vida)
         # Gerando mais coxinhas
         if player.move:
-            tempo_atual = pygame.time.get_ticks()
+            tempo_atual_coxinha = pygame.time.get_ticks()
             global tempo_ultima_geracao_coxinhas
-            if tempo_atual - tempo_ultima_geracao_coxinhas >= cooldown_novas_coxinhas:
+            if tempo_atual_coxinha - tempo_ultima_geracao_coxinhas >= cooldown_novas_coxinhas:
                 # Gere novas coxinhas
                 coxinha_group.add(vida_script.Coxinha.gerar_coxinhas(player, tela_scroll))
-                tempo_ultima_geracao_coxinhas = tempo_atual
+                tempo_ultima_geracao_coxinhas = tempo_atual_coxinha
+
+        # Gerando novas shotguns
+        if player.move:
+            tempo_atual_shotgun = pygame.time.get_ticks()
+            global tempo_ultima_geracao_shotgun
+            if tempo_atual_shotgun - tempo_ultima_geracao_shotgun >= cooldown_nova_shotgun:
+                # Gere nova shotgun
+                shotgun_group.add(Shotgun.gerar_shotgun(player, tela_scroll))
+                tempo_ultima_geracao_shotgun = tempo_atual_shotgun
 
         # updade das ações do player
         if player.vivo:
@@ -152,13 +161,14 @@ def play():
                 player.shoot('inimigo', 'bullet0')
             tela_scroll =  player.move(mooving_left, mooving_right) 
             
-
-            inimigo1.rect.x += tela_scroll
-            inimigo2.rect.x += tela_scroll
+            for inimigo in inimigo_group:
+                inimigo.rect.x += tela_scroll
+                inimigo.rect.x += tela_scroll
             for coxinha in coxinha_group:
                 coxinha.rect.x += tela_scroll
             back_x += tela_scroll
-            shotgun.rect.x += tela_scroll
+            for shotgun in shotgun_group:
+                shotgun.rect.x += tela_scroll
         
         else:
             player

@@ -47,9 +47,8 @@ class Coxinha(pygame.sprite.Sprite):
     @staticmethod
     def gerar_coxinhas(player, tela_scroll=0):
         coxinhas_group = pygame.sprite.Group()
-        if randint(1, 2) == 1:
+        if randint(1, 7) == 1:
             quantidade_coxinhas = randint(1, 3)
-            print(f'gerei {quantidade_coxinhas} coxinhas')
             for _ in range(quantidade_coxinhas):
                 coxinha = Coxinha(player, tela_scroll) 
                 coxinhas_group.add(coxinha)

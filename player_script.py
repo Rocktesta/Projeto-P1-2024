@@ -122,8 +122,8 @@ class Player(pygame.sprite.Sprite):
 
     def shoot(self, alvo, bullet_type):
         if self.shoot_cooldown == 0:
-            self.shoot_cooldown = 40
-            bullet = Bullet(bullet_type, self.rect.centerx + (0.42 * self.rect.size[0] * self.direcao), self.rect.centery - 45, self.direcao, 10)
+            self.shoot_cooldown = 60
+            bullet = Bullet(bullet_type, self.rect.centerx + (0.32 * self.rect.size[0] * self.direcao), self.rect.centery - 20, self.direcao, 7)
             if alvo == 'inimigo': 
                 player_bullet_group.add(bullet)
                 pistol_sound.play()
