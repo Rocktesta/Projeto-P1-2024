@@ -3,3 +3,5 @@ __pycache__/
 
 # Environments
 venv/
+__pycache__/player_script.cpython-311.pyc
+Player_idle_sheet.png
