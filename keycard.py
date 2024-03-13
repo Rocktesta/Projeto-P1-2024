@@ -3,10 +3,10 @@ import pygame
 class Keycard:
     def __init__(self, x, y, tela, player):
         self.tela = tela
-        self.rect = player.keycard[0].get_rect()
         self.images = player.keycard
         self.x = x
         self.y = y
+        self.rect = pygame.Rect(self.x, self.y, 64, 64)
         self.render = True
         self.frame_index = 0
         self.update_tempo = 0

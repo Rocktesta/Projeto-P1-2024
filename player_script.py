@@ -1,8 +1,8 @@
 import pygame
 from pygame import mixer
 import os
-from random import randint
 from pygame.sprite import Group
+import numpy
 
 mixer.init()
 # carregando sons
@@ -11,7 +11,7 @@ pistol_sound.set_volume(0.3)
 bullet_laser_sound = mixer.Sound('Audio\\bullet_laser.mp3')
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, velocidade, gravidade, escala=10, vida=90, cooldown_animacao=100):
+    def __init__(self, char_type, x, y, velocidade, gravidade, escala=3, vida=90, cooldown_animacao=100):
         pygame.sprite.Sprite.__init__(self)
         self.escala = escala
         self.gravidade = gravidade
@@ -80,7 +80,7 @@ class Player(pygame.sprite.Sprite):
                     self.coxinha.append(imagem)
 
                 
-        self.rect = pygame.Rect(x, y, 100, 384)
+        self.rect = pygame.Rect(x, y, 160, 384)
         self.rect_pernas = pygame.Rect(self.rect.x, self.rect.y - 300, 100, 64)
         self.rect.center = (x, y)
         print(len(self.idle_t))
@@ -279,22 +279,22 @@ class Player(pygame.sprite.Sprite):
 
 class Inimigo(Player, pygame.sprite.Sprite):
     # classe inimigo que herdeira da classe Player
-    def __init__(self, char_type, x, y, velocidade, gravidade, escala=2, vida=100, cooldown_animacao=100):
+    def __init__(self, char_type, x, y, velocidade, gravidade, escala=3, vida=100, cooldown_animacao=100):
         pygame.sprite.Sprite.__init__(self)
         super().__init__(char_type, x, y, velocidade, gravidade, escala, vida, cooldown_animacao)
         self.perseguindo = False
         self.move_counter = 0
-        self.linha_de_fogo = pygame.Rect(0, 0, 600, 40)
-        self.campo_visao = pygame.Rect(0, 0, 00, 40)
+        self.linha_de_fogo = pygame.Rect(0, 0, 550, 40)
+        self.campo_visao = pygame.Rect(0, 0, 650, 40)
         self.idling = False
         self.idling_counter = 0
     
     def ai(self, player):
         if self.vivo and player.vivo:
             self.linha_de_fogo.center = (self.rect.centerx + 300 * self.direcao, self.rect.centery) # posição do campo de visão
-            self.campo_visao.center = (self.rect.centerx + 400 * self.direcao, self.rect.centery) # posição do campo de visão extendido
+            self.campo_visao.center = (self.rect.centerx + 500 * self.direcao, self.rect.centery) # posição do campo de visão extendido
             # fazendo o inimigo ficar parado
-            if self.idling == False and randint(1, 200) == 1:
+            if self.idling == False and numpy.random.randint(1, 100) == 1:
                 self.update_action(0) # ação de idle
                 self.idling = True
                 self.idling_counter = 50
@@ -327,9 +327,9 @@ class Inimigo(Player, pygame.sprite.Sprite):
                     self.move_counter += 1
                     # update visão do inimigo quando ele se move
                     self.linha_de_fogo.center = (self.rect.centerx + 300 * self.direcao, self.rect.centery) # posição do campo de visão
-                    self.campo_visao.center = (self.rect.centerx + 400 * self.direcao, self.rect.centery) # posição do campo de visão extendido
+                    self.campo_visao.center = (self.rect.centerx + 600 * self.direcao, self.rect.centery) # posição do campo de visão extendido
                     # mudando a direção
-                    if self.move_counter > 50:
+                    if self.move_counter > 70:
                         self.direcao *= -1
                         self.move_counter *= -1
                 else: 
