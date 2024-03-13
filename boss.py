@@ -19,7 +19,7 @@ class Boss(pygame.sprite.Sprite):
         self.action = 0
         self.update_time = pygame.time.get_ticks()
 
-        animation_types = ['Idle', 'Run', 'Jump', 'Death', 'Win']
+        animation_types = ['Idle', 'Run',  'Win']
         for animation in animation_types:
             lista_temp = []
             num_frames = len(os.listdir(f'Image\Sprites\\boss\{animation}'))
