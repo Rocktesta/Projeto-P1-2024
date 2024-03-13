@@ -24,7 +24,7 @@ class Shotgun(pygame.sprite.Sprite):
     @staticmethod
     def gerar_shotgun(player, tela_scroll=0):
         shotgun_group = pygame.sprite.Group()
-        if randint(1, 1) == 1:
+        if randint(1, 10) == 1:
             shotgun = Shotgun(player, tela_scroll) 
             shotgun_group.add(shotgun)
         return shotgun_group
@@ -37,6 +37,6 @@ class Shotgun(pygame.sprite.Sprite):
             self.equipada = True
             #player.char_type = 'player_Kiev_shotgun' # mudar o sprite do player
             self.kill()
-         
+
 # Sprite Grups       
 weapons_group = pygame.sprite.Group() 

@@ -4,6 +4,7 @@ import pygame_gui
 import vida_script
 import time
 from weapons import Shotgun
+from boss import Boss
 
 pygame.init()
 
@@ -82,15 +83,13 @@ def play():
     player = player_script.Player('soldier', 300, 600, 3, gravidade, 3)
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
     tela_scroll = 0
+
     # criando armas
         #shotgun
     shotgun_group = pygame.sprite.Group()
+
     # criando coxinhas
     coxinha_group = vida_script.Coxinha.gerar_coxinhas(player)
-
-    '''#armas
-    weapons_group = weapons.weapons_group
-    weapons_group.add(shotgun)'''
 
     # inimigos
     inimigo_group = player_script.inimigo_group
@@ -99,6 +98,7 @@ def play():
     inimigo_group.add(inimigo1)
     inimigo_group.add(inimigo2)
 
+    boss = Boss(900, 500)
     
     # Loop Principal do Jogo
     running = True
@@ -124,6 +124,8 @@ def play():
             inimigo.update()
             inimigo.draw(tela)
             player_bullet_group.update(inimigo, 'inimigo') # update de colisão tiro com inimigo
+        boss.update()
+        boss.draw(tela)
 
         # updade e draw sprite groups
         player_bullet_group.draw(tela)
@@ -169,6 +171,7 @@ def play():
             back_x += tela_scroll
             for shotgun in shotgun_group:
                 shotgun.rect.x += tela_scroll
+            boss.rect.x += tela_scroll
         
         else:
             player
@@ -243,7 +246,6 @@ def play():
             player.jump = False
             
         
-            print("space")
         
         
         
