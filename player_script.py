@@ -73,18 +73,18 @@ class Player(pygame.sprite.Sprite):
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
 
-    def move(self, mooving_left, mooving_right):
+    def move(self, moving_left, moving_right):
         # reset as variáveis de movimento
         if self.vivo:
             tela_scroll = 0
             dx = 0
             dy = 0
             # checando se o player se move para a direita ou esquerda
-            if mooving_left:
+            if moving_left:
                 dx = -self.velocidade
                 self.flip = True
                 self.direcao = -1
-            if mooving_right:
+            if moving_right:
                 dx = +self.velocidade
                 self.flip = False
                 self.direcao = 1
