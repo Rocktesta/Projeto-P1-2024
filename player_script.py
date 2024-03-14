@@ -196,9 +196,9 @@ class Player(pygame.sprite.Sprite):
             if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
                 self.update_tempo = pygame.time.get_ticks()
                 self.frame_index += 1
-            # se a animação chegar no final ela reinicia
+            # se a animação chegar no final ela para
             if self.frame_index >= 15:
-                self.frame_index = 0
+                self.frame_index = len(self.die) - 1
         elif self.action == 4: # atirando corendo 
             # update da imagem dependendo do frame
             self.img_player = self.shoot_t[self.frame_index]
@@ -269,7 +269,7 @@ class Player(pygame.sprite.Sprite):
                 self.update_tempo = pygame.time.get_ticks()
                 self.frame_index += 1
                 self.leg_index += 1
-            # se a animação chegar no final ela reinicia
+            # se a animação chegar no final ela reinicia   
             if self.frame_index >= 10:
                 self.frame_index = 0
             if self.leg_index >= 6:
@@ -407,7 +407,7 @@ class Bullet(pygame.sprite.Sprite):
                     player.vida -= 5 # dano que a bala causa
                     self.kill()
         else:
-            inimigo = entrada
+            # a entrada é o grupo de inimigos
             for alvo in entrada:
                 if pygame.sprite.spritecollide(alvo, player_bullet_group, False):
                     if alvo.vivo:
