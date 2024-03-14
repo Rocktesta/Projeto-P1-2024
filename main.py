@@ -4,7 +4,8 @@ import pygame_gui
 import vida_script
 import time
 from weapons import Shotgun
-from boss import Boss
+import boss_script
+from boss_script import Boss
 import keycard
 
 pygame.init()
@@ -111,8 +112,8 @@ def play():
         pygame.Surface.fill(tela, BG)
         tela.blit((background), (back_x, 0))
         player_bullet_group = player_script.player_bullet_group
-        player_text = fonte.render(f"Player {inimigo1.vida}", True, (0, 0, 0))
-        tela.blit(player_text, (player.rect.x, player.rect.y - 50))
+        #player_text = fonte.render(f"Player {inimigo1.vida}", True, (0, 0, 0))
+        #tela.blit(player_text, (player.rect.x, player.rect.y - 50))
         player.update()
         player.draw(tela)
         player.check_vivo()
@@ -127,15 +128,19 @@ def play():
             inimigo.ai(player)
             inimigo.update()
             inimigo.draw(tela)
-            player_bullet_group.update(inimigo, 'inimigo') # update de colisão tiro com inimigo
+        boss.ai(player)
         boss.update()
         boss.draw(tela)
 
         # updade e draw sprite groups
+        player_bullet_group.update(inimigo_group, 'inimigo') # update de colisão tiro com inimigo
         player_bullet_group.draw(tela)
         inimigo_bullet_group = player_script.inimigo_bullet_group
         inimigo_bullet_group.update(player, 'player')
         inimigo_bullet_group.draw(tela)
+        missil_group = boss_script.missil_group
+        missil_group.update(player)
+        missil_group.draw(tela)
 
         for coxinha in coxinha_group:
            if coxinha.render == True:

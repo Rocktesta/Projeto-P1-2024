@@ -30,7 +30,7 @@ class Player(pygame.sprite.Sprite):
         self.shotgun_equip = False
         self.lista_animacoes = []
         self.frame_index = 0
-        self.sprite_sheet = pygame.image.load("Image\Sprites\Sprite_sheet_Kiev.png").convert_alpha()
+        self.sprite_sheet = pygame.image.load("Image\Sprites\Sprite_sheet_main.png").convert_alpha()
         frames = self.sprite_sheet.get_width() // 128
         linhas = self.sprite_sheet.get_height() // 128
         # 0 = Idle | 1 = Run | 2 = Jump | 3 = Death
@@ -365,10 +365,11 @@ class Bullet(pygame.sprite.Sprite):
                     self.kill()
         else:
             inimigo = entrada
-            if pygame.sprite.spritecollide(inimigo, player_bullet_group, False):
-                if inimigo.vivo:
-                    inimigo.vida -= 30 # dano que a bala causa
-                    self.kill()
+            for alvo in entrada:
+                if pygame.sprite.spritecollide(alvo, player_bullet_group, False):
+                    if alvo.vivo:
+                        alvo.vida -= 30 # dano que a bala causa
+                        self.kill()
 
 # Sprite Groups
 player_bullet_group = pygame.sprite.Group()

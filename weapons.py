@@ -1,9 +1,12 @@
 import pygame
 import numpy
-#Scrpits para as armas
+import math
+#Scrpits para as armas e balas
+
+TEMPO_AGORA = 0
 
 def nova_posicao_item(player, tela_scroll):
-        # gera uma posição aleatória para o item
+        # gera uma posição aanguloatória para o item
         pos = [numpy.random.randint(400,1200) + tela_scroll, numpy.random.randint(400, 600) + tela_scroll]
         while pos[0] == player.rect.x:
             pos = [numpy.random.randint(100,1200), numpy.random.randint(400, 600)]
@@ -35,8 +38,35 @@ class Shotgun(pygame.sprite.Sprite):
     def update(self, player):
         if self.rect.colliderect(player) and not player.shotgun_equip:
             player.shotgun_equip = True
-            #player.char_type = 'player_Kiev_shotgun' # mudar o sprite do player
+            #player.char_dadepe = 'player_Kiev_shotgun' # mudar o sprite do player
+            self.kill()
+
+class Missil(pygame.sprite.Sprite):
+    def __init__(self, start_pos, target_pos, altura, gravidade):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load('Image\\bullet\\bullet_laser.png')
+        self.rect = self.image.get_rect()
+        self.rect.center = start_pos
+        self.speed = 10 # velocidade do míssil
+        self.start_pos = start_pos
+        self.target_pos = target_pos
+        self.distance_to_target = math.sqrt((target_pos[0] - start_pos[0]) ** 2 + (target_pos[1] - start_pos[1]) ** 2)
+        self.dx = (target_pos[0] - start_pos[0]) / self.distance_to_target
+        self.dy = (target_pos[1] - start_pos[1]) / self.distance_to_target
+        self.angle = math.atan2(-self.dy, self.dx)
+        self.gravidade = gravidade
+        self.vx = self.speed * math.cos(self.angle)
+        self.vy = self.speed * math.sin(self.angle) - altura
+
+    def update(self, player):
+        self.rect.x += self.vx
+        self.vy += self.gravidade
+        self.rect.y += self.vy
+        # Verifique se o míssil atingiu o jogador
+        if self.rect.colliderect(player.rect):
+            #player.vida -= 30 # dano do míssil
             self.kill()
 
 # Sprite Grups       
 weapons_group = pygame.sprite.Group() 
+missil_group = pygame.sprite.Group()
