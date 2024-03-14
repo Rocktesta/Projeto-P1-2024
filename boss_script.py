@@ -22,6 +22,8 @@ class Boss(pygame.sprite.Sprite):
         self.lista_animacoes = []
         self.frame_index = 0
         self.action = 0
+        self.x = x
+        self.y = y 
         self.update_time = pygame.time.get_ticks()
 
         animation_types = ['Idle', 'Run',  'Win']
@@ -36,6 +38,9 @@ class Boss(pygame.sprite.Sprite):
         
         self.image = self.lista_animacoes[self.action][self.frame_index]
         self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.lista_animacoes[0][0])
+        self.imagem_mask = self.mask.to_surface()
+        self.imagem_mask.set_colorkey((0, 0, 0))
         self.rect.center = (x, y)
 
     def update(self):

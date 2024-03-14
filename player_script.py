@@ -37,6 +37,8 @@ class Player(pygame.sprite.Sprite):
         self.action = 0
         self.update_tempo = pygame.time.get_ticks()
         self.idle_t = []
+        self.x = x
+        self.y = y
         self.run_t_shotgun = []
         self.idle_t_shotgun = []
         self.idle_p = []
@@ -47,6 +49,7 @@ class Player(pygame.sprite.Sprite):
         self.jump_sprites = []
         self.coxinha = []
         self.keycard = []
+        self.shotgun_shoot = []
         for i in range(linhas):
             for j in range(frames):
                 imagem = pygame.Surface((128, 128)).convert_alpha()
@@ -78,11 +81,17 @@ class Player(pygame.sprite.Sprite):
                     self.keycard.append(imagem)
                 if i == 10:
                     self.coxinha.append(imagem)
+                if i == 11:
+                    self.shotgun_shoot.append(imagem)
 
                 
-        self.rect = pygame.Rect(x, y, 160, 384)
+        self.rect = pygame.Rect(x, y, 120, 360)
+        self.mask = pygame.mask.from_surface(self.idle_t[0])
+        self.imagem_mask = self.mask.to_surface()
+        self.imagem_mask.set_colorkey((0, 0, 0))
         self.rect_pernas = pygame.Rect(self.rect.x, self.rect.y - 300, 100, 64)
         self.rect.center = (x, y)
+        self.leg_index = 0
         print(len(self.idle_t))
 
 
@@ -136,8 +145,8 @@ class Player(pygame.sprite.Sprite):
 
     def shoot(self, alvo, bullet_type):
         if self.shoot_cooldown == 0:
-            self.shoot_cooldown = 60
-            bullet = Bullet(bullet_type, self.rect.centerx + (0.32 * self.rect.size[0] * self.direcao), self.rect.centery - 20, self.direcao, 7)
+            self.shoot_cooldown = 40
+            bullet = Bullet(bullet_type, self.rect.centerx + (1 * self.rect.size[0] * self.direcao), self.rect.centery - 40, self.direcao, 7)
             if alvo == 'inimigo': 
                 player_bullet_group.add(bullet)
                 pistol_sound.play()
@@ -155,7 +164,7 @@ class Player(pygame.sprite.Sprite):
                 self.update_tempo = pygame.time.get_ticks()
                 self.frame_index += 1
             # se a animação chegar no final ela reinicia
-            if self.frame_index >= 2:
+            if self.frame_index >= 14:
                 self.frame_index = 0
         elif self.action == 1: # correndo
             # update da imagem dependendo do frame
@@ -193,16 +202,18 @@ class Player(pygame.sprite.Sprite):
         elif self.action == 4: # atirando corendo 
             # update da imagem dependendo do frame
             self.img_player = self.shoot_t[self.frame_index]
-            self.img_perna = self.run_p[self.frame_index]
+            self.img_perna = self.run_p[self.leg_index]
             # check se passou tempo suficiente desde o último update
             if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
                 self.update_tempo = pygame.time.get_ticks()
                 self.frame_index += 1
+                self.leg_index += 1
             # se a animação chegar no final ela reinicia
             if self.frame_index >= 6:
                 self.frame_index = 0
+            if self.leg_index >= 6:
+                self.leg_index = 0
         elif self.action == 5: # atirando parado
-            self.leg_index = 0
             # update da imagem dependendo do frame
             self.img_player = self.shoot_t[self.frame_index]
             self.img_perna = self.idle_p[self.leg_index]
@@ -236,9 +247,34 @@ class Player(pygame.sprite.Sprite):
                 self.update_tempo = pygame.time.get_ticks()
                 self.frame_index += 1
             # se a animação chegar no final ela reinicia
-            if self.frame_index >= 2:
+            if self.frame_index >= 14:
                 self.frame_index = 0
-        
+        elif self.action == 8: #shotgun atirando parado
+            # update da imagem dependendo do frame
+            self.img_player = self.shotgun_shoot[self.frame_index]
+            self.img_perna = self.idle_p[0]
+            # check se passou tempo suficiente desde o último update
+            if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
+                self.update_tempo = pygame.time.get_ticks()
+                self.frame_index += 1
+            # se a animação chegar no final ela reinicia
+            if self.frame_index >= 10:
+                self.frame_index = 0
+        elif self.action == 9: #shotgun atirando correndo
+             # update da imagem dependendo do frame
+            self.img_player = self.shotgun_shoot[self.frame_index]
+            self.img_perna = self.run_p[self.leg_index]
+            # check se passou tempo suficiente desde o último update
+            if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
+                self.update_tempo = pygame.time.get_ticks()
+                self.frame_index += 1
+                self.leg_index += 1
+            # se a animação chegar no final ela reinicia
+            if self.frame_index >= 10:
+                self.frame_index = 0
+            if self.leg_index >= 6:
+                self.leg_index = 0
+
         
 
     def update_action(self, nova_acao):
@@ -247,7 +283,7 @@ class Player(pygame.sprite.Sprite):
             self.action = nova_acao
             # update do cooldown da animação
             if self.action == 0:
-                self.cooldown_animacao = 300 # cooldown da ação de Idle
+                self.cooldown_animacao = 200 # cooldown da ação de Idle
             elif self.action == 1:
                 self.cooldown_animacao = 100 # cooldown da ação de Run
             elif self.action == 2:
@@ -261,7 +297,13 @@ class Player(pygame.sprite.Sprite):
             elif self.action == 6:
                 self.cooldown_animacao = 100 # cooldown da ação run com shotgun
             elif self.action == 7:
-                self.cooldown_animacao = 300 # cooldown da ação idle com shotgun
+                self.cooldown_animacao = 100 # cooldown da ação idle com shotgun
+            elif self.action == 8:
+                self.cooldown_animacao = 100 # cooldown da ação shoot idle com shotgun
+            elif self.action == 9:
+                self.cooldown_animacao = 100 # cooldown da ação shoot run com shotgun
+                
+
             # updade das configs da animação, para trocar para o começo da próxima animação
             self.frame_index = 0
             self.update_tempo = pygame.time.get_ticks()
@@ -345,6 +387,7 @@ class Bullet(pygame.sprite.Sprite):
         self.velocidade = velocidade
         self.image = pygame.image.load(f'Image/bullet/{self.bullet_type}.png')
         self.image = pygame.transform.scale(self.image, (self.image.get_width() * 2, self.image.get_height() * 2))
+        self.mask = pygame.mask.from_surface(self.image)
         if self.direcao == -1:
             self.image = pygame.transform.flip(self.image, True, False)
         self.rect = self.image.get_rect()

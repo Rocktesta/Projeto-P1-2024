@@ -7,13 +7,13 @@ TEMPO_AGORA = 0
 
 def nova_posicao_item(player, tela_scroll):
         # gera uma posição aanguloatória para o item
-        pos = [numpy.random.randint(400,1200) + tela_scroll, numpy.random.randint(400, 600) + tela_scroll]
+        pos = [numpy.random.randint(400,1200) + tela_scroll, numpy.random.randint(300, 500) + tela_scroll]
         while pos[0] == player.rect.x:
             pos = [numpy.random.randint(100,1200), numpy.random.randint(400, 600)]
         return pos
 
 class Shotgun(pygame.sprite.Sprite):
-    def __init__(self, player, tela_scroll=0, sprite="Weapons\Shotgun_sprite.png", cooldown=1, escala=1):
+    def __init__(self, player, tela_scroll=0, sprite="Weapons\Shotgun_sprite.png", cooldown=1, escala=3):
         pygame.sprite.Sprite.__init__(self)
         self.pos = nova_posicao_item(player, tela_scroll)
         self.x = self.pos[0]
@@ -27,7 +27,7 @@ class Shotgun(pygame.sprite.Sprite):
     @staticmethod
     def gerar_shotgun(player, tela_scroll=0):
         shotgun_group = pygame.sprite.Group()
-        if numpy.random.randint(1, 10) == 1:
+        if numpy.random.randint(1, 5) == 1:
             shotgun = Shotgun(player, tela_scroll) 
             shotgun_group.add(shotgun)
         return shotgun_group

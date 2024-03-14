@@ -79,10 +79,12 @@ def play():
     mooving_right = False
     shoot = False
     equipada = True
+    fire_cooldown = 300
     shoot_anima = False
     start_time = 0
 
     player = player_script.Player('soldier', 300, 600, 3, gravidade, 3)
+    
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
     cracha = keycard.Keycard(2000, 400, tela, player)
     tela_scroll = 0
@@ -131,6 +133,7 @@ def play():
         boss.ai(player)
         boss.update()
         boss.draw(tela)
+        
 
         # updade e draw sprite groups
         player_bullet_group.update(inimigo_group, 'inimigo') # update de colisão tiro com inimigo
@@ -141,6 +144,11 @@ def play():
         missil_group = boss_script.missil_group
         missil_group.update(player)
         missil_group.draw(tela)
+       
+        posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
+
+        if player.mask.overlap(boss.mask, posicao_player_boss):
+            print("colide")
 
         for coxinha in coxinha_group:
            if coxinha.render == True:
@@ -192,17 +200,38 @@ def play():
                 if event.key == pygame.K_ESCAPE:   # Se for tecla escape, jogo para de rodar
                     running = False 
                     pygame.quit()
+                elif event.key == pygame.K_RETURN:
+                    temp_inicial = pygame.time.get_ticks()
         # Pressionar teclas no teclado
         if player.vivo:
+            if player.shotgun_equip:
+                shoot_anima = 400
+            else:
+                 shoot_anima = 300
             teclas = pygame.key.get_pressed()
+            if teclas[pygame.K_RETURN]:
+                temp_atual = pygame.time.get_ticks()
+                
+                if temp_atual - temp_inicial >= fire_cooldown:
+                    shoot_anima = True
+                else:
+                    shoot_anima = False
             if teclas[pygame.K_a] and teclas[pygame.K_RETURN]:
-                player.update_action(4)
-                shoot = True
+                if shoot_anima:
+                    if not player.shotgun_equip:
+                        player.update_action(4)
+                    else:
+                        player.update_action(9)
+                    shoot = True
                 mooving_left = True
                 mooving_right = False
             elif teclas[pygame.K_d] and teclas[pygame.K_RETURN]:
-                player.update_action(4)
-                shoot = True
+                if shoot_anima:
+                    if not player.shotgun_equip:
+                        player.update_action(4)
+                    else:
+                        player.update_action(9)
+                    shoot = True
                 mooving_right = True
                 mooving_left = False
             elif teclas[pygame.K_d] and not teclas[pygame.K_RETURN]:
@@ -222,8 +251,12 @@ def play():
                 mooving_left = True
                 mooving_right = False
             elif teclas[pygame.K_RETURN]:
-                player.update_action(5)
-                shoot = True
+                if shoot_anima:
+                    if not player.shotgun_equip:
+                        player.update_action(5)
+                    else:
+                        player.update_action(8)
+                    shoot = True
                 mooving_left = False
                 mooving_right = False
             elif not teclas[pygame.K_a] and  not teclas[pygame.K_d]:
