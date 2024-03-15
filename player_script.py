@@ -3,6 +3,7 @@ from pygame import mixer
 import os
 from pygame.sprite import Group
 import numpy
+from weapons import Shotgun
 
 mixer.init()
 # carregando sons
@@ -55,7 +56,7 @@ class Player(pygame.sprite.Sprite):
                 imagem = pygame.Surface((128, 128)).convert_alpha()
                 imagem.fill((0, 0, 0, 0))
                 imagem.blit(self.sprite_sheet, (0, 0), ((j * 128), (i * 128), 128, 128))
-                imagem = pygame.transform.scale(imagem, (128 * escala, 128 * escala)) 
+                imagem = pygame.transform.scale(imagem, (128 * 3, 128 * 3)) 
                 imagem.convert_alpha()
                 if pygame.transform.average_color(imagem) == ((0, 0, 0, 0)):
                     imagem == None
@@ -92,6 +93,7 @@ class Player(pygame.sprite.Sprite):
         self.rect_pernas = pygame.Rect(self.rect.x, self.rect.y - 300, 100, 64)
         self.rect.center = (x, y)
         self.leg_index = 0
+        self.shotgun_cooldown = 0
         print(len(self.idle_t))
 
 
@@ -143,17 +145,25 @@ class Player(pygame.sprite.Sprite):
             return 0
 
 
-    def shoot(self, alvo, bullet_type):
-        if self.shoot_cooldown == 0:
-            self.shoot_cooldown = 40
-            bullet = Bullet(bullet_type, self.rect.centerx + (1 * self.rect.size[0] * self.direcao), self.rect.centery - 40, self.direcao, 7)
-            if alvo == 'inimigo': 
-                player_bullet_group.add(bullet)
-                pistol_sound.play()
-            else:
-                inimigo_bullet_group.add(bullet)
-                bullet_laser_sound.play()
-
+    def shoot(self, alvo, bullet_type, player, tela):
+        if not player.shotgun_equip:
+            if self.shoot_cooldown == 0:
+                self.shoot_cooldown = 40
+                bullet = Bullet(bullet_type, self.rect.centerx + (1 * self.rect.size[0] * self.direcao), self.rect.centery - 120, self.direcao, 7)
+                if alvo == 'inimigo': 
+                    player_bullet_group.add(bullet)
+                    pistol_sound.play()
+                else:
+                    inimigo_bullet_group.add(bullet)
+                    bullet_laser_sound.play()
+        else:
+            if self.shotgun_cooldown == 0:
+                shotgun = Shotgun(player)
+                shotgun.draw_blast(tela, player)
+                shotgun_cooldown = 300
+            if self.shotgun_cooldown > 0:
+                shotgun_cooldown -= 100
+            
     def update_animacao(self):
         if self.action == 0: # idle
             # update da imagem dependendo do frame
@@ -275,8 +285,6 @@ class Player(pygame.sprite.Sprite):
             if self.leg_index >= 6:
                 self.leg_index = 0
 
-        
-
     def update_action(self, nova_acao):
         # checa se a nova ação é deferente da ação anterior
         if nova_acao != self.action:
@@ -331,7 +339,7 @@ class Inimigo(Player, pygame.sprite.Sprite):
         self.idling = False
         self.idling_counter = 0
     
-    def ai(self, player):
+    def ai(self, player, tela):
         if self.vivo and player.vivo:
             self.linha_de_fogo.center = (self.rect.centerx + 300 * self.direcao, self.rect.centery) # posição do campo de visão
             self.campo_visao.center = (self.rect.centerx + 500 * self.direcao, self.rect.centery) # posição do campo de visão extendido
@@ -349,7 +357,7 @@ class Inimigo(Player, pygame.sprite.Sprite):
             if self.linha_de_fogo.colliderect(player.rect):
                 # parar de se mover e encarar o player
                 self.update_action(0) # ação de idle
-                self.shoot('player', 'bullet_laser')
+                self.shoot('player', 'bullet_laser', player, tela)
                 self.perseguindo = True
             elif self.perseguindo:
                 # se o jogador sair da linha de tiro ou entrar no campo de visão o inimigo o persegue até sair do campo de visão
@@ -390,7 +398,7 @@ class Bullet(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         if self.direcao == -1:
             self.image = pygame.transform.flip(self.image, True, False)
-        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(x, y, 40, 40)
         self.rect.center = (x, y)
     
     def update(self, entrada, entrada_tipo):

@@ -51,13 +51,13 @@ class Boss(pygame.sprite.Sprite):
 
     def update_animacao(self):
         cooldown_animacao = 100
-		#update da imagem dependendo do frame
+		# update da imagem dependendo do frame
         self.image = self.lista_animacoes[self.action][self.frame_index]
-		#check if enough time has passed since the last update
+		# check se já passou tempo suficiente desde o último update
         if pygame.time.get_ticks() - self.update_time > cooldown_animacao:
             self.update_time = pygame.time.get_ticks()
             self.frame_index += 1
-		#if the animation has run out the reset back to the start
+		# se a animação chegou no final ela reinicia
         if self.frame_index >= len(self.lista_animacoes[self.action]):
             if self.action == 3:
                 self.frame_index = len(self.lista_animacoes[self.action]) - 1
