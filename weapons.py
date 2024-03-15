@@ -4,8 +4,6 @@ import math
 import os
 #Scrpits para as armas e balas
 
-TEMPO_AGORA = 0
-
 def nova_posicao_item(player, tela_scroll):
         # gera uma posição aanguloatória para o item
         pos = [numpy.random.randint(400,1200) + tela_scroll, numpy.random.randint(300, 500) + tela_scroll]
@@ -45,31 +43,25 @@ class Shotgun(pygame.sprite.Sprite):
     def draw(self, tela):
         if self.equipada == False:
             tela.blit(self.sprite, (self.rect.x , self.y))
+
     def update(self, player):
         if self.rect.colliderect(player) and not player.shotgun_equip:
             player.shotgun_equip = True
-            #player.char_dadepe = 'player_Kiev_shotgun' # mudar o sprite do player
             self.kill()
 
-    def draw_blast(self, tela):
-        cooldown_animacao = 300  
-        
-        
-        if pygame.time.get_ticks() - self.update_time >= cooldown_animacao:
-            self.frame_index += 1
+    def draw_blast(self, tela, player):
+        cooldown_animacao = 50  
+
+        if pygame.time.get_ticks() - self.update_time > cooldown_animacao:
             self.update_time = pygame.time.get_ticks()  
+            print('atualizando quadro')
+            self.frame_index += 1
+            if self.frame_index >= self.num_frames:
+                self.frame_index = 0
 
-        imagem_blast = self.blast_list[self.frame_index]
-        tela.blit(imagem_blast, (self.player.rect.x - 100, self.player.rect.centery - 150))
-
-        
-        if self.frame_index >= self.num_frames:
-            self.frame_index = 0
-                        
-             
-         
-
-
+            print('desenhando quadro')
+            tela.blit(self.blast_list[self.frame_index], (self.player.rect.x + (200 * player.direcao) , self.player.rect.centery - 200))
+                    
 class Missil(pygame.sprite.Sprite):
     def __init__(self, start_pos, target_pos, altura, gravidade):
         pygame.sprite.Sprite.__init__(self)

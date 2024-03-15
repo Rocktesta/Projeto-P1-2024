@@ -146,9 +146,9 @@ class Player(pygame.sprite.Sprite):
 
 
     def shoot(self, alvo, bullet_type, player, tela):
-        if self.shoot_cooldown == 0:
-            self.shoot_cooldown = 40
-            if not player.shotgun_equip:
+        if not player.shotgun_equip:
+            if self.shoot_cooldown == 0:
+                self.shoot_cooldown = 40
                 bullet = Bullet(bullet_type, self.rect.centerx + (1 * self.rect.size[0] * self.direcao), self.rect.centery - 120, self.direcao, 7)
                 if alvo == 'inimigo': 
                     player_bullet_group.add(bullet)
@@ -156,17 +156,14 @@ class Player(pygame.sprite.Sprite):
                 else:
                     inimigo_bullet_group.add(bullet)
                     bullet_laser_sound.play()
-            else:
-                
-                if self.shotgun_cooldown == 0:
-                    shotgun = Shotgun(player)
-                    shotgun.draw_blast(tela)
-                    shotgun_cooldown = 300
-
-                if self.shotgun_cooldown > 0:
-                    shotgun_cooldown -= 100
+        else:
+            if self.shotgun_cooldown == 0:
+                shotgun = Shotgun(player)
+                shotgun.draw_blast(tela, player)
+                shotgun_cooldown = 300
+            if self.shotgun_cooldown > 0:
+                shotgun_cooldown -= 100
             
-
     def update_animacao(self):
         if self.action == 0: # idle
             # update da imagem dependendo do frame
@@ -287,8 +284,6 @@ class Player(pygame.sprite.Sprite):
                 self.frame_index = 0
             if self.leg_index >= 6:
                 self.leg_index = 0
-
-        
 
     def update_action(self, nova_acao):
         # checa se a nova ação é deferente da ação anterior

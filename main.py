@@ -105,7 +105,7 @@ def play():
     inimigo_group.add(inimigo1)
     inimigo_group.add(inimigo2)
 
-    boss = Boss(900, 500)
+    #boss = Boss(900, 500)
     
     # Loop Principal do Jogo
     running = True
@@ -133,9 +133,9 @@ def play():
             inimigo.ai(player, tela)
             inimigo.update()
             inimigo.draw(tela)
-        boss.ai(player)
+        '''boss.ai(player)
         boss.update()
-        boss.draw(tela)
+        boss.draw(tela)'''
         
 
         # updade e draw sprite groups
@@ -148,10 +148,10 @@ def play():
         missil_group.update(player)
         missil_group.draw(tela)
        
-        posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
+        #posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
 
-        if player.mask.overlap(boss.mask, posicao_player_boss):
-            print("colide")
+        '''if player.mask.overlap(boss.mask, posicao_player_boss):
+            print("colide")'''
 
         for coxinha in coxinha_group:
            if coxinha.render == True:
@@ -191,7 +191,7 @@ def play():
             back_x += tela_scroll
             for shotgun in shotgun_group:
                 shotgun.rect.x += tela_scroll
-            boss.rect.x += tela_scroll
+            #boss.rect.x += tela_scroll
             cracha.rect.x += tela_scroll
         
         elif player.vivo == False:

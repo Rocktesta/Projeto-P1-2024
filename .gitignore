@@ -1,5 +1,7 @@
-# Byte-compiled (.pyc)
+# Byte-compiled / (.pyc)
 __pycache__/
+*.py[cod]
+*.pyc
 
 # Environments
 venv/
