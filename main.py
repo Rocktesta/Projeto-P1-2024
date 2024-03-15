@@ -18,7 +18,9 @@ manager = pygame_gui.UIManager((largura_tela, altura_tela))
 botao_play = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 50, altura_tela//2), (100, 50)),text='Play', manager=manager)
 botao_quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 50, altura_tela//2 + 100), (100, 50)),text='Exit', manager=manager)
 background = pygame.image.load("Image\\background.png").convert_alpha()
+parallax_back = pygame.image.load("Image\\Parallax_back.png").convert_alpha()
 background = pygame.transform.scale(background, (background.get_width() * 4, background.get_height() * 4))
+parallax_back = pygame.transform.scale(parallax_back, (parallax_back.get_width() * 4, parallax_back.get_height() * 4))
 
 #cooldowns
 tempo_ultima_geracao_coxinhas = 0
@@ -112,6 +114,7 @@ def play():
         clock.tick(fps)
 
         pygame.Surface.fill(tela, BG)
+        tela.blit((parallax_back), (0, 0))
         tela.blit((background), (back_x, 0))
         player_bullet_group = player_script.player_bullet_group
         #player_text = fonte.render(f"Player {inimigo1.vida}", True, (0, 0, 0))
@@ -127,7 +130,7 @@ def play():
         for coxinha in coxinha_group:
             coxinha.draw(tela)
         for inimigo in inimigo_group:
-            inimigo.ai(player)
+            inimigo.ai(player, tela)
             inimigo.update()
             inimigo.draw(tela)
         boss.ai(player)
@@ -177,8 +180,9 @@ def play():
         if player.vivo:
             # shoot bullets
             if shoot:
-                player.shoot('inimigo', 'bullet0')
+                player.shoot('inimigo', 'bullet0', player, tela)
             tela_scroll =  player.move(moving_left, moving_right) 
+            back_x += tela_scroll * 0000.1
             
             for inimigo in inimigo_group:
                 inimigo.rect.x += tela_scroll

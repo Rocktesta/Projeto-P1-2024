@@ -1,6 +1,7 @@
 import pygame
 import numpy
 
+
 def nova_posicao_item(player, tela_scroll):
         # gera uma posição aleatória para o item
         pos = [numpy.random.randint(400,1200) + tela_scroll, numpy.random.randint(300, 400) + tela_scroll]

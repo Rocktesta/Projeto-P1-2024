@@ -1,6 +1,7 @@
 import pygame
 import numpy
 import math
+import os
 #Scrpits para as armas e balas
 
 TEMPO_AGORA = 0
@@ -23,6 +24,15 @@ class Shotgun(pygame.sprite.Sprite):
         self.rect = pygame.Rect(self.x, self.y, self.sprite.get_width(), self.sprite.get_height())
         self.cooldown = cooldown
         self.equipada = False
+        self.player = player
+        self.update_time = pygame.time.get_ticks()
+        self.blast_list = []
+        self.frame_index = 0
+        self.num_frames = len(os.listdir(f'Weapons')) - 1
+        for i in range(self.num_frames):
+                img = pygame.image.load(f'Weapons\Shotgun_blast{i}.png')
+                img = pygame.transform.scale(img, (img.get_width(), img.get_height()))
+                self.blast_list.append(img) 
 
     @staticmethod
     def gerar_shotgun(player, tela_scroll=0):
@@ -40,6 +50,25 @@ class Shotgun(pygame.sprite.Sprite):
             player.shotgun_equip = True
             #player.char_dadepe = 'player_Kiev_shotgun' # mudar o sprite do player
             self.kill()
+
+    def draw_blast(self, tela):
+        cooldown_animacao = 300  
+        
+        
+        if pygame.time.get_ticks() - self.update_time >= cooldown_animacao:
+            self.frame_index += 1
+            self.update_time = pygame.time.get_ticks()  
+
+        imagem_blast = self.blast_list[self.frame_index]
+        tela.blit(imagem_blast, (self.player.rect.x - 100, self.player.rect.centery - 150))
+
+        
+        if self.frame_index >= self.num_frames:
+            self.frame_index = 0
+                        
+             
+         
+
 
 class Missil(pygame.sprite.Sprite):
     def __init__(self, start_pos, target_pos, altura, gravidade):
