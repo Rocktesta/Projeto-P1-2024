@@ -2,8 +2,9 @@ import pygame
 import numpy
 import math
 import os
-#Scrpits para as armas e balas
+from pygame.sprite import Group
 
+#Scrpits para as armas e balas
 def nova_posicao_item(player, tela_scroll):
         # gera uma posição aanguloatória para o item
         pos = [numpy.random.randint(400,1200) + tela_scroll, numpy.random.randint(300, 500) + tela_scroll]
@@ -23,14 +24,6 @@ class Shotgun(pygame.sprite.Sprite):
         self.cooldown = cooldown
         self.equipada = False
         self.player = player
-        self.update_time = pygame.time.get_ticks()
-        self.blast_list = []
-        self.frame_index = 0
-        self.num_frames = len(os.listdir(f'Weapons')) - 1
-        for i in range(self.num_frames):
-                img = pygame.image.load(f'Weapons\Shotgun_blast{i}.png')
-                img = pygame.transform.scale(img, (img.get_width(), img.get_height()))
-                self.blast_list.append(img) 
 
     @staticmethod
     def gerar_shotgun(player, tela_scroll=0):
@@ -49,7 +42,7 @@ class Shotgun(pygame.sprite.Sprite):
             player.shotgun_equip = True
             self.kill()
 
-    def draw_blast(self, tela, player):
+    '''def draw_blast(self, tela, player):
         cooldown_animacao = 50  
 
         if pygame.time.get_ticks() - self.update_time > cooldown_animacao:
@@ -60,8 +53,34 @@ class Shotgun(pygame.sprite.Sprite):
                 self.frame_index = 0
 
             print('desenhando quadro')
-            tela.blit(self.blast_list[self.frame_index], (self.player.rect.x + (200 * player.direcao) , self.player.rect.centery - 200))
-                    
+            tela.blit(self.blast_list[self.frame_index], (self.player.rect.x + (200 * player.direcao) , self.player.rect.centery - 200))'''
+    
+            
+class ShotgunBlast(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.images = [] 
+        for n in range(len(os.listdir(f'Weapons')) - 1):
+            img = pygame.image.load(f'Weapons\Shotgun_blast{n}.png')
+            img = pygame.transform.scale(img, (100, 100))
+            self.images.append(img)
+        self.frame_index = 0
+        self.image = self.images[self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.contador = 0
+
+    def update(self):
+        velocidade_blast = 4
+        self.contador += 1
+        if self.contador >= velocidade_blast and self.frame_index < len(self.images) - 1:
+            self.contador = 0
+            self.frame_index += 1
+            self.image = self.images[self.frame_index]
+        # animação completa reset frame index
+        if self.frame_index >= len(self.images) - 1 and self.contador >= velocidade_blast:
+            self.kill()
+
 class Missil(pygame.sprite.Sprite):
     def __init__(self, start_pos, target_pos, altura, gravidade):
         pygame.sprite.Sprite.__init__(self)
@@ -89,5 +108,6 @@ class Missil(pygame.sprite.Sprite):
             self.kill()
 
 # Sprite Grups       
-weapons_group = pygame.sprite.Group() 
+weapons_group = pygame.sprite.Group()
+shotgun_blast_group = pygame.sprite.Group() 
 missil_group = pygame.sprite.Group()

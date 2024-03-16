@@ -3,6 +3,7 @@ import player_script
 import pygame_gui
 import vida_script
 import time
+import weapons
 from weapons import Shotgun
 import boss_script
 from boss_script import Boss
@@ -105,7 +106,7 @@ def play():
     inimigo_group.add(inimigo1)
     inimigo_group.add(inimigo2)
 
-    #boss = Boss(900, 500)
+    boss = Boss(900, 500)
     
     # Loop Principal do Jogo
     running = True
@@ -133,9 +134,9 @@ def play():
             inimigo.ai(player, tela)
             inimigo.update()
             inimigo.draw(tela)
-        '''boss.ai(player)
+        boss.ai(player)
         boss.update()
-        boss.draw(tela)'''
+        boss.draw(tela)
         
 
         # updade e draw sprite groups
@@ -147,11 +148,12 @@ def play():
         missil_group = boss_script.missil_group
         missil_group.update(player)
         missil_group.draw(tela)
+        shotgun_blast_group = weapons.shotgun_blast_group
        
-        #posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
+        posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
 
-        '''if player.mask.overlap(boss.mask, posicao_player_boss):
-            print("colide")'''
+        if player.mask.overlap(boss.mask, posicao_player_boss):
+            print("colide")
 
         for coxinha in coxinha_group:
            if coxinha.render == True:
@@ -181,6 +183,11 @@ def play():
             # shoot bullets
             if shoot:
                 player.shoot('inimigo', 'bullet0', player, tela)
+                if player.shotgun_equip:
+                    blast = weapons.ShotgunBlast(player.rect.x + (300 * player.direcao), player.rect.y + 200)
+                    shotgun_blast_group.add(blast)
+                    shotgun_blast_group.draw(tela)
+                    shotgun_blast_group.update()
             tela_scroll =  player.move(moving_left, moving_right) 
             back_x += tela_scroll * 0000.1
             
