@@ -1,8 +1,8 @@
 import pygame
 from pygame import mixer
-import os
 from pygame.sprite import Group
 import numpy
+import weapons
 from weapons import Shotgun
 
 mixer.init()
@@ -19,7 +19,8 @@ class Player(pygame.sprite.Sprite):
         self.vivo = True
         self.char_type = char_type
         self.velocidade = velocidade
-        self.shoot_cooldown = 0 
+        self.shoot_cooldown = 0
+        self.shotgun_cooldown = 0
         self.cooldown_animacao = cooldown_animacao # tempo de update da animação
         self.vida = vida
         self.max_vida = 100
@@ -103,6 +104,9 @@ class Player(pygame.sprite.Sprite):
         # update cooldown
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
+        if self.shotgun_cooldown > 0:
+            self.shotgun_cooldown -= 1
+            print(self.shotgun_cooldown)
 
     def move(self, moving_left, moving_right):
         # reset as variáveis de movimento
@@ -159,10 +163,11 @@ class Player(pygame.sprite.Sprite):
         else:
             if self.shotgun_cooldown == 0:
                 shotgun = Shotgun(player)
-                shotgun.draw_blast(tela, player)
-                shotgun_cooldown = 300
-            if self.shotgun_cooldown > 0:
-                shotgun_cooldown -= 100
+                '''blast = weapons.ShotgunBlast(shotgun.x, shotgun.y)
+                shotgun_blast_group.add(blast)
+                shotgun_blast_group.draw(tela)
+                shotgun_blast_group.update()'''
+                self.shotgun_cooldown = 200
             
     def update_animacao(self):
         if self.action == 0: # idle
@@ -426,3 +431,4 @@ class Bullet(pygame.sprite.Sprite):
 player_bullet_group = pygame.sprite.Group()
 inimigo_bullet_group = pygame.sprite.Group()
 inimigo_group = pygame.sprite.Group()
+shotgun_blast_group = weapons.shotgun_blast_group
