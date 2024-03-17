@@ -103,7 +103,7 @@ def play():
     inimigo_group.add(inimigo1)
     #inimigo_group.add(inimigo2)
 
-    boss = Boss(2560, 500)
+    boss = Boss(2560, 420)
     
     # Loop Principal do Jogo
     running = True
@@ -130,7 +130,7 @@ def play():
             inimigo.ai(player, tela)
             inimigo.update()
             inimigo.draw(tela)
-        boss.ai(player)
+        boss.ai(player, tela)
         boss.update()
         boss.draw(tela)
         

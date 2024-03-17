@@ -366,6 +366,7 @@ class Inimigo(pygame.sprite.Sprite):
         self.move_counter = 0
         self.idling = False
         self.idling_counter = 0
+        self.atirando = False
         self.campo_visao_frente = pygame.Rect(0, 0, 700, 40)
         self.campo_visao_costas = pygame.Rect(0, 0, 300, 40)
     
@@ -411,15 +412,14 @@ class Inimigo(pygame.sprite.Sprite):
             if self.action == 0 or self.action == 1: # ação de idle ou run
                 self.cooldown_animacao = 100
             elif self.action == 2: # ação de shoot
-                self.cooldown_animacao = 200
+                self.cooldown_animacao = 100
             elif self.action == 3: # ação de death
                 self.cooldown_animacao = 150
     
     def shoot(self, bullet_type):
-        if self.shoot_cooldown == 0:
-            self.update_action(2)
-            self.shoot_cooldown = 50
-            bullet = Bullet(bullet_type, self.rect.centerx + (100 * self.direcao), self.rect.centery, self.direcao, 7)
+        if self.shoot_cooldown == 0 and self.frame_index == 5:
+            self.shoot_cooldown = 60
+            bullet = Bullet(bullet_type, self.rect.centerx + (215 * self.direcao), self.rect.centery + 15, self.direcao, 7)
             inimigo_bullet_group.add(bullet)
             bullet_laser_sound.play()
     
@@ -434,21 +434,27 @@ class Inimigo(pygame.sprite.Sprite):
         tela.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
 
     def ai(self, player, tela):
-        if self.vivo:
+        if self.vivo and player.vivo:
             self.campo_visao_frente.center = (self.rect.centerx + 300 * self.direcao, self.rect.centery)
             self.campo_visao_costas.center = (self.rect.centerx - 200 * self.direcao, self.rect.centery)
             if self.idling == False and numpy.random.randint(1, 100) == 1:
+                self.atirando = False
                 self.update_action(0) # ação de idle
                 self.idling = True
                 self.idling_counter = 50
             # check se o player está no campo de visão da frente
             if self.campo_visao_frente.colliderect(player.rect):
-                self.update_action(0) # ação de idle
+                if self.atirando == False:
+                    self.update_action(0) # ação de idle
+                    self.update_action(2) # ação de tiro
+                    self.atirando = True
                 self.shoot('bullet_laser')
             elif self.campo_visao_costas.colliderect(player.rect):
+                self.atirando = False
                 self.flip = not self.flip
                 self.direcao *= -1
             else:
+                self.atirando = False
                 if self.idling == False:
                     if self.direcao == 1:
                         ai_moving_right = True
@@ -461,9 +467,7 @@ class Inimigo(pygame.sprite.Sprite):
                     # updade do campo de visão quando se mover
                     self.campo_visao_frente.center = (self.rect.centerx + 300 * self.direcao, self.rect.centery)
                     self.campo_visao_costas.center = (self.rect.centerx - 200 * self.direcao, self.rect.centery)
-                    pygame.draw.rect(tela, (255, 0, 0), self.campo_visao_frente)
-                    pygame.draw.rect(tela, (0, 0, 255), self.campo_visao_costas)
-
+                
                     distancia_percorrida = numpy.random.randint(60, 150)
                     if self.move_counter > distancia_percorrida:
                         self.direcao *= -1
@@ -472,7 +476,9 @@ class Inimigo(pygame.sprite.Sprite):
                 else:
                     self.idling_counter -= 1
                     if self.idling_counter == 0:
-                        self.idling = False 
+                        self.idling = False
+        elif not player.vivo:
+            self.update_action(0) # ação de idle
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, bullet_type, x, y, direcao, velocidade):
