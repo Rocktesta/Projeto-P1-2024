@@ -43,11 +43,13 @@ class Boss(pygame.sprite.Sprite):
         self.imagem_mask.set_colorkey((0, 0, 0))
         self.rect.center = (x, y)
 
-        self.campo_visao = pygame.Rect(0, 0, 1000, 50)
-        self.campo_visao.center = self.rect.center
         self.no_canto = False
-        self.max_duracao_acao = 200
-        self.duracao_acao = 0
+        self.idling = False
+        self.idling_counter = 0
+        self.campo_visao = pygame.Rect(0, 0, 600, 70)
+        self.campo_visao.center = self.rect.center
+        self.campo_proximidade = pygame.Rect(0, 0, 400, 70)
+        self.campo_proximidade.center = self.rect.center
 
     def update(self):
         self.update_animacao()
@@ -140,15 +142,23 @@ class Boss(pygame.sprite.Sprite):
             ataque = self.big_run(player)
         return ataque
 
-    def ai(self, player):
+    def ai(self, player, tela):
         if self.vivo and player.vivo:
-            if self.campo_visao.colliderect(player.rect):
-                if self.duracao_acao < self.max_duracao_acao:
-                    ataque = self.escolher_ataque(player)
-                    self.duracao_acao += 1
-                else:
-                    self.duracao_acao = 0
-                
+            self.campo_visao.center = (self.rect.centerx - 775 * self.direcao, self.rect.centery)
+            self.campo_proximidade.center = (self.rect.centerx - 250 * self.direcao, self.rect.centery)
+            pygame.draw.rect(tela, (255, 0, 0), self.campo_visao)
+            pygame.draw.rect(tela, (0, 0, 255), self.campo_proximidade)
+            if self.idling == False and numpy.random.randint(1, 100) == 1:
+                self.update_action(0)
+                self.idling = True
+                self.idling_counter = 100
+            if self.campo_proximidade.colliderect(player.rect):
+                self.no_canto = False
+                self.big_run(player)
+            else:
+                self.idling_counter -= 1
+                if self.idling_counter == 0:
+                    self.idling = False
         else: 
             self.update_action(2)
 
