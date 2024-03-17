@@ -95,6 +95,7 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = (x, y)
         self.leg_index = 0
         self.shotgun_cooldown = 0
+        self.blast = weapons.ShotgunBlast(300, 500)
         print(len(self.idle_t))
 
 
@@ -160,14 +161,15 @@ class Player(pygame.sprite.Sprite):
                 player_bullet_group.add(bullet)
                 pistol_sound.play()
         else:
-            if self.shotgun_cooldown == 0:
-                blast = weapons.ShotgunBlast(self.rect.x + (300 * self.direcao), self.rect.y + 200)
-                print(len(blast.images))
-                for i in range(len(blast.images)):
-                    blast.update()
-                    blast.draw(tela)
-                    pygame.display.update()
-                self.shotgun_cooldown = 50
+                if self.direcao  == 1:
+                    self.blast.update(self.rect.x + (300 * self.direcao), self.rect.y + 140)
+                    self.blast.draw(tela, False)
+                else:
+                    self.blast.update(self.rect.x + (300 * self.direcao), self.rect.y + 140)
+                    self.blast.draw(tela, True)
+                
+                
+                
             
     def update_animacao(self):
         if self.action == 0: # idle
@@ -195,7 +197,7 @@ class Player(pygame.sprite.Sprite):
         elif self.action == 2: # pulando
             # update da imagem dependendo do frame
             self.img_player = self.jump_sprites[self.frame_index]
-            self.img_perna = self.jump_sprites[10]
+            self.img_perna = self.jump_sprites[14]
             # check se passou tempo suficiente desde o último update
             if pygame.time.get_ticks() - self.update_tempo > self.cooldown_animacao:
                 self.update_tempo = pygame.time.get_ticks()

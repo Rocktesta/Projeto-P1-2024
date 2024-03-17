@@ -292,10 +292,10 @@ def play():
                 moving_left = False
                 moving_right = True
                 player.jump = True
-            elif not teclas[pygame.K_SPACE]:
+            if not teclas[pygame.K_SPACE]:
                 player.jump = False
             
-        
+            
         
         
         
