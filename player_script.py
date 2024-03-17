@@ -507,17 +507,22 @@ class Bullet(pygame.sprite.Sprite):
                 if pygame.sprite.spritecollide(alvo, player_bullet_group, False):
                     if alvo.vivo:
                         alvo.vida -= 30 # dano que a bala causa
-                        hit = BulletHit(alvo.rect.x + (180 * player.direcao), alvo.rect.y + 275)
+                        if player.direcao == 1:
+                            hit = BulletHit(alvo.rect.x + 200, alvo.rect.y + 275, False) # atirando da esquerda pra direita
+                        elif player.direcao == -1:
+                            hit = BulletHit(alvo.rect.x + 245, alvo.rect.y + 275, True) # atirando da direita para a esquerda
                         player_bullet_hit_group.add(hit)
                         self.kill()
 
 class BulletHit(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, flip):
         pygame.sprite.Sprite.__init__(self)
         self.images = []
         for n in range(len(os.listdir(f'Image\\bullet\\bullet_impact')) - 1):
             img = pygame.image.load(f'Image\\bullet\\bullet_impact\impact{n}.png')
-            img = pygame.transform.scale(img, (img.get_width() * 2, img.get_height() * 2))
+            img = pygame.transform.scale(img, (img.get_width() * 2.5, img.get_height() * 2.5))
+            if flip == True:
+                img = pygame.transform.flip(img, True, False)
             self.images.append(img)
         self.frame_index = 0
         self.image = self.images[self.frame_index]
