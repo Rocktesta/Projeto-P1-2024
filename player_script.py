@@ -2,6 +2,7 @@ import pygame
 from pygame import mixer
 from pygame.sprite import Group
 import numpy
+import os
 import weapons
 from weapons import Shotgun
 
@@ -12,12 +13,11 @@ pistol_sound.set_volume(0.3)
 bullet_laser_sound = mixer.Sound('Audio\\bullet_laser.mp3')
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, char_type, x, y, velocidade, gravidade, escala=3, vida=90, cooldown_animacao=100):
+    def __init__(self, x, y, velocidade, gravidade, escala=3, vida=100, cooldown_animacao=100):
         pygame.sprite.Sprite.__init__(self)
         self.escala = escala
         self.gravidade = gravidade
         self.vivo = True
-        self.char_type = char_type
         self.velocidade = velocidade
         self.shoot_cooldown = 0
         self.shotgun_cooldown = 0
@@ -134,8 +134,8 @@ class Player(pygame.sprite.Sprite):
                 self.velocidade_y
             dy += self.velocidade_y
             # checando colisão com o chão
-            if self.rect.bottom + dy > 700:
-                dy = 700 - self.rect.bottom
+            if self.rect.bottom + dy > 600: # chão setado para 700
+                dy = 600 - self.rect.bottom
                 self.no_ar = False
             # updade da posição do rect do player
             self.rect.x += dx
@@ -149,25 +149,25 @@ class Player(pygame.sprite.Sprite):
             return 0
 
 
-    def shoot(self, alvo, bullet_type, player, tela):
-        if not player.shotgun_equip:
+    def shoot(self, bullet_type, tela):
+        if not self.shotgun_equip:
             if self.shoot_cooldown == 0:
                 self.shoot_cooldown = 40
-                bullet = Bullet(bullet_type, self.rect.centerx + (1 * self.rect.size[0] * self.direcao), self.rect.centery - 120, self.direcao, 7)
-                if alvo == 'inimigo': 
-                    player_bullet_group.add(bullet)
-                    pistol_sound.play()
-                else:
-                    inimigo_bullet_group.add(bullet)
-                    bullet_laser_sound.play()
+                if self.direcao == 1:
+                    bullet = Bullet(bullet_type, self.rect.centerx + 70, self.rect.centery - 120, self.direcao, 7)
+                elif self.direcao == -1:
+                    bullet = Bullet(bullet_type, self.rect.centerx - 235, self.rect.centery - 120, self.direcao, 7)
+                player_bullet_group.add(bullet)
+                pistol_sound.play()
         else:
             if self.shotgun_cooldown == 0:
-                shotgun = Shotgun(player)
-                '''blast = weapons.ShotgunBlast(shotgun.x, shotgun.y)
-                shotgun_blast_group.add(blast)
-                shotgun_blast_group.draw(tela)
-                shotgun_blast_group.update()'''
-                self.shotgun_cooldown = 200
+                blast = weapons.ShotgunBlast(self.rect.x + (300 * self.direcao), self.rect.y + 200)
+                print(len(blast.images))
+                for i in range(len(blast.images)):
+                    blast.update()
+                    blast.draw(tela)
+                    pygame.display.update()
+                self.shotgun_cooldown = 50
             
     def update_animacao(self):
         if self.action == 0: # idle
@@ -332,65 +332,147 @@ class Player(pygame.sprite.Sprite):
         tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y))
         tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y - 10))
 
-class Inimigo(Player, pygame.sprite.Sprite):
-    # classe inimigo que herdeira da classe Player
-    def __init__(self, char_type, x, y, velocidade, gravidade, escala=3, vida=100, cooldown_animacao=100):
+class Inimigo(pygame.sprite.Sprite):
+    def __init__(self, char_type, x, y, velocidade, gravidade, escala=100, vida=100):
         pygame.sprite.Sprite.__init__(self)
-        super().__init__(char_type, x, y, velocidade, gravidade, escala, vida, cooldown_animacao)
-        self.perseguindo = False
+        self.vivo = True
+        self.vida = vida
+        self.char_type = char_type
+        self.velocidade = velocidade
+        self.gravidade = gravidade
+        self.direcao = 1
+        self.flip = False
+        self.frame_index = 0
+        self.action = 0
+        self.update_time = pygame.time.get_ticks()
+        self.cooldown_animacao = 100
+
+        self.lista_animacoes = []
+        animacao_tipos = ['Idle', 'Run', 'Shoot', 'Death']
+        for animacao in animacao_tipos:
+            temp_list = []
+            num_frames = len(os.listdir(f'Image\Sprites\{self.char_type}\{animacao}'))
+            for i in range(num_frames):
+                img = pygame.image.load(f'Image\Sprites\{self.char_type}\{animacao}\{i}.png')
+                img = pygame.transform.scale(img, (img.get_width() * escala, img.get_height() * escala))
+                temp_list.append(img)
+            self.lista_animacoes.append(temp_list)
+
+        self.image = self.lista_animacoes[self.action][self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+
+        self.shoot_cooldown = 0
         self.move_counter = 0
-        self.linha_de_fogo = pygame.Rect(0, 0, 550, 40)
-        self.campo_visao = pygame.Rect(0, 0, 650, 40)
         self.idling = False
         self.idling_counter = 0
+        self.campo_visao_frente = pygame.Rect(0, 0, 700, 40)
+        self.campo_visao_costas = pygame.Rect(0, 0, 300, 40)
     
+    def move(self, moving_left, moving_right):
+        dx = 0
+        dy = 0
+        if moving_left:
+            dx = -self.velocidade
+            self.flip = True
+            self.direction = -1
+        if moving_right:
+            dx = self.velocidade
+            self.flip = False
+            self.direction = 1
+        #check collision with floor
+        if self.rect.bottom + dy > 570: # chão settado para 550
+            dy = 570 - self.rect.bottom
+        self.rect.x += dx
+        self.rect.y += dy
+
+    def update(self):
+        self.update_animation()
+        self.check_vivo()
+        if self.shoot_cooldown > 0:
+            self.shoot_cooldown -= 1
+
+    def update_animation(self):
+        self.image = self.lista_animacoes[self.action][self.frame_index]
+        if pygame.time.get_ticks() - self.update_time > self.cooldown_animacao:
+            self.update_time = pygame.time.get_ticks()
+            self.frame_index += 1
+        if self.frame_index >= len(self.lista_animacoes[self.action]):
+            if self.action == 3:
+                self.frame_index = len(self.lista_animacoes[self.action]) - 1
+            else:
+                self.frame_index = 0
+    
+    def update_action(self, nova_acao):
+        if nova_acao != self.action:
+            self.action = nova_acao
+            self.frame_index = 0
+            self.update_time = pygame.time.get_ticks()
+            if self.action == 0 or self.action == 1: # ação de idle ou run
+                self.cooldown_animacao = 100
+            elif self.action == 2: # ação de shoot
+                self.cooldown_animacao = 200
+            elif self.action == 3: # ação de death
+                self.cooldown_animacao = 150
+    
+    def shoot(self, bullet_type):
+        if self.shoot_cooldown == 0:
+            self.update_action(2)
+            self.shoot_cooldown = 50
+            bullet = Bullet(bullet_type, self.rect.centerx + (100 * self.direcao), self.rect.centery, self.direcao, 7)
+            inimigo_bullet_group.add(bullet)
+            bullet_laser_sound.play()
+    
+    def check_vivo(self):
+        if self.vida <= 0:
+            self.vida = 0
+            self.velocidade = 0
+            self.vivo = False
+            self.update_action(3)
+    
+    def draw(self, tela):
+        tela.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
+
     def ai(self, player, tela):
-        if self.vivo and player.vivo:
-            self.linha_de_fogo.center = (self.rect.centerx + 300 * self.direcao, self.rect.centery) # posição do campo de visão
-            self.campo_visao.center = (self.rect.centerx + 500 * self.direcao, self.rect.centery) # posição do campo de visão extendido
-            # fazendo o inimigo ficar parado
+        if self.vivo:
+            self.campo_visao_frente.center = (self.rect.centerx + 300 * self.direcao, self.rect.centery)
+            self.campo_visao_costas.center = (self.rect.centerx - 200 * self.direcao, self.rect.centery)
             if self.idling == False and numpy.random.randint(1, 100) == 1:
                 self.update_action(0) # ação de idle
                 self.idling = True
                 self.idling_counter = 50
-            # check se o inimigo está perto de um player
-            if self.campo_visao.colliderect(player.rect):
-                # se o jogador entrar no campo de visão o inimigo o persegue
-                self.perseguindo = True
-            else:
-                self.perseguindo = False
-            if self.linha_de_fogo.colliderect(player.rect):
-                # parar de se mover e encarar o player
+            # check se o player está no campo de visão da frente
+            if self.campo_visao_frente.colliderect(player.rect):
                 self.update_action(0) # ação de idle
-                self.shoot('player', 'bullet_laser', player, tela)
-                self.perseguindo = True
-            elif self.perseguindo:
-                # se o jogador sair da linha de tiro ou entrar no campo de visão o inimigo o persegue até sair do campo de visão
-                self.update_action(1)  # Ação de correr
-                self.move(self.direcao == -1, self.direcao == 1)
+                self.shoot('bullet_laser')
+            elif self.campo_visao_costas.colliderect(player.rect):
+                self.flip = not self.flip
+                self.direcao *= -1
             else:
-                self.perseguindo = False
                 if self.idling == False:
-                    # movendo o inimigo
                     if self.direcao == 1:
-                        ai_movendo_direita = True
+                        ai_moving_right = True
                     else:
-                        ai_movendo_direita = False
-                    ai_movendo_esquerda = not ai_movendo_direita
-                    self.move(ai_movendo_esquerda, ai_movendo_direita)
+                        ai_moving_right = False
+                    ai_moving_left = not ai_moving_right
+                    self.move(ai_moving_left, ai_moving_right)
                     self.update_action(1) # ação de correr
                     self.move_counter += 1
-                    # update visão do inimigo quando ele se move
-                    self.linha_de_fogo.center = (self.rect.centerx + 300 * self.direcao, self.rect.centery) # posição do campo de visão
-                    self.campo_visao.center = (self.rect.centerx + 600 * self.direcao, self.rect.centery) # posição do campo de visão extendido
-                    # mudando a direção
-                    if self.move_counter > 70:
+                    # updade do campo de visão quando se mover
+                    self.campo_visao_frente.center = (self.rect.centerx + 300 * self.direcao, self.rect.centery)
+                    self.campo_visao_costas.center = (self.rect.centerx - 200 * self.direcao, self.rect.centery)
+                    pygame.draw.rect(tela, (255, 0, 0), self.campo_visao_frente)
+                    pygame.draw.rect(tela, (0, 0, 255), self.campo_visao_costas)
+
+                    distancia_percorrida = numpy.random.randint(60, 150)
+                    if self.move_counter > distancia_percorrida:
                         self.direcao *= -1
                         self.move_counter *= -1
-                else: 
+                # se não estiverem em idle
+                else:
                     self.idling_counter -= 1
-                    if self.idling_counter <= 0:
-                        self.idling = False
+                    if self.idling_counter == 0:
+                        self.idling = False 
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, bullet_type, x, y, direcao, velocidade):
@@ -406,7 +488,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x, y, 40, 40)
         self.rect.center = (x, y)
     
-    def update(self, entrada, entrada_tipo):
+    def update(self, entrada, entrada_tipo, player):
         # mover a bala
         self.rect.x += (self.direcao * self.velocidade)
         # checar se a bala saiu da tela
@@ -425,10 +507,39 @@ class Bullet(pygame.sprite.Sprite):
                 if pygame.sprite.spritecollide(alvo, player_bullet_group, False):
                     if alvo.vivo:
                         alvo.vida -= 30 # dano que a bala causa
+                        hit = BulletHit(alvo.rect.x + (180 * player.direcao), alvo.rect.y + 275)
+                        player_bullet_hit_group.add(hit)
                         self.kill()
+
+class BulletHit(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.images = []
+        for n in range(len(os.listdir(f'Image\\bullet\\bullet_impact')) - 1):
+            img = pygame.image.load(f'Image\\bullet\\bullet_impact\impact{n}.png')
+            img = pygame.transform.scale(img, (img.get_width() * 2, img.get_height() * 2))
+            self.images.append(img)
+        self.frame_index = 0
+        self.image = self.images[self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.fps = 350 # velocidade da animação
+        self.count_cooldown = 0
+        self.delay = int(1000/self.fps)
+
+    def update(self):
+        self.count_cooldown += 1
+        if self.count_cooldown >= self.delay:
+            self.count_cooldown = 0
+            self.frame_index += 1
+            if self.frame_index >= len(self.images):
+                self.kill() # remove a animação quando acabarem os frames
+            else:
+                self.image = self.images[self.frame_index]
 
 # Sprite Groups
 player_bullet_group = pygame.sprite.Group()
+player_bullet_hit_group = pygame.sprite.Group()
 inimigo_bullet_group = pygame.sprite.Group()
 inimigo_group = pygame.sprite.Group()
 shotgun_blast_group = weapons.shotgun_blast_group

@@ -1,8 +1,7 @@
 import pygame
-import player_script
 import pygame_gui
+import player_script
 import vida_script
-import time
 import weapons
 from weapons import Shotgun
 import boss_script
@@ -19,9 +18,7 @@ manager = pygame_gui.UIManager((largura_tela, altura_tela))
 botao_play = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 50, altura_tela//2), (100, 50)),text='Play', manager=manager)
 botao_quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 50, altura_tela//2 + 100), (100, 50)),text='Exit', manager=manager)
 background = pygame.image.load("Image\\background.png").convert_alpha()
-parallax_back = pygame.image.load("Image\\Parallax_back.png").convert_alpha()
-background = pygame.transform.scale(background, (background.get_width() * 4, background.get_height() * 4))
-parallax_back = pygame.transform.scale(parallax_back, (parallax_back.get_width() * 4, parallax_back.get_height() * 4))
+background = pygame.transform.scale(background, (background.get_width() * 3, background.get_height() * 3))
 
 #cooldowns
 tempo_ultima_geracao_coxinhas = 0
@@ -86,7 +83,7 @@ def play():
     shoot_anima = False
     start_time = 0
 
-    player = player_script.Player('soldier', 300, 600, 3, gravidade, 3)
+    player = player_script.Player(300, 600, 3, gravidade, 3)
     
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
     cracha = keycard.Keycard(2000, 400, tela, player)
@@ -101,12 +98,12 @@ def play():
 
     # inimigos
     inimigo_group = player_script.inimigo_group
-    inimigo1 = player_script.Inimigo('soldier', 700, 700, 3, gravidade, 3)
-    inimigo2 = player_script.Inimigo('soldier', 900, 700, 3, gravidade, 3)
+    inimigo1 = player_script.Inimigo('inimigo_robo', 700, 700, 2, gravidade, 3.5)
+    #inimigo2 = player_script.Inimigo('inimigo_robo', 900, 700, 2, gravidade, 3.5)
     inimigo_group.add(inimigo1)
-    inimigo_group.add(inimigo2)
+    #inimigo_group.add(inimigo2)
 
-    boss = Boss(900, 500)
+    boss = Boss(2560, 500)
     
     # Loop Principal do Jogo
     running = True
@@ -115,7 +112,6 @@ def play():
         clock.tick(fps)
 
         pygame.Surface.fill(tela, BG)
-        tela.blit((parallax_back), (0, 0))
         tela.blit((background), (back_x, 0))
         player_bullet_group = player_script.player_bullet_group
         #player_text = fonte.render(f"Player {inimigo1.vida}", True, (0, 0, 0))
@@ -140,15 +136,20 @@ def play():
         
 
         # updade e draw sprite groups
-        player_bullet_group.update(inimigo_group, 'inimigo') # update de colisão tiro com inimigo
+        player_bullet_group.update(inimigo_group, 'inimigo', player) # update de colisão tiro com inimigo
         player_bullet_group.draw(tela)
+        player_bullet_hit_group = player_script.player_bullet_hit_group
+        player_bullet_hit_group.update()
+        player_bullet_hit_group.draw(tela)
         inimigo_bullet_group = player_script.inimigo_bullet_group
-        inimigo_bullet_group.update(player, 'player')
+        inimigo_bullet_group.update(player, 'player', player)
         inimigo_bullet_group.draw(tela)
         missil_group = boss_script.missil_group
         missil_group.update(player)
         missil_group.draw(tela)
-        shotgun_blast_group = weapons.shotgun_blast_group
+        explosoes_group = weapons.explosoes_group
+        explosoes_group.update()
+        explosoes_group.draw(tela)
        
         posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
 
@@ -182,12 +183,7 @@ def play():
         if player.vivo:
             # shoot bullets
             if shoot:
-                player.shoot('inimigo', 'bullet0', player, tela)
-                if player.shotgun_equip:
-                    blast = weapons.ShotgunBlast(player.rect.x + (300 * player.direcao), player.rect.y + 200)
-                    shotgun_blast_group.add(blast)
-                    shotgun_blast_group.draw(tela)
-                    shotgun_blast_group.update()
+                player.shoot('bullet0', tela)
             tela_scroll =  player.move(moving_left, moving_right) 
             back_x += tela_scroll * 0000.1
             
@@ -198,7 +194,7 @@ def play():
             back_x += tela_scroll
             for shotgun in shotgun_group:
                 shotgun.rect.x += tela_scroll
-            #boss.rect.x += tela_scroll
+            boss.rect.x += tela_scroll
             cracha.rect.x += tela_scroll
         
         elif player.vivo == False:

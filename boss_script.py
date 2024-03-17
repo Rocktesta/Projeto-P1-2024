@@ -17,8 +17,8 @@ class Boss(pygame.sprite.Sprite):
         self.velocidade = 7
         self.vel_y = 0
         self.shoot_laser_cooldown = 0
+        self.shoot_missil_cooldown = 0
         self.flip = True
-        self.no_canto = False
         self.lista_animacoes = []
         self.frame_index = 0
         self.action = 0
@@ -43,11 +43,20 @@ class Boss(pygame.sprite.Sprite):
         self.imagem_mask.set_colorkey((0, 0, 0))
         self.rect.center = (x, y)
 
+        self.campo_visao = pygame.Rect(0, 0, 1000, 50)
+        self.campo_visao.center = self.rect.center
+        self.no_canto = False
+        self.max_duracao_acao = 200
+        self.duracao_acao = 0
+
     def update(self):
         self.update_animacao()
+        self.campo_visao.center = self.rect.center
         # update cooldown laser
         if self.shoot_laser_cooldown > 0:
             self.shoot_laser_cooldown -= 1
+        if self.shoot_missil_cooldown > 0:
+            self.shoot_missil_cooldown -= 1
 
     def update_animacao(self):
         cooldown_animacao = 100
@@ -85,15 +94,17 @@ class Boss(pygame.sprite.Sprite):
 
     def shoot_laser(self):
         if self.shoot_laser_cooldown == 0:
-            self.shoot_laser_cooldown = 50 # cooldown do tiro
+            self.shoot_laser_cooldown = 60 # cooldown do tiro
             laser_bullet = Bullet('bullet_laser', self.rect.centerx + (0.32 * self.rect.size[0] * self.direcao), self.rect.centery - 20, self.direcao, 10)
             inimigo_bullet_group.add(laser_bullet)
 
     def shoot_missil(self, player):
-        missil1 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 20, 0.7)
-        missil2 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 25, 0.5)
-        missil3 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 30, 0.45)
-        missil_group.add(missil1, missil2, missil3)
+        if self.shoot_missil_cooldown == 0:
+            missil1 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 20, 0.7)
+            missil2 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 25, 0.5)
+            missil3 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 30, 0.45)
+            missil_group.add(missil1, missil2, missil3)
+            self.shoot_missil_cooldown = 100
 
     def big_run(self, player):
         if self.no_canto == False:
@@ -118,14 +129,28 @@ class Boss(pygame.sprite.Sprite):
 
     def laser_beam(self):
         pass
+    
+    def escolher_ataque(self, player):
+        escolher_ataque = numpy.random.randint(0, 2)
+        if escolher_ataque == 0:
+            ataque = self.shoot_laser()
+        elif escolher_ataque == 1:
+            ataque = self.shoot_missil(player)
+        elif escolher_ataque == 2:
+            ataque = self.big_run(player)
+        return ataque
 
     def ai(self, player):
-        if self.vivo:
-            # se o player estiver na tela a luta inicia
-            if player.rect.x > 0:
-                self.big_run(player) # corrida até o outro lado da tela
-                if self.action == 0:
-                    self.shoot_missil(player)
+        if self.vivo and player.vivo:
+            if self.campo_visao.colliderect(player.rect):
+                if self.duracao_acao < self.max_duracao_acao:
+                    ataque = self.escolher_ataque(player)
+                    self.duracao_acao += 1
+                else:
+                    self.duracao_acao = 0
+                
+        else: 
+            self.update_action(2)
 
     def draw(self, tela):
         tela.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)

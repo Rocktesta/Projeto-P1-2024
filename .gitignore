@@ -2,8 +2,7 @@
 __pycache__/
 *.py[cod]
 *.pyc
+*.cpython-311.pyc
 
 # Environments
 venv/
-__pycache__/player_script.cpython-311.pyc
-Player_idle_sheet.png

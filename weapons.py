@@ -41,20 +41,6 @@ class Shotgun(pygame.sprite.Sprite):
         if self.rect.colliderect(player) and not player.shotgun_equip:
             player.shotgun_equip = True
             self.kill()
-
-    '''def draw_blast(self, tela, player):
-        cooldown_animacao = 50  
-
-        if pygame.time.get_ticks() - self.update_time > cooldown_animacao:
-            self.update_time = pygame.time.get_ticks()  
-            print('atualizando quadro')
-            self.frame_index += 1
-            if self.frame_index >= self.num_frames:
-                self.frame_index = 0
-
-            print('desenhando quadro')
-            tela.blit(self.blast_list[self.frame_index], (self.player.rect.x + (200 * player.direcao) , self.player.rect.centery - 200))'''
-    
             
 class ShotgunBlast(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -68,23 +54,28 @@ class ShotgunBlast(pygame.sprite.Sprite):
         self.image = self.images[self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
+        self.velocidade_blast = 4
         self.contador = 0
 
     def update(self):
-        velocidade_blast = 4
         self.contador += 1
-        if self.contador >= velocidade_blast and self.frame_index < len(self.images) - 1:
+        if self.contador >= self.velocidade_blast and self.frame_index < len(self.images) - 1:
             self.contador = 0
             self.frame_index += 1
             self.image = self.images[self.frame_index]
         # animação completa reset frame index
-        if self.frame_index >= len(self.images) - 1 and self.contador >= velocidade_blast:
+        if self.frame_index >= len(self.images) - 1 and self.contador >= self.velocidade_blast:
             self.kill()
+    
+    def draw(self, tela):
+        tela.blit(self.image, self.rect)
 
 class Missil(pygame.sprite.Sprite):
     def __init__(self, start_pos, target_pos, altura, gravidade):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('Image\\bullet\\bullet_laser.png')
+        self.image = pygame.transform.scale(self.image, (self.image.get_width() * 2, self.image.get_height() * 2))
+        self.original_image = self.image.copy()
         self.rect = self.image.get_rect()
         self.rect.center = start_pos
         self.speed = 10 # velocidade do míssil
@@ -102,12 +93,54 @@ class Missil(pygame.sprite.Sprite):
         self.rect.x += self.vx
         self.vy += self.gravidade
         self.rect.y += self.vy
+        self.rotacionar_imagem() # rotacionando a imagem
+        # Verificando colisão com o chão
+        if self.rect.y >= 600: # chão settado para 500
+            explosao = Explosao(self.rect.center)
+            explosoes_group.add(explosao)
+            self.kill()
         # Verifique se o míssil atingiu o jogador
         if self.rect.colliderect(player.rect):
-            #player.vida -= 30 # dano do míssil
+            player.vida -= 10 # dano do míssil
+            explosao = Explosao(self.rect.center)
+            explosoes_group.add(explosao)
             self.kill()
+
+    def rotacionar_imagem(self):
+        angulo_graus = math.degrees(math.atan2(self.vy, self.vx))
+        # Rotaciona a imagem original para o ângulo calculado
+        self.image = pygame.transform.rotate(self.original_image, -angulo_graus)
+        # Atualiza o retângulo da imagem
+        self.rect = self.image.get_rect(center=self.rect.center)
+
+class Explosao(pygame.sprite.Sprite):
+    def __init__(self, posicao):
+        pygame.sprite.Sprite.__init__(self)
+        self.images = []
+        for n in range(len(os.listdir(f'Image\Explosão')) - 1):
+            img = pygame.image.load(f'Image\Explosão\{n}.png')
+            img = pygame.transform.scale(img, (img.get_width() * 2, img.get_height() * 3))
+            self.images.append(img)
+        self.frame_index = 0
+        self.image = self.images[self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.center = (posicao[0], posicao[1] - 300)
+        self.fps = 300
+        self.count_cooldown = 0
+        self.delay = int(1000/self.fps)
+
+    def update(self):
+        self.count_cooldown += 1
+        if self.count_cooldown >= self.delay:
+            self.count_cooldown = 0
+            self.frame_index += 1
+            if self.frame_index >= len(self.images):
+                self.kill() # remove a explosão quando acabarem os frames
+            else:
+                self.image = self.images[self.frame_index]
 
 # Sprite Grups       
 weapons_group = pygame.sprite.Group()
 shotgun_blast_group = pygame.sprite.Group() 
 missil_group = pygame.sprite.Group()
+explosoes_group = pygame.sprite.Group()
