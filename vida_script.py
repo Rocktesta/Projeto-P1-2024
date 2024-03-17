@@ -41,7 +41,7 @@ class Coxinha(pygame.sprite.Sprite):
         self.rect = self.rect = pygame.Rect(self.x, self.y, 50, 50)
         self.rect.x = self.x
         self.rect.y = self.y
-        self.vida = 10
+        self.vida = 15
         self.render = True
         self.cooldown_animacao = 100
         self.update_tempo = 0

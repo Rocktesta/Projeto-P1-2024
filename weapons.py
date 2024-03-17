@@ -28,7 +28,7 @@ class Shotgun(pygame.sprite.Sprite):
     @staticmethod
     def gerar_shotgun(player, tela_scroll=0):
         shotgun_group = pygame.sprite.Group()
-        if numpy.random.randint(1, 5) == 1:
+        if numpy.random.randint(1, 2) == 1:
             shotgun = Shotgun(player, tela_scroll) 
             shotgun_group.add(shotgun)
         return shotgun_group
@@ -48,27 +48,38 @@ class ShotgunBlast(pygame.sprite.Sprite):
         self.images = [] 
         for n in range(len(os.listdir(f'Weapons')) - 1):
             img = pygame.image.load(f'Weapons\Shotgun_blast{n}.png')
-            img = pygame.transform.scale(img, (100, 100))
+            img = pygame.transform.scale(img, (200, 250))
             self.images.append(img)
         self.frame_index = 0
         self.image = self.images[self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.velocidade_blast = 4
+        self.velocidade_blast = 6
         self.contador = 0
 
-    def update(self):
+    def update(self, x, y):
+        self.rect.center = (x, y)
+        
+        
+    
+    def draw(self, tela, flip):
         self.contador += 1
         if self.contador >= self.velocidade_blast and self.frame_index < len(self.images) - 1:
             self.contador = 0
             self.frame_index += 1
             self.image = self.images[self.frame_index]
-        # animação completa reset frame index
-        if self.frame_index >= len(self.images) - 1 and self.contador >= self.velocidade_blast:
-            self.kill()
-    
-    def draw(self, tela):
+        if  self.frame_index >= len(self.images) - 1:
+            self.frame_index = 0
+
+        if flip:
+            self.image = pygame.transform.flip(self.images[self.frame_index], True, False)
+            self.rect.x += 140
+        else:
+            self.image = self.images[self.frame_index]
+
         tela.blit(self.image, self.rect)
+        
+        
 
 class Missil(pygame.sprite.Sprite):
     def __init__(self, start_pos, target_pos, altura, gravidade):
@@ -117,7 +128,7 @@ class Explosao(pygame.sprite.Sprite):
     def __init__(self, posicao):
         pygame.sprite.Sprite.__init__(self)
         self.images = []
-        for n in range(len(os.listdir(f'Image\Explosão')) - 1):
+        for n in range(len(os.listdir(f'Image\Explosão'))):
             img = pygame.image.load(f'Image\Explosão\{n}.png')
             img = pygame.transform.scale(img, (img.get_width() * 2, img.get_height() * 3))
             self.images.append(img)
@@ -139,8 +150,48 @@ class Explosao(pygame.sprite.Sprite):
             else:
                 self.image = self.images[self.frame_index]
 
+class Laser(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = x
+        self.y = y
+        self.images = []
+        for n in range(len(os.listdir('Image\\bullet\laser'))):
+            img = pygame.image.load(f'Image\\bullet\laser\laser_{n}.png')
+            img = pygame.transform.scale(img, (img.get_width() * 2, img.get_height() * 2))
+            self.images.append(img)
+        self.frame_index = 0
+        self.image = self.images[self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.fps = 60
+        self.count_cooldown = 0
+        self.delay = int(1000/self.fps)
+        self.laser_duration = 0
+
+    def update(self, player):
+        self.count_cooldown += 1
+        self.laser_duration += 1
+        if self.count_cooldown >= self.delay:
+            self.count_cooldown = 0
+            self.frame_index += 1
+            if self.frame_index > len(self.images) - 1:
+                self.frame_index = len(self.images) - 1
+            self.image = self.images[self.frame_index]
+            self.rect = self.image.get_rect()
+            self.rect.center = (self.x, self.y)
+            if self.image == self.images[3]:
+                self.rect.center = (self.x - 1000, self.y)
+        if self.laser_duration >= 100:
+            self.kill()
+
+        # dano
+        if self.rect.colliderect(player.rect):
+            player.vida -= 0.1 # dano do laser
+
 # Sprite Grups       
 weapons_group = pygame.sprite.Group()
 shotgun_blast_group = pygame.sprite.Group() 
 missil_group = pygame.sprite.Group()
 explosoes_group = pygame.sprite.Group()
+laser_group = pygame.sprite.Group()
