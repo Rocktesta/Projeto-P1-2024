@@ -1,6 +1,12 @@
 import pygame
+from pygame import mixer
 import numpy
 
+mixer.init()
+# carregando sons
+comendo_coxinha0 = mixer.Sound('Audio\Coxinha\comendo_mine.wav')
+comendo_coxinha1 = mixer.Sound('Audio\Coxinha\comendo_delicious.wav')
+comendo_coxinha2 = mixer.Sound('Audio\Coxinha\comendo_mine_delicious.wav')
 
 def nova_posicao_item(player, tela_scroll):
         # gera uma posição aleatória para o item
@@ -41,7 +47,7 @@ class Coxinha(pygame.sprite.Sprite):
         self.rect = self.rect = pygame.Rect(self.x, self.y, 50, 50)
         self.rect.x = self.x
         self.rect.y = self.y
-        self.vida = 10
+        self.vida = 15
         self.render = True
         self.cooldown_animacao = 100
         self.update_tempo = 0
@@ -73,6 +79,13 @@ class Coxinha(pygame.sprite.Sprite):
         vida = 0
         if self.rect.colliderect(player.rect) == 1:
             if player.vida < player.max_vida:
+                n_som = numpy.random.randint(0,3)
+                if n_som == 0:
+                    comendo_coxinha0.play()
+                elif n_som == 1:
+                    comendo_coxinha1.play()
+                else:
+                    comendo_coxinha2.play()
                 vida += self.vida
                 self.render = False
         return vida

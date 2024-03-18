@@ -86,7 +86,7 @@ def play():
     player = player_script.Player(300, 600, 3, gravidade, 3)
     
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
-    cracha = keycard.Keycard(2000, 400, tela, player)
+    cracha = keycard.Keycard(3000, 300, tela, player)
     tela_scroll = 0
 
     # criando armas
@@ -104,6 +104,7 @@ def play():
     #inimigo_group.add(inimigo2)
 
     boss = Boss(2560, 420)
+    inimigo_group.add(boss)
     
     # Loop Principal do Jogo
     running = True
@@ -118,8 +119,9 @@ def play():
         #tela.blit(player_text, (player.rect.x, player.rect.y - 50))
         player.update()
         player.draw(tela)
-        player.check_vivo()
-        cracha.draw()
+        if boss.vivo == False:
+            cracha.update(player)
+            cracha.draw()
         for shotgun in shotgun_group:
             shotgun.draw(tela)
             shotgun.update(player)
@@ -127,13 +129,10 @@ def play():
         for coxinha in coxinha_group:
             coxinha.draw(tela)
         for inimigo in inimigo_group:
+            print(inimigo.vida)
             inimigo.ai(player, tela)
             inimigo.update()
-            inimigo.draw(tela)
-        boss.ai(player, tela)
-        boss.update()
-        boss.draw(tela)
-        
+            inimigo.draw(tela)        
 
         # updade e draw sprite groups
         player_bullet_group.update(inimigo_group, 'inimigo', player) # update de colisão tiro com inimigo
@@ -150,6 +149,9 @@ def play():
         explosoes_group = weapons.explosoes_group
         explosoes_group.update()
         explosoes_group.draw(tela)
+        laser_group = weapons.laser_group
+        laser_group.update(player)
+        laser_group.draw(tela)
        
         posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
 
@@ -176,7 +178,8 @@ def play():
             global tempo_ultima_geracao_shotgun
             if tempo_atual_shotgun - tempo_ultima_geracao_shotgun >= cooldown_nova_shotgun:
                 # Gere nova shotgun
-                shotgun_group.add(Shotgun.gerar_shotgun(player, tela_scroll))
+                if player.shotgun_equip == False:
+                    shotgun_group.add(Shotgun.gerar_shotgun(player, tela_scroll))
                 tempo_ultima_geracao_shotgun = tempo_atual_shotgun
 
         # updade das ações do player
@@ -194,7 +197,7 @@ def play():
             back_x += tela_scroll
             for shotgun in shotgun_group:
                 shotgun.rect.x += tela_scroll
-            boss.rect.x += tela_scroll
+            #boss.rect.x += tela_scroll
             cracha.rect.x += tela_scroll
         
         elif player.vivo == False:

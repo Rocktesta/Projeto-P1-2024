@@ -1,15 +1,20 @@
 import pygame
+from pygame import mixer
 import numpy
 import math
 import os
 from pygame.sprite import Group
 
+mixer.init()
+# Carregando sons
+som_explosao = mixer.Sound('Audio\Tiros\Som_explosao.wav')
+
 #Scrpits para as armas e balas
 def nova_posicao_item(player, tela_scroll):
         # gera uma posição aanguloatória para o item
-        pos = [numpy.random.randint(400,1200) + tela_scroll, numpy.random.randint(300, 500) + tela_scroll]
+        pos = [numpy.random.randint(400,1200) + tela_scroll, numpy.random.randint(200, 300)]
         while pos[0] == player.rect.x:
-            pos = [numpy.random.randint(100,1200), numpy.random.randint(400, 600)]
+            pos = [numpy.random.randint(100,1200) + tela_scroll, numpy.random.randint(200, 300)]
         return pos
 
 class Shotgun(pygame.sprite.Sprite):
@@ -57,11 +62,13 @@ class ShotgunBlast(pygame.sprite.Sprite):
         self.velocidade_blast = 6
         self.contador = 0
 
-    def update(self, x, y):
+    def update(self, x, y, inimigo_group):
         self.rect.center = (x, y)
+        for inimigo in inimigo_group:
+            if self.rect.colliderect(inimigo.rect):
+                inimigo.vida -= 0.5
+                inimigo.vida = int(inimigo.vida)
         
-        
-    
     def draw(self, tela, flip):
         self.contador += 1
         if self.contador >= self.velocidade_blast and self.frame_index < len(self.images) - 1:
@@ -107,11 +114,13 @@ class Missil(pygame.sprite.Sprite):
         self.rotacionar_imagem() # rotacionando a imagem
         # Verificando colisão com o chão
         if self.rect.y >= 600: # chão settado para 500
+            som_explosao.play()
             explosao = Explosao(self.rect.center)
             explosoes_group.add(explosao)
             self.kill()
         # Verifique se o míssil atingiu o jogador
         if self.rect.colliderect(player.rect):
+            som_explosao.play()
             player.vida -= 10 # dano do míssil
             explosao = Explosao(self.rect.center)
             explosoes_group.add(explosao)
@@ -128,7 +137,7 @@ class Explosao(pygame.sprite.Sprite):
     def __init__(self, posicao):
         pygame.sprite.Sprite.__init__(self)
         self.images = []
-        for n in range(len(os.listdir(f'Image\Explosão')) - 1):
+        for n in range(len(os.listdir(f'Image\Explosão'))):
             img = pygame.image.load(f'Image\Explosão\{n}.png')
             img = pygame.transform.scale(img, (img.get_width() * 2, img.get_height() * 3))
             self.images.append(img)
@@ -150,8 +159,48 @@ class Explosao(pygame.sprite.Sprite):
             else:
                 self.image = self.images[self.frame_index]
 
+class Laser(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.x = x
+        self.y = y
+        self.images = []
+        for n in range(len(os.listdir('Image\\bullet\laser'))):
+            img = pygame.image.load(f'Image\\bullet\laser\laser_{n}.png')
+            img = pygame.transform.scale(img, (img.get_width() * 2, img.get_height() * 2))
+            self.images.append(img)
+        self.frame_index = 0
+        self.image = self.images[self.frame_index]
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.fps = 60
+        self.count_cooldown = 0
+        self.delay = int(1000/self.fps)
+        self.laser_duration = 0
+
+    def update(self, player):
+        self.count_cooldown += 1
+        self.laser_duration += 1
+        if self.count_cooldown >= self.delay:
+            self.count_cooldown = 0
+            self.frame_index += 1
+            if self.frame_index > len(self.images) - 1:
+                self.frame_index = len(self.images) - 1
+            self.image = self.images[self.frame_index]
+            self.rect = self.image.get_rect()
+            self.rect.center = (self.x, self.y)
+            if self.image == self.images[3]:
+                self.rect.center = (self.x - 1000, self.y)
+        if self.laser_duration >= 100:
+            self.kill()
+
+        # dano
+        if self.rect.colliderect(player.rect):
+            player.vida -= 0.1 # dano do laser
+
 # Sprite Grups       
 weapons_group = pygame.sprite.Group()
 shotgun_blast_group = pygame.sprite.Group() 
 missil_group = pygame.sprite.Group()
 explosoes_group = pygame.sprite.Group()
+laser_group = pygame.sprite.Group()
