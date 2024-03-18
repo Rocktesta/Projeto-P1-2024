@@ -33,6 +33,7 @@ class Boss(pygame.sprite.Sprite):
         self.action = 0
         self.x = x
         self.y = y 
+        self.music = False
         self.update_time = pygame.time.get_ticks()
 
         animation_types = ['Idle', 'Run', 'Win', 'Death']
@@ -178,6 +179,7 @@ class Boss(pygame.sprite.Sprite):
                 if self.idling_counter <= 0:
                     self.idling = False
                 if self.campo_visao_longe.colliderect(player.rect):
+                    self.music = True
                     escolher_ataque = numpy.random.randint(0, 3)
                     if escolher_ataque == 0:
                         self.shoot_laser()

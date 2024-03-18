@@ -64,6 +64,15 @@ BG = (152, 152, 152)
 def draw_bg():
     pygame.draw.line(tela, (0, 0, 0), (0, 600), (largura_tela, 600))
 
+Musica_played = False
+def play_boss_music(musica_anterior, musica_atual):
+    global Musica_played
+    if not Musica_played:
+        musica_anterior.fadeout(200)
+        musica_atual.set_volume(0.9)
+        musica_atual.play()
+        Musica_played = True
+
 def play():
     pygame.display.set_caption('PLAY')
 
@@ -82,12 +91,17 @@ def play():
     fire_cooldown = 300
     shoot_anima = False
     start_time = 0
+    update_camera = False
 
     player = player_script.Player(300, 600, 3, gravidade, 3)
     
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
     cracha = keycard.Keycard(3000, 300, tela, player)
     tela_scroll = 0
+    pygame.mixer.init()
+    Musica_main = pygame.mixer.Sound('Audio\\Musica_main.mp3')
+    Musica_boss = pygame.mixer.Sound('Audio\\Musica_boss.mp3')
+    Musica_main.play()
 
     # criando armas
         #shotgun
@@ -155,8 +169,10 @@ def play():
        
         posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
 
-        if player.mask.overlap(boss.mask, posicao_player_boss):
-            print("colide")
+        
+            
+            
+
 
         for coxinha in coxinha_group:
            if coxinha.render == True:
@@ -182,13 +198,40 @@ def play():
                     shotgun_group.add(Shotgun.gerar_shotgun(player, tela_scroll))
                 tempo_ultima_geracao_shotgun = tempo_atual_shotgun
 
+    
         # updade das ações do player
         if player.vivo:
             # shoot bullets
             if shoot:
                 player.shoot('bullet0', tela)
+
+
             tela_scroll =  player.move(moving_left, moving_right) 
+
+            if boss.music:
+                play_boss_music(Musica_main, Musica_boss)
+                if not update_camera:
+                    tela_scroll -= 800
+                    player.rect.x -= 700
+                    update_camera = True
+                if boss.vivo and player.mask.overlap(boss.mask, posicao_player_boss):
+                    if moving_right == True:
+                            player.velocidade = 0
+                    else:
+                            player.velocidade = 5
+                    
+
+
+
+            
+                
+                
+
+
+
+
             back_x += tela_scroll * 0000.1
+
             
             for inimigo in inimigo_group:
                 inimigo.rect.x += tela_scroll
