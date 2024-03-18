@@ -89,14 +89,14 @@ class ShotgunBlast(pygame.sprite.Sprite):
         
 
 class Missil(pygame.sprite.Sprite):
-    def __init__(self, start_pos, target_pos, altura, gravidade, velocidade):
+    def __init__(self, start_pos, target_pos, altura, gravidade):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load('Image\\bullet\\bullet_laser.png')
         self.image = pygame.transform.scale(self.image, (self.image.get_width() * 2, self.image.get_height() * 2))
         self.original_image = self.image.copy()
         self.rect = self.image.get_rect()
         self.rect.center = start_pos
-        self.speed = velocidade # velocidade do míssil
+        self.speed = 3 # velocidade do míssil
         self.start_pos = start_pos
         self.target_pos = target_pos
         self.distance_to_target = math.sqrt((target_pos[0] - start_pos[0]) ** 2 + (target_pos[1] - start_pos[1]) ** 2)
@@ -113,7 +113,7 @@ class Missil(pygame.sprite.Sprite):
         self.rect.y += self.vy
         self.rotacionar_imagem() # rotacionando a imagem
         # Verificando colisão com o chão
-        if self.rect.y >= 450: # chão settado para 500
+        if self.rect.y >= 500: # chão settado para 500
             self.kill()
             explosao = Explosao(self.rect.center)
             explosoes_group.add(explosao)
