@@ -1,4 +1,5 @@
 import pygame
+from pygame import mixer
 import os
 import numpy
 import player_script
@@ -6,6 +7,10 @@ from player_script import Bullet
 import weapons
 from weapons import Missil
 from pygame.sprite import Group
+
+mixer.init()
+# carregando sons
+som_missil = mixer.Sound('Audio\Tiros\Som_Missil_Inicio.wav')
 
 class Boss(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -133,6 +138,7 @@ class Boss(pygame.sprite.Sprite):
             missil2 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 25, 0.5)
             missil3 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 30, 0.45)
             missil_group.add(missil1, missil2, missil3)
+            som_missil.play()
 
     def big_run(self, player):
         self.rect.x -= self.velocidade * self.direcao
@@ -158,9 +164,9 @@ class Boss(pygame.sprite.Sprite):
     def ai(self, player, tela):
         if self.vivo and player.vivo:
             if self.vida >= 100:
-                self.valor_cooldown_shoot_laser = 70
-                self.valor_cooldown_shoot_missil = 800
-                self.valor_cooldown_laser_beam = 1800
+                self.valor_cooldown_shoot_laser = 60
+                self.valor_cooldown_shoot_missil = 500
+                self.valor_cooldown_laser_beam = 1000
             self.campo_visao_longe.center = (self.rect.centerx + 500 * self.direcao, self.rect.centery)
             pygame.draw.rect(tela, (255, 0, 0), self.campo_visao_longe)
             if self.idling == False and numpy.random.randint(1, 150) == 1:

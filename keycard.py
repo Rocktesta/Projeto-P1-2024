@@ -1,4 +1,10 @@
 import pygame
+from pygame import mixer
+
+mixer.init()
+# carregando sons
+claim_card_sound = mixer.Sound('Audio\Arcade_card_Kiev.wav')
+claim_card_sound.set_volume(0.5)
 
 class Keycard(pygame.sprite.Sprite):
     def __init__(self, x, y, tela, player):
@@ -15,6 +21,7 @@ class Keycard(pygame.sprite.Sprite):
 
     def update(self, player):
         if self.rect.colliderect(player.rect):
+            claim_card_sound.play()
             self.kill()
             player.com_keycard = True
             self.render = False

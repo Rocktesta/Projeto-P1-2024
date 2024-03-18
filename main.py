@@ -117,11 +117,11 @@ def play():
         player_bullet_group = player_script.player_bullet_group
         #player_text = fonte.render(f"Player {inimigo1.vida}", True, (0, 0, 0))
         #tela.blit(player_text, (player.rect.x, player.rect.y - 50))
-        print(player.com_keycard)
         player.update()
         player.draw(tela)
-        cracha.update(player)
-        cracha.draw()
+        if boss.vivo == False:
+            cracha.update(player)
+            cracha.draw()
         for shotgun in shotgun_group:
             shotgun.draw(tela)
             shotgun.update(player)
@@ -129,13 +129,10 @@ def play():
         for coxinha in coxinha_group:
             coxinha.draw(tela)
         for inimigo in inimigo_group:
+            print(inimigo.vida)
             inimigo.ai(player, tela)
             inimigo.update()
-            inimigo.draw(tela)
-        '''boss.ai(player, tela)
-        boss.update()
-        boss.draw(tela)'''
-        
+            inimigo.draw(tela)        
 
         # updade e draw sprite groups
         player_bullet_group.update(inimigo_group, 'inimigo', player) # update de colisão tiro com inimigo
@@ -181,7 +178,8 @@ def play():
             global tempo_ultima_geracao_shotgun
             if tempo_atual_shotgun - tempo_ultima_geracao_shotgun >= cooldown_nova_shotgun:
                 # Gere nova shotgun
-                #shotgun_group.add(Shotgun.gerar_shotgun(player, tela_scroll))
+                if player.shotgun_equip == False:
+                    shotgun_group.add(Shotgun.gerar_shotgun(player, tela_scroll))
                 tempo_ultima_geracao_shotgun = tempo_atual_shotgun
 
         # updade das ações do player
@@ -199,7 +197,7 @@ def play():
             back_x += tela_scroll
             for shotgun in shotgun_group:
                 shotgun.rect.x += tela_scroll
-            boss.rect.x += tela_scroll
+            #boss.rect.x += tela_scroll
             cracha.rect.x += tela_scroll
         
         elif player.vivo == False:

@@ -1,15 +1,20 @@
 import pygame
+from pygame import mixer
 import numpy
 import math
 import os
 from pygame.sprite import Group
 
+mixer.init()
+# Carregando sons
+som_explosao = mixer.Sound('Audio\Tiros\Som_explosao.wav')
+
 #Scrpits para as armas e balas
 def nova_posicao_item(player, tela_scroll):
         # gera uma posição aanguloatória para o item
-        pos = [numpy.random.randint(400,1200) + tela_scroll, numpy.random.randint(300, 500) + tela_scroll]
+        pos = [numpy.random.randint(400,1200) + tela_scroll, numpy.random.randint(200, 300)]
         while pos[0] == player.rect.x:
-            pos = [numpy.random.randint(100,1200), numpy.random.randint(400, 600)]
+            pos = [numpy.random.randint(100,1200) + tela_scroll, numpy.random.randint(200, 300)]
         return pos
 
 class Shotgun(pygame.sprite.Sprite):
@@ -57,11 +62,13 @@ class ShotgunBlast(pygame.sprite.Sprite):
         self.velocidade_blast = 6
         self.contador = 0
 
-    def update(self, x, y):
+    def update(self, x, y, inimigo_group):
         self.rect.center = (x, y)
+        for inimigo in inimigo_group:
+            if self.rect.colliderect(inimigo.rect):
+                inimigo.vida -= 0.5
+                inimigo.vida = int(inimigo.vida)
         
-        
-    
     def draw(self, tela, flip):
         self.contador += 1
         if self.contador >= self.velocidade_blast and self.frame_index < len(self.images) - 1:
@@ -107,11 +114,13 @@ class Missil(pygame.sprite.Sprite):
         self.rotacionar_imagem() # rotacionando a imagem
         # Verificando colisão com o chão
         if self.rect.y >= 600: # chão settado para 500
+            som_explosao.play()
             explosao = Explosao(self.rect.center)
             explosoes_group.add(explosao)
             self.kill()
         # Verifique se o míssil atingiu o jogador
         if self.rect.colliderect(player.rect):
+            som_explosao.play()
             player.vida -= 10 # dano do míssil
             explosao = Explosao(self.rect.center)
             explosoes_group.add(explosao)
