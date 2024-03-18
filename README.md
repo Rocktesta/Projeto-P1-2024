@@ -1,5 +1,5 @@
-![CIN Invaders](https://myoctocat.com/assets/images/base-octocat.svg)
-Cin Invaders é uma experiência 2D
+![CIN Invaders](/assets/Image/Logo_CINInvaders.png)
+Kiev teve um longo dia de trabalho; após horas, ele foi o último a sair do CIN. No entanto, logo percebeu que estava em perigo. O CIN foi invadido por uma inteligência artificial maligna, que controlava seu exército de robôs. Além disso, Kiev havia perdido seu crachá para fugir do CIN. Mas, com muita sorte, Kiev sempre anda preparado...
 ## Membros: 
 * Vinicious Lidignton (vasll) - Project Lead
 * João Henrique S. Ebbers (jhse) - Desenvolvedor/Programador and Game Desingner
