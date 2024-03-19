@@ -29,6 +29,7 @@ class Shotgun(pygame.sprite.Sprite):
         self.cooldown = cooldown
         self.equipada = False
         self.player = player
+       
 
     @staticmethod
     def gerar_shotgun(player, tela_scroll=0):
@@ -53,14 +54,15 @@ class ShotgunBlast(pygame.sprite.Sprite):
         self.images = [] 
         for n in range(len(os.listdir(f'Weapons')) - 1):
             img = pygame.image.load(f'Weapons\Shotgun_blast{n}.png')
-            img = pygame.transform.scale(img, (200, 250))
+            img = pygame.transform.scale(img, (330, 200))
             self.images.append(img)
         self.frame_index = 0
         self.image = self.images[self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.velocidade_blast = 6
+        self.velocidade_blast = 8
         self.contador = 0
+        
 
     def update(self, x, y, inimigo_group):
         self.rect.center = (x, y)
@@ -70,6 +72,7 @@ class ShotgunBlast(pygame.sprite.Sprite):
                 inimigo.vida = int(inimigo.vida)
         
     def draw(self, tela, flip):
+
         self.contador += 1
         if self.contador >= self.velocidade_blast and self.frame_index < len(self.images) - 1:
             self.contador = 0
@@ -77,12 +80,15 @@ class ShotgunBlast(pygame.sprite.Sprite):
             self.image = self.images[self.frame_index]
         if  self.frame_index >= len(self.images) - 1:
             self.frame_index = 0
+            
+
 
         if flip:
             self.image = pygame.transform.flip(self.images[self.frame_index], True, False)
-            self.rect.x += 140
+            self.rect.x += 80
         else:
             self.image = self.images[self.frame_index]
+            self.rect.x += 80
 
         tela.blit(self.image, self.rect)
         
@@ -91,8 +97,8 @@ class ShotgunBlast(pygame.sprite.Sprite):
 class Missil(pygame.sprite.Sprite):
     def __init__(self, start_pos, target_pos, altura, gravidade):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load('Image\\bullet\\bullet_laser.png')
-        self.image = pygame.transform.scale(self.image, (self.image.get_width() * 2, self.image.get_height() * 2))
+        self.image = pygame.image.load('Image\\missil\\missil_sprite.png')
+        self.image = pygame.transform.scale(self.image, (self.image.get_width() , self.image.get_height() ))
         self.original_image = self.image.copy()
         self.rect = self.image.get_rect()
         self.rect.center = start_pos

@@ -11,6 +11,8 @@ mixer.init()
 pistol_sound = mixer.Sound('Audio\Tiros\pistol_sound.wav')
 pistol_sound.set_volume(0.3)
 bullet_laser_sound = mixer.Sound('Audio\Tiros\\bullet_laser.wav')
+shotgun_sound = mixer.Sound('Audio\Tiros\\shotgun_blast.mp3')
+shotgun_sound.set_volume(0.4)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, velocidade, gravidade, escala=3, vida=100, cooldown_animacao=100):
@@ -162,12 +164,18 @@ class Player(pygame.sprite.Sprite):
                 player_bullet_group.add(bullet)
                 pistol_sound.play()
         else:
+                if self.shotgun_cooldown == 0:
+                    self.shotgun_cooldown = 90
                 if self.direcao  == 1:
                     self.blast.update(self.rect.x + (300 * self.direcao), self.rect.y + 140, inimigo_group)
                     self.blast.draw(tela, False)
-                else:
+                else:            
                     self.blast.update(self.rect.x + (300 * self.direcao), self.rect.y + 140, inimigo_group)
                     self.blast.draw(tela, True)
+                shotgun_sound.play()
+                
+
+                        
                 
                 
                 

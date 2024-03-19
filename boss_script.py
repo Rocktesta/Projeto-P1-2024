@@ -169,7 +169,6 @@ class Boss(pygame.sprite.Sprite):
                 self.valor_cooldown_shoot_missil = 500
                 self.valor_cooldown_laser_beam = 1000
             self.campo_visao_longe.center = (self.rect.centerx + 500 * self.direcao, self.rect.centery)
-            pygame.draw.rect(tela, (255, 0, 0), self.campo_visao_longe)
             if self.idling == False and numpy.random.randint(1, 150) == 1:
                 self.update_action(0) # ação de idle
                 self.idling = True
