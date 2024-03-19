@@ -92,11 +92,12 @@ def play():
     shoot_anima = False
     start_time = 0
     update_camera = False
+    update_camera_2 = False
 
     player = player_script.Player(300, 600, 3, gravidade, 3)
     
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
-    cracha = keycard.Keycard(3000, 300, tela, player)
+    cracha = keycard.Keycard(3200, 300, tela, player)
     tela_scroll = 0
     pygame.mixer.init()
     Musica_main = pygame.mixer.Sound('Audio\\Musica_main.mp3')
@@ -219,6 +220,11 @@ def play():
                             player.velocidade = 0
                     else:
                             player.velocidade = 5
+                if not boss.vivo:
+                    if not update_camera_2:
+                        tela_scroll -= 800
+                        player.rect.x -= 300
+                        update_camera_2 = True
                     
 
 

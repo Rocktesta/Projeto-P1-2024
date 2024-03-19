@@ -8,6 +8,7 @@ from pygame.sprite import Group
 mixer.init()
 # Carregando sons
 som_explosao = mixer.Sound('Audio\Tiros\Som_explosao.wav')
+som_shotgun_equip = mixer.Sound('Audio\\Metal_slug_Shotgun.wav')
 
 #Scrpits para as armas e balas
 def nova_posicao_item(player, tela_scroll):
@@ -47,6 +48,7 @@ class Shotgun(pygame.sprite.Sprite):
         if self.rect.colliderect(player) and not player.shotgun_equip:
             player.shotgun_equip = True
             self.kill()
+            som_shotgun_equip.play()
             
 class ShotgunBlast(pygame.sprite.Sprite):
     def __init__(self, x, y):

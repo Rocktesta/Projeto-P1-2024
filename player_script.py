@@ -90,7 +90,7 @@ class Player(pygame.sprite.Sprite):
                     self.shotgun_shoot.append(imagem)
 
                 
-        self.rect = pygame.Rect(x, y, 120, 360)
+        self.rect = pygame.Rect(x, y, 100, 360)
         self.mask = pygame.mask.from_surface(self.idle_t[0])
         self.imagem_mask = self.mask.to_surface()
         self.imagem_mask.set_colorkey((0, 0, 0))
@@ -164,14 +164,14 @@ class Player(pygame.sprite.Sprite):
                 player_bullet_group.add(bullet)
                 pistol_sound.play()
         else:
-                if self.shotgun_cooldown == 0:
-                    self.shotgun_cooldown = 90
-                if self.direcao  == 1:
-                    self.blast.update(self.rect.x + (300 * self.direcao), self.rect.y + 140, inimigo_group)
-                    self.blast.draw(tela, False)
-                else:            
-                    self.blast.update(self.rect.x + (300 * self.direcao), self.rect.y + 140, inimigo_group)
-                    self.blast.draw(tela, True)
+            if self.direcao  == 1:
+                self.blast.update(self.rect.x + (300 * self.direcao), self.rect.y + 140, inimigo_group)
+                self.blast.draw(tela, False)
+            else:            
+                self.blast.update(self.rect.x + (300 * self.direcao), self.rect.y + 140, inimigo_group)
+                self.blast.draw(tela, True)
+            if self.shotgun_cooldown == 0:
+                self.shotgun_cooldown = 60
                 shotgun_sound.play()
                 
 
