@@ -68,7 +68,7 @@ Musica_played = False
 def play_boss_music(musica_anterior, musica_atual):
     global Musica_played
     if not Musica_played:
-        musica_anterior.fadeout(200)
+        musica_anterior.fadeout(1200)
         musica_atual.set_volume(0.9)
         musica_atual.play()
         Musica_played = True
@@ -92,6 +92,7 @@ def play():
     start_time = 0
     update_camera = False
     update_camera_2 = False
+    cam_cooldown = 40
 
     player = player_script.Player(300, 600, 3, gravidade, 3)
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
@@ -102,6 +103,7 @@ def play():
     pygame.mixer.init()
     Musica_main = pygame.mixer.Sound('Audio\\Musica_main.mp3')
     Musica_boss = pygame.mixer.Sound('Audio\\Musica_boss.mp3')
+    win_sound = pygame.mixer.Sound('Audio\\win.mp3')
     Musica_main.play()
 
     # Imagens
@@ -234,8 +236,13 @@ def play():
                             player.velocidade = 0
                     else:
                             player.velocidade = 5
+                if tela_scroll > 0:
+                    tela_scroll = 0
                 if not boss.vivo:
-                    if not update_camera_2:
+                    cam_cooldown -= 1
+                    if not update_camera_2 and cam_cooldown == 0:
+                        win_sound.play()
+                        win_sound.fadeout(9000)
                         tela_scroll -= 800
                         player.rect.x -= 300
                         update_camera_2 = True
