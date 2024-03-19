@@ -218,7 +218,7 @@ class Player(pygame.sprite.Sprite):
                 self.frame_index += 1
             # se a animação chegar no final ela reinicia
             if self.frame_index >= 8:
-                self.frame_index = 0
+                self.frame_index = 7
         elif self.action == 3: # morrendo
             # update da imagem dependendo do frame
             self.img_player = self.die[self.frame_index]
@@ -316,7 +316,7 @@ class Player(pygame.sprite.Sprite):
             elif self.action == 1:
                 self.cooldown_animacao = 100 # cooldown da ação de Run
             elif self.action == 2:
-                self.cooldown_animacao = 200 # cooldown da ação de Jump
+                self.cooldown_animacao = 100 # cooldown da ação de Jump
             elif self.action == 3:
                 self.cooldown_animacao = 100 # cooldown da ação de Death
             elif self.action == 4:
