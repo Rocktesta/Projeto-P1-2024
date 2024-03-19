@@ -81,7 +81,6 @@ def play():
     back_x = 0
     fonte = pygame.font.SysFont("Arial", 36)
     white = (255, 255, 255)
-    
 
     # Movimentações do Player
     moving_left = False
@@ -95,14 +94,25 @@ def play():
     update_camera_2 = False
 
     player = player_script.Player(300, 600, 3, gravidade, 3)
-    
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
     cracha = keycard.Keycard(3200, 300, tela, player)
     tela_scroll = 0
+
+    # Sons
     pygame.mixer.init()
     Musica_main = pygame.mixer.Sound('Audio\\Musica_main.mp3')
     Musica_boss = pygame.mixer.Sound('Audio\\Musica_boss.mp3')
     Musica_main.play()
+
+    # Imagens
+    pistol_img = pygame.image.load('Image\\bullet\pistola.png')
+    pistol_img = pygame.transform.scale(pistol_img, (400, 400))
+    pistol_bullet_img = pygame.image.load('Image\\bullet\\balas_pistola.png')
+    pistol_bullet_img = pygame.transform.scale(pistol_bullet_img, (200, 200))
+    shotgun_img = pygame.image.load('Weapons\Shotgun_sprite.png')
+    shotgun_img = pygame.transform.scale(shotgun_img, (350, 350))
+    shotgun_bullet_img = pygame.image.load('Image\\bullet\shotgun_bullet.png')
+    shotgun_bullet_img = pygame.transform.scale(shotgun_bullet_img, (200, 200))
 
     # criando armas
         #shotgun
@@ -129,9 +139,18 @@ def play():
 
         pygame.Surface.fill(tela, BG)
         tela.blit((background), (back_x, 0))
-        player_bullet_group = player_script.player_bullet_group
-        #player_text = fonte.render(f"Player {inimigo1.vida}", True, (0, 0, 0))
-        #tela.blit(player_text, (player.rect.x, player.rect.y - 50))
+
+        # Munições
+        # Munição da shotgun
+        if player.shotgun_equip:
+            tela.blit(shotgun_img, (150, -115))
+            for x in range(player.shotgun_ammo):
+                tela.blit(shotgun_bullet_img, (300 + (x * 20), -45))
+        # Munição pistola
+        else:
+            tela.blit(pistol_img, (90, -135))
+            tela.blit(pistol_bullet_img, ((300, -35)))
+        
         player.update()
         player.draw(tela)
         if boss.vivo == False:
@@ -144,12 +163,12 @@ def play():
         for coxinha in coxinha_group:
             coxinha.draw(tela)
         for inimigo in inimigo_group:
-            print(inimigo.vida)
             inimigo.ai(player, tela)
             inimigo.update()
             inimigo.draw(tela)        
 
         # updade e draw sprite groups
+        player_bullet_group = player_script.player_bullet_group
         player_bullet_group.update(inimigo_group, 'inimigo', player) # update de colisão tiro com inimigo
         player_bullet_group.draw(tela)
         player_bullet_hit_group = player_script.player_bullet_hit_group
@@ -169,11 +188,6 @@ def play():
         laser_group.draw(tela)
        
         posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
-
-        
-            
-            
-
 
         for coxinha in coxinha_group:
            if coxinha.render == True:

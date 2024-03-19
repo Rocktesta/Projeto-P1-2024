@@ -8,11 +8,12 @@ from weapons import Shotgun
 
 mixer.init()
 # carregando sons
+pegar_pistola_sound = mixer.Sound('Audio\Pegando_arma.wav')
 pistol_sound = mixer.Sound('Audio\Tiros\pistol_sound.wav')
 pistol_sound.set_volume(0.3)
 bullet_laser_sound = mixer.Sound('Audio\Tiros\\bullet_laser.wav')
 shotgun_sound = mixer.Sound('Audio\Tiros\\shotgun_blast.mp3')
-shotgun_sound.set_volume(0.4)
+shotgun_sound.set_volume(0.3)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y, velocidade, gravidade, escala=3, vida=100, cooldown_animacao=100):
@@ -33,6 +34,7 @@ class Player(pygame.sprite.Sprite):
         self.no_ar = True
         self.flip = False
         self.shotgun_equip = False
+        self.shotgun_ammo = 0
         self.lista_animacoes = []
         self.frame_index = 0
         self.sprite_sheet = pygame.image.load("Image\Sprites\Sprite_sheet_main.png").convert_alpha()
@@ -110,7 +112,9 @@ class Player(pygame.sprite.Sprite):
             self.shoot_cooldown -= 1
         if self.shotgun_cooldown > 0:
             self.shotgun_cooldown -= 1
-            print(self.shotgun_cooldown)
+        if self.shotgun_equip == True and self.shotgun_ammo <= 0:
+            self.shotgun_equip = False
+            pegar_pistola_sound.play()
 
     def move(self, moving_left, moving_right):
         # reset as variáveis de movimento
@@ -173,6 +177,7 @@ class Player(pygame.sprite.Sprite):
             if self.shotgun_cooldown == 0:
                 self.shotgun_cooldown = 60
                 shotgun_sound.play()
+                self.shotgun_ammo -= 1
                 
 
                         
