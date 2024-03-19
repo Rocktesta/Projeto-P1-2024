@@ -136,8 +136,8 @@ class Boss(pygame.sprite.Sprite):
         if self.shoot_missil_cooldown == 0:
             self.shoot_missil_cooldown = self.valor_cooldown_shoot_missil
             missil1 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 20, 0.7)
-            missil2 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 25, 0.5)
-            missil3 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 30, 0.45)
+            missil2 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 30, 0.5)
+            missil3 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 40, 0.4)
             missil_group.add(missil1, missil2, missil3)
             som_missil.play()
 

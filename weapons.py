@@ -102,7 +102,7 @@ class Missil(pygame.sprite.Sprite):
         self.original_image = self.image.copy()
         self.rect = self.image.get_rect()
         self.rect.center = start_pos
-        self.speed = 10 # velocidade do míssil
+        self.speed = 3 # velocidade do míssil
         self.start_pos = start_pos
         self.target_pos = target_pos
         self.distance_to_target = math.sqrt((target_pos[0] - start_pos[0]) ** 2 + (target_pos[1] - start_pos[1]) ** 2)
@@ -119,18 +119,18 @@ class Missil(pygame.sprite.Sprite):
         self.rect.y += self.vy
         self.rotacionar_imagem() # rotacionando a imagem
         # Verificando colisão com o chão
-        if self.rect.y >= 600: # chão settado para 500
-            som_explosao.play()
+        if self.rect.y >= 500: # chão settado para 500
+            self.kill()
             explosao = Explosao(self.rect.center)
             explosoes_group.add(explosao)
-            self.kill()
+            som_explosao.play()
         # Verifique se o míssil atingiu o jogador
         if self.rect.colliderect(player.rect):
-            som_explosao.play()
+            self.kill()
             player.vida -= 10 # dano do míssil
             explosao = Explosao(self.rect.center)
             explosoes_group.add(explosao)
-            self.kill()
+            som_explosao.play()
 
     def rotacionar_imagem(self):
         angulo_graus = math.degrees(math.atan2(self.vy, self.vx))

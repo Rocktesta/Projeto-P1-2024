@@ -1,5 +1,8 @@
-# Titulo do projeto (TO DO, a definir)
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean tristique aliquam turpis sed porttitor. Donec elementum lorem placerat urna commodo ornare. Morbi molestie ipsum quam, sit amet condimentum nisi ornare posuere. Proin nisi massa, hendrerit pulvinar vulputate eget, viverra ut metus. Fusce at volutpat ex, vitae aliquet dui. Maecenas rutrum augue nisi, nec tristique risus porttitor a. Nulla ornare enim nisl, vitae venenatis mauris vestibulum quis. Sed lobortis lacinia enim, vitae vulputate nisl semper vitae. Integer rhoncus sed nunc sit amet porttitor. Maecenas dignissim turpis eget arcu scelerisque, mollis placerat justo congue. Vestibulum eget placerat nisl. Morbi aliquet placerat est, sed tristique lacus hendrerit at. Vivamus sed fermentum ex. Integer diam nunc, vehicula ac tincidunt a, pulvinar quis ante. Mauris ultricies nunc sed felis vestibulum imperdiet. Integer tempus scelerisque eros.
+<p align="center">
+  <img src="Image/Logo_CINInvaders.png" width="300" height="300" alt="CIN Invaders, nome do jogo">
+</p>
+
+Kiev teve um longo dia de trabalho; após horas, ele foi o último a sair do CIN. No entanto, logo percebeu que estava em perigo. O CIN foi invadido por uma inteligência artificial maligna, que controlava seu exército de robôs. Além disso, Kiev havia perdido seu crachá para fugir do CIN. Mas, com muita sorte, Kiev sempre anda preparado...
 ## Membros: 
 * Vinicious Lidignton (vasll) - Project Lead
 * João Henrique S. Ebbers (jhse) - Desenvolvedor/Programador and Game Desingner
