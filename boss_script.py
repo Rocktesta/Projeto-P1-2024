@@ -129,7 +129,7 @@ class Boss(pygame.sprite.Sprite):
     def shoot_laser(self):
         if self.shoot_laser_cooldown == 0:
             self.shoot_laser_cooldown = self.valor_cooldown_shoot_laser # cooldown do tiro
-            laser_bullet = Bullet('bullet_laser', self.rect.centerx + (0.32 * self.rect.size[0] * self.direcao), self.rect.centery - 20, self.direcao, 10)
+            laser_bullet = Bullet('bullet_laser', self.rect.centerx + (0.45 * self.rect.size[0] * self.direcao), self.rect.centery - 70, self.direcao, 10)
             inimigo_bullet_group.add(laser_bullet)
 
     def shoot_missil(self, player):
@@ -162,13 +162,14 @@ class Boss(pygame.sprite.Sprite):
             laser = weapons.Laser(self.rect.centerx - 100, self.rect.centery)
             laser_group.add(laser)
     
-    def ai(self, player, tela):
+    def ai(self, player, tela, tela_scroll):
         if self.vivo and player.vivo:
             if self.vida >= 100:
                 self.valor_cooldown_shoot_laser = 60
                 self.valor_cooldown_shoot_missil = 500
                 self.valor_cooldown_laser_beam = 1000
             self.campo_visao_longe.center = (self.rect.centerx + 500 * self.direcao, self.rect.centery)
+            pygame.draw.rect(tela, (255, 0, 0), self.campo_visao_longe)
             if self.idling == False and numpy.random.randint(1, 150) == 1:
                 self.update_action(0) # ação de idle
                 self.idling = True

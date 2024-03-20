@@ -153,7 +153,7 @@ def play():
             tela.blit(pistol_img, (90, -135))
             tela.blit(pistol_bullet_img, ((300, -35)))
         
-        player.update(player.rect.x, player.rect.y)
+        player.update(player.rect.x, player.rect.y, tela)
         player.draw(tela)
         if boss.vivo == False:
             cracha.update(player)
@@ -165,7 +165,7 @@ def play():
         for coxinha in coxinha_group:
             coxinha.draw(tela)
         for inimigo in inimigo_group:
-            inimigo.ai(player, tela)
+            inimigo.ai(player, tela, tela_scroll)
             inimigo.update()
             inimigo.draw(tela)        
 

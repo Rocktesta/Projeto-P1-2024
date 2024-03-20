@@ -117,7 +117,8 @@ class Player(pygame.sprite.Sprite):
         print(len(self.idle_t))
 
 
-    def update(self, x, y):
+    def update(self, x, y, tela):
+        pygame.draw.rect(tela, (255, 0, 0), self.rect, 5)
         if self.crouch == True:
             self.rect = pygame.Rect(x, y + 100, 100, 180)
         else:
@@ -160,14 +161,13 @@ class Player(pygame.sprite.Sprite):
             dy += self.velocidade_y
             # checando colisão com o chão
             if self.crouch == False:
-                if self.rect.bottom + dy > 570: # chão setado para 700
+                if self.rect.bottom + dy > 570: # chão setado para 570
                     dy = 570 - self.rect.bottom
                     self.no_ar = False
             else:
-                if self.rect.bottom + dy > 470: # chão setado para 700
+                if self.rect.bottom + dy > 470: # chão setado para 470
                     dy = 470 - self.rect.bottom
                     self.no_ar = False
-                
                 
             # updade da posição do rect do player
             self.rect.x += dx
@@ -201,13 +201,7 @@ class Player(pygame.sprite.Sprite):
             if self.shotgun_cooldown == 0:
                 self.shotgun_cooldown = 60
                 shotgun_sound.play()
-                self.shotgun_ammo -= 1
-                
-
-                        
-                
-                
-                
+                self.shotgun_ammo -= 1    
             
     def update_animacao(self):
         if self.action == 0: # idle
@@ -370,8 +364,7 @@ class Player(pygame.sprite.Sprite):
             if self.frame_index >= 8:
                 self.frame_index = 7
             if self.leg_index >= 8:
-                self.leg_index = 7
-            
+                self.leg_index = 7 
 
     def update_action(self, nova_acao):
         # checa se a nova ação é deferente da ação anterior
@@ -405,8 +398,6 @@ class Player(pygame.sprite.Sprite):
             elif self.action == 12:
                 self.cooldown_animacao = 100 # cooldown da ação de Jump com doze
 
-                
-
             # updade das configs da animação, para trocar para o começo da próxima animação
             self.frame_index = 0
             self.update_tempo = pygame.time.get_ticks()
@@ -416,6 +407,7 @@ class Player(pygame.sprite.Sprite):
             self.vida = 0
             self.velocidade = 0
             self.vivo = False
+            self.crouch = False
             self.update_action(3) # ação de morrer
 
     def draw(self, tela):
@@ -461,8 +453,8 @@ class Inimigo(pygame.sprite.Sprite):
         self.idling = False
         self.idling_counter = 0
         self.atirando = False
-        self.campo_visao_frente = pygame.Rect(0, 0, 700, 40)
-        self.campo_visao_costas = pygame.Rect(0, 0, 300, 40)
+        self.campo_visao_frente = pygame.Rect(0, 0, 700, 300)
+        self.campo_visao_costas = pygame.Rect(0, 0, 400, 100)
     
     def move(self, moving_left, moving_right):
         dx = 0
@@ -527,15 +519,15 @@ class Inimigo(pygame.sprite.Sprite):
     def draw(self, tela):
         tela.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
 
-    def ai(self, player, tela):
+    def ai(self, player, tela, tela_scroll):
         if self.vivo and player.vivo:
-            self.campo_visao_frente.center = (self.rect.centerx + 300 * self.direcao, self.rect.centery)
-            self.campo_visao_costas.center = (self.rect.centerx - 200 * self.direcao, self.rect.centery)
             if self.idling == False and numpy.random.randint(1, 100) == 1:
                 self.atirando = False
                 self.update_action(0) # ação de idle
                 self.idling = True
                 self.idling_counter = 50
+                self.campo_visao_frente.center = (self.rect.centerx + (300 * self.direcao) + tela_scroll, self.rect.centery - 100)
+                self.campo_visao_costas.center = (self.rect.centerx - (230 * self.direcao) + tela_scroll, self.rect.centery + 20)
             # check se o player está no campo de visão da frente
             if self.campo_visao_frente.colliderect(player.rect):
                 if self.atirando == False:
@@ -543,10 +535,14 @@ class Inimigo(pygame.sprite.Sprite):
                     self.update_action(2) # ação de tiro
                     self.atirando = True
                 self.shoot('bullet_laser')
+                self.campo_visao_frente.center = (self.rect.centerx + (300 * self.direcao) + tela_scroll, self.rect.centery - 100)
+                self.campo_visao_costas.center = (self.rect.centerx - (230 * self.direcao) + tela_scroll, self.rect.centery + 20)
             elif self.campo_visao_costas.colliderect(player.rect):
                 self.atirando = False
                 self.flip = not self.flip
                 self.direcao *= -1
+                self.campo_visao_frente.center = (self.rect.centerx + (300 * self.direcao) + tela_scroll, self.rect.centery - 100)
+                self.campo_visao_costas.center = (self.rect.centerx - (230 * self.direcao) + tela_scroll, self.rect.centery + 20)
             else:
                 self.atirando = False
                 if self.idling == False:
@@ -559,9 +555,9 @@ class Inimigo(pygame.sprite.Sprite):
                     self.update_action(1) # ação de correr
                     self.move_counter += 1
                     # updade do campo de visão quando se mover
-                    self.campo_visao_frente.center = (self.rect.centerx + 300 * self.direcao, self.rect.centery)
-                    self.campo_visao_costas.center = (self.rect.centerx - 200 * self.direcao, self.rect.centery)
-                
+                    self.campo_visao_frente.center = (self.rect.centerx + 300 * self.direcao + tela_scroll, self.rect.centery - 100)
+                    self.campo_visao_costas.center = (self.rect.centerx - 230 * self.direcao + tela_scroll, self.rect.centery + 20)
+
                     distancia_percorrida = numpy.random.randint(60, 150)
                     if self.move_counter > distancia_percorrida:
                         self.direcao *= -1
