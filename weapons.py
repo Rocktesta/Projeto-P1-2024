@@ -102,8 +102,8 @@ class Missil(pygame.sprite.Sprite):
         self.image = pygame.image.load('Image\\missil\\missil_sprite.png')
         self.image = pygame.transform.scale(self.image, (self.image.get_width() , self.image.get_height() ))
         self.original_image = self.image.copy()
-        self.rect = self.image.get_rect()
-        self.rect.center = start_pos
+        self.rect = pygame.Rect(start_pos, (80, 50))
+        self.rect.center = (start_pos[0], start_pos[1])
         self.speed = 3 # velocidade do míssil
         self.start_pos = start_pos
         self.target_pos = target_pos
@@ -115,7 +115,8 @@ class Missil(pygame.sprite.Sprite):
         self.vx = self.speed * math.cos(self.angle)
         self.vy = self.speed * math.sin(self.angle) - altura
 
-    def update(self, player):
+    def update(self, player, tela):
+        pygame.draw.rect(tela, (0, 0, 255), self.rect, 5)
         self.rect.x += self.vx
         self.vy += self.gravidade
         self.rect.y += self.vy
@@ -139,7 +140,7 @@ class Missil(pygame.sprite.Sprite):
         # Rotaciona a imagem original para o ângulo calculado
         self.image = pygame.transform.rotate(self.original_image, -angulo_graus)
         # Atualiza o retângulo da imagem
-        self.rect = self.image.get_rect(center=self.rect.center)
+        #self.rect = self.image.get_rect(center=self.rect.center)
 
 class Explosao(pygame.sprite.Sprite):
     def __init__(self, posicao):

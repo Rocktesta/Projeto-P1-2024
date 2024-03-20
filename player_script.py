@@ -412,8 +412,13 @@ class Player(pygame.sprite.Sprite):
 
     def draw(self, tela):
         if self.crouch == False:
-            tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y - 50))
-            tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y - 50))
+            if self.vivo == True:
+                tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y - 50))
+                tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y - 50))
+            else:
+                tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y - 150))
+                tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y - 150))
+
         else:
             tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y - 150))
             tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y - 150))

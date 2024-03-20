@@ -180,7 +180,7 @@ def play():
         inimigo_bullet_group.update(player, 'player', player)
         inimigo_bullet_group.draw(tela)
         missil_group = boss_script.missil_group
-        missil_group.update(player)
+        missil_group.update(player, tela)
         missil_group.draw(tela)
         explosoes_group = weapons.explosoes_group
         explosoes_group.update()
