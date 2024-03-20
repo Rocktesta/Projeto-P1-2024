@@ -103,8 +103,7 @@ class Player(pygame.sprite.Sprite):
                     self.jump_shotgun.append(imagem)
                 if i == 17:
                     self.nada.append(imagem)
-
-                
+         
         self.rect = pygame.Rect(x, y , 100, 300)
         self.mask = pygame.mask.from_surface(self.idle_t[0])
         self.imagem_mask = self.mask.to_surface()
@@ -115,7 +114,6 @@ class Player(pygame.sprite.Sprite):
         self.shotgun_cooldown = 0
         self.blast = weapons.ShotgunBlast(300, 500)
         print(len(self.idle_t))
-
 
     def update(self, x, y, tela):
         pygame.draw.rect(tela, (255, 0, 0), self.rect, 5)
@@ -179,7 +177,6 @@ class Player(pygame.sprite.Sprite):
             return tela_scroll
         else:
             return 0
-
 
     def shoot(self, bullet_type, tela):
         if not self.shotgun_equip:
@@ -405,21 +402,19 @@ class Player(pygame.sprite.Sprite):
     def check_vivo(self):
         if self.vida <= 0 or self.vivo == False:
             self.vida = 0
+            if self.crouch == True:
+                self.crouch = False
+                self.rect.y = 290
             self.velocidade = 0
             self.vivo = False
-            self.crouch = False
             self.update_action(3) # ação de morrer
 
     def draw(self, tela):
         if self.crouch == False:
-            if self.vivo == True:
-                tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y - 50))
-                tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y - 50))
-            else:
-                tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y - 150))
-                tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y - 150))
+            tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y - 50))
+            tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y - 50))
 
-        else:
+        else: 
             tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y - 150))
             tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y - 150))
 
