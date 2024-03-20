@@ -93,7 +93,7 @@ def play():
     update_camera = False
     update_camera_2 = False
 
-    player = player_script.Player(300, 600, 3, gravidade, 3)
+    player = player_script.Player(300, 600, 3, gravidade, tela,  3)
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
     cracha = keycard.Keycard(3200, 300, tela, player)
     tela_scroll = 0
@@ -151,7 +151,7 @@ def play():
             tela.blit(pistol_img, (90, -135))
             tela.blit(pistol_bullet_img, ((300, -35)))
         
-        player.update()
+        player.update(player.rect.x, player.rect.y)
         player.draw(tela)
         if boss.vivo == False:
             cracha.update(player)
@@ -186,7 +186,7 @@ def play():
         laser_group = weapons.laser_group
         laser_group.update(player)
         laser_group.draw(tela)
-       
+        
         posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
 
         for coxinha in coxinha_group:
@@ -289,7 +289,7 @@ def play():
                     shoot_anima = True
                 else:
                     shoot_anima = False
-            if player.no_ar == False and teclas[pygame.K_a] and teclas[pygame.K_RETURN]:
+            if player.no_ar == False and teclas[pygame.K_a] and teclas[pygame.K_RETURN] and not teclas[pygame.K_LCTRL]:
                 if shoot_anima:
                     if not player.shotgun_equip:
                         player.update_action(4)
@@ -298,7 +298,7 @@ def play():
                     shoot = True
                 moving_left = True
                 moving_right = False
-            elif player.no_ar == False and teclas[pygame.K_d] and teclas[pygame.K_RETURN]:
+            elif player.no_ar == False and teclas[pygame.K_d] and teclas[pygame.K_RETURN] and not teclas[pygame.K_LCTRL]:
                 if shoot_anima:
                     if not player.shotgun_equip:
                         player.update_action(4)
@@ -307,7 +307,7 @@ def play():
                     shoot = True
                 moving_right = True
                 moving_left = False
-            elif player.no_ar == False and teclas[pygame.K_d] and not teclas[pygame.K_RETURN]:
+            elif player.no_ar == False and teclas[pygame.K_d] and not teclas[pygame.K_RETURN] and not teclas[pygame.K_LCTRL]:
                 if not player.shotgun_equip:
                     player.update_action(1)
                 else:
@@ -315,7 +315,7 @@ def play():
                 shoot = False
                 moving_right = True
                 moving_left = False
-            elif player.no_ar == False and  teclas[pygame.K_a] and not teclas[pygame.K_RETURN]:
+            elif player.no_ar == False and  teclas[pygame.K_a] and not teclas[pygame.K_RETURN] and not teclas[pygame.K_LCTRL]:
                 if not player.shotgun_equip:
                     player.update_action(1)
                 else:
@@ -323,7 +323,7 @@ def play():
                 shoot = False
                 moving_left = True
                 moving_right = False
-            elif player.no_ar == False and teclas[pygame.K_RETURN]:
+            elif player.no_ar == False and teclas[pygame.K_RETURN] and not teclas[pygame.K_LCTRL]:
                 if shoot_anima:
                     if not player.shotgun_equip:
                         player.update_action(5)
@@ -332,7 +332,7 @@ def play():
                     shoot = True
                 moving_left = False
                 moving_right = False
-            elif player.no_ar == False and not teclas[pygame.K_a] and  not teclas[pygame.K_d]:
+            elif player.no_ar == False and not teclas[pygame.K_a] and  not teclas[pygame.K_d] and not teclas[pygame.K_LCTRL]:
                 if not player.shotgun_equip:
                     player.update_action(0)
                 else:
@@ -341,26 +341,46 @@ def play():
                 moving_left = False
                 moving_right = False
             if teclas[pygame.K_SPACE] and not teclas[pygame.K_a] and not teclas[pygame.K_d] or player.no_ar == True and not teclas[pygame.K_a] and not teclas[pygame.K_d]:
-                player.update_action(2)
+                if not player.shotgun_equip:
+                    player.update_action(2)
+                else:
+                    player.update_action(12)
                 shoot = False
                 moving_left = False
                 moving_right = False
                 player.jump = True
             elif teclas[pygame.K_SPACE] and teclas[pygame.K_a] and not teclas[pygame.K_d] or player.no_ar == True and teclas[pygame.K_a] and not teclas[pygame.K_d]:
-                player.update_action(2)
+                if not player.shotgun_equip:
+                    player.update_action(2)
+                else:
+                    player.update_action(12)
                 shoot = False
                 moving_left = True
                 moving_right = False
                 player.jump = True
             elif teclas[pygame.K_SPACE] and not teclas[pygame.K_a] and teclas[pygame.K_d] or player.no_ar == True and not teclas[pygame.K_a] and teclas[pygame.K_d]:
-                player.update_action(2)
+                if not player.shotgun_equip:
+                    player.update_action(2)
+                else:
+                    player.update_action(12)
                 shoot = False
                 moving_left = False
                 moving_right = True
                 player.jump = True
             if not teclas[pygame.K_SPACE]:
                 player.jump = False
-            
+            if teclas[pygame.K_LCTRL] and player.no_ar == False:
+                if not player.shotgun_equip:
+                    player.update_action(10)
+                else:
+                    player.update_action(11)
+                shoot = False
+                moving_left = False
+                moving_right = False
+                player.crouch = True
+            if not teclas[pygame.K_LCTRL]:
+                player.crouch = False
+                
             
             
         
