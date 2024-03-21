@@ -32,19 +32,19 @@ To Do
 > Este módulo fornece uma maneira simples de usar funcionalidades que são dependentes do sistema operacional. Em nosso código foi usado para manipular pastas e aquivos, checando o tamanho dessas pastas.
 * Math
 > Essa biblioteca fornece acesso a funções matemáticas definidas pelo padrão C. Ela inclui funções para realizar cálculos matemáticos básicos como raízes quadradas, logarítmos e trigonometria, no nosso código foram utilizadas principalmente funções trigonométricas para definir a trajetória dos ataques do boss. 
-## Organização do Código:
+## Organização do código
 Trata-se de um código modular dividido em três funções principais com os loops do jogo, a função principal com a lógica do jogo (play()), a função que contém o loop do menu do jogo e uma função com o loop para rodar a introdução. A única função que é chamada é a função intro() e a partir delas as outras funções são chamadas.
 Além do módulo principal, o código contém mais 5 módulos que compõem o jogo:
 * player_script
-> esse é o arquivo que contém a classe do player e dos inimigos, ambas muito semelhantes e contando com métodos de update(), draw(), move(), shoot() e a classe dos inimigos contendo o método extra ai(), que dita o movimento automático dos inimigos
+> esse é o arquivo que contém a classe do player e dos inimigos, ambas muito semelhantes e contando com métodos de update(), draw(), move(), shoot() e a classe dos inimigos contendo o método extra ai(), que dita o movimento automático dos inimigos.
 * boss_script
-> esse módulo é bastante semelhante ao player_script, contendo a classe do boss, seus métodos de ataque shoot_laser(), shoot_missil() e laser_beam(), além do seus métodos de update(), draw() e ai()
+> esse módulo é bastante semelhante ao player_script, contendo a classe do boss, seus métodos de ataque shoot_laser(), shoot_missil() e laser_beam(), além do seus métodos de update(), draw() e ai().
 * vida_script
 > esse módulo contém tanto a classe da barra de vida do player, quanto a classe do coletável que concede vida para o jogador, a coxinha. Ambas essas classes possuem seus métodos de update() e draw(), e para a classe da coxinha uma função extra, gerar_coxinhas(), que diz se novos itens de cura vão ser gerados com base em uma probabilidade.
 * weapons
->
+> esse arquivo conta com a classe da arma coletável Shotgun(), da animação de tiro dela, ShotgunBlast() e também as classes dos projéteis que o boss dispara, as classes Missil, Explosão e Laser. Todas essas classes tem suas funções de update() e draw(). A classe Shotgun, semelhante a classe Coxinha, tem a função gerar_shotgun(), que se o player não estiver equipado com essa arma gera aleatoriamente novas armas com base em uma probabilidade.
 * keycard
->
+> esse módulo é o que contém a classe Keycard, que é o último coletável do jogo, ele só aparece na tela se o boss for derrotado e quando é coletádo o jogador zera o jogo. Essa classe possui as funções update() e draw().
 ## Conceitos:
 * Programação Orientada a Objetos
 > POO é um paradigma da programação baseado no conceito de objetos, cada objeto é definido através de uma classe e essa classe contém os atributos e métodos desse objeto. Esse conceito cumpre um papel fundamental da organização do nosso código, uma vez que todos os objetos do jogo foram definidos em suas respectivas classes, o que facilitou bastante para implementar suas funções no loop principal do jogo.
@@ -61,8 +61,8 @@ Além do módulo principal, o código contém mais 5 módulos que compõem o jog
 > Refazer a classe pra se adequar ao sistema de spritesheet
 Adequar-se a disponibilidade do tempo entre os integrantes, muitos trabalhos dependiam uns dos outros.
 * Quais as lições aprendidas durante o projeto?
-> AMOR 
-AMIZADE
-COMPAIXÃO
+> Aprendemos a utilizar programação orientada a objetos, e fazer um código modular utilizando diversas bibliotecas, módulos e pacotes.
+AMOR, AMIZADE ,COMPAIXÃO, DISCIPLINA, FOCO...
+
 #
 ###### _Projeto referente a cadeira de Programação 1/CIN-UFPE no período 2023.2._
