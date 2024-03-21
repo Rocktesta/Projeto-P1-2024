@@ -146,7 +146,7 @@ class Boss(pygame.sprite.Sprite):   #classe do boss
     def laser_beam(self):   # ataque do raio laser
         if self.laser_beam_cooldown == 0:
             self.laser_beam_cooldown = self.valor_cooldown_laser_beam
-            laser = weapons.Laser(self.rect.centerx - 100, self.rect.centery)
+            laser = weapons.Laser(self.rect.centerx - 100, self.rect.centery + 50)
             laser_group.add(laser)
 
     '''def big_run(self, player):
