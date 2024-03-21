@@ -23,6 +23,7 @@ background = pygame.transform.scale(background, (background.get_width() * 3, bac
 background_menu = pygame.image.load('Assets\TELA_INICIO.jpg')
 background_menu = pygame.transform.scale(background_menu, (background_menu.get_width()*1, background_menu.get_height()*1))
 game_over_img = pygame.image.load('Assets\GAME_OVER.png')
+game_win_img = pygame.image.load('Assets\WIN.png')
 
 
 
@@ -66,11 +67,18 @@ def intro():
             vid.close()
             menu()
 
+Menu_play = False
 def menu():
-
+    global Menu_play
     running = True
+    menu_musica = pygame.mixer.Sound('Audio\\Musica_Menu.mp3')
+    if not Menu_play:
+        menu_musica.play()
+        Menu_play = False
+    
     while running:
         clock.tick(fps)
+        
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -79,12 +87,15 @@ def menu():
             if event.type == pygame.USEREVENT:
                 if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
                     if event.ui_element == botao_play:
+                        menu_musica.fadeout(2000)
+                        menu_musica.stop()
                         play()
                     elif event.ui_element == botao_quit:
                         pygame.quit()
                         return
         
             manager.process_events(event)  # Processa eventos da GUI
+        
 
 
         # Atualiza e desenha a GUI
@@ -113,6 +124,7 @@ def play_boss_music(musica_anterior, musica_atual):
 
 def play():
     pygame.display.set_caption('PLAY')
+    
 
     # Variáveis do jogo
     gravidade = 0.75
@@ -134,7 +146,7 @@ def play():
 
     player = player_script.Player(300, 600, 3, gravidade, tela,  3)
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
-    cracha = keycard.Keycard(9980, 300, tela, player)
+    cracha = keycard.Keycard(8700, 300, tela, player)
 
     tela_scroll = 0
 
@@ -154,7 +166,8 @@ def play():
     shotgun_img = pygame.transform.scale(shotgun_img, (350, 350))
     shotgun_bullet_img = pygame.image.load('Image\\bullet\shotgun_bullet.png')
     shotgun_bullet_img = pygame.transform.scale(shotgun_bullet_img, (200, 200))
-    inv_wall = pygame.Rect(9000, 0, 230, 830)
+    inv_wall = pygame.Rect(8800, 0, 230, 830)
+    Inv_wall_init = pygame.Rect(300, 0, 230, 830)
 
     # criando armas
         #shotgun
@@ -186,7 +199,7 @@ def play():
                       inimigo4, inimigo5, inimigo6, 
                       inimigo7, inimigo8, inimigo9)
 
-    boss = Boss(9270, 420)
+    boss = Boss(8400, 420)
     inimigo_group.add(boss)
     
     # Loop Principal do Jogo
@@ -244,7 +257,7 @@ def play():
         laser_group = weapons.laser_group
         laser_group.update(player)
         laser_group.draw(tela)
-        pygame.draw.rect(tela, (0, 0 ,0 ) , inv_wall)
+        
         
         posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
 
@@ -275,9 +288,11 @@ def play():
     
         # updade das ações do player
         if player.vivo:
-            # shoot bullets
+            # atira balas
             if shoot:
                 player.shoot('bullet0', tela)
+            if player.com_keycard:
+                tela.blit(game_win_img, (0, 0))
 
 
             tela_scroll =  player.move(moving_left, moving_right) 
@@ -285,8 +300,8 @@ def play():
             if boss.music:
                 play_boss_music(Musica_main, Musica_boss)
                 if not update_camera:
-                    tela_scroll -= 800
-                    player.rect.x -= 700
+                    tela_scroll -= 600
+                    player.rect.x -= 400
                     update_camera = True
                 if boss.vivo and player.mask.overlap(boss.mask, posicao_player_boss):
                     if moving_right == True:
@@ -301,18 +316,18 @@ def play():
                         win_sound.play()
                         win_sound.fadeout(9000)
                         play_boss_music(Musica_boss, Musica_main)
-                        tela_scroll -= 800
-                        player.rect.x -= 300
+                        tela_scroll -= 700
+                        player.rect.x -= 400
                         update_camera_2 = True
                     
 
 
-
-            if player.rect.x <= 600 and tela_scroll > 0:
-                tela_scroll = 0
                 
             if inv_wall.colliderect(player.rect) and tela_scroll < 0:
                 tela_scroll = 0  
+            if Inv_wall_init.colliderect(player.rect) and tela_scroll > 0:
+                tela_scroll = 0  
+
 
 
 
@@ -330,6 +345,7 @@ def play():
             #boss.rect.x += tela_scroll
             cracha.rect.x += tela_scroll
             inv_wall.x += tela_scroll
+            Inv_wall_init.x += tela_scroll
         
         elif player.vivo == False:
             player.update_action(3)
@@ -345,12 +361,17 @@ def play():
                     pygame.quit()
                 elif event.key == pygame.K_RETURN:
                     temp_inicial = pygame.time.get_ticks()
-                elif event.key == pygame.K_SPACE and player.vivo == False:
+                elif event.key == pygame.K_SPACE and (player.vivo == False or player.com_keycard):
                     running = False
+                    Musica_main.stop()
                     Musica_boss.stop()
                     boss.kill()
+                    for inimigo in inimigo_group:
+                        inimigo.kill()
                     global Musica_played
+                    global Menu_play
                     Musica_played = False
+                    Menu_play = False
                     return intro()
 
         # Pressionar teclas no teclado
