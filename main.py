@@ -11,9 +11,11 @@ import keycard
 
 pygame.init()
 
+# resolucao 
 largura_tela = 1280
 altura_tela = 720
 
+#  definicao da tela, ui manager do jogo e load de assets
 tela = pygame.display.set_mode((largura_tela, altura_tela))
 manager = pygame_gui.UIManager((largura_tela, altura_tela))
 botao_play = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 90, altura_tela//2 + 125), (200, 50)),text='Play', manager=manager)
@@ -38,15 +40,15 @@ cooldown_nova_shotgun = 5000
 clock = pygame.time.Clock()
 fps = 60
 
-
+# intro inicial video
 def intro():
 
-    vid = Video('Assets\INTRODU.mp4')
-    vid.set_size((1280, 720))
+    vid = Video('Assets\INTRODU.mp4')   
+    vid.set_size((1280, 720)) # resolucao
 
     tempo_inicial = pygame.time.get_ticks()
 
-    while True:
+    while True: # se o video parar, vai para o menu
         tempo_atual = pygame.time.get_ticks()
         tempo_decorrido = tempo_atual - tempo_inicial
         if not vid.active:
@@ -68,7 +70,8 @@ def intro():
             menu()
 
 Menu_play = False
-def menu():
+#var global para a musica do menu (flag)
+def menu(): # funcao do menu do jogo
     global Menu_play
     running = True
     menu_musica = pygame.mixer.Sound('Audio\\Musica_Menu.mp3')
@@ -85,7 +88,7 @@ def menu():
                 pygame.quit()
                 return  # Saindo da função e encerrando o loop do jogo
             if event.type == pygame.USEREVENT:
-                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                if event.user_type == pygame_gui.UI_BUTTON_PRESSED: # eventos dos buttons do pygame_gui
                     if event.ui_element == botao_play:
                         menu_musica.fadeout(2000)
                         menu_musica.stop()
@@ -99,7 +102,7 @@ def menu():
 
 
         # Atualiza e desenha a GUI
-        tela.blit(background_menu,(0, 0))
+        tela.blit(background_menu,(0, 0))   # fundo do menu
 
         manager.update(fps)
         manager.draw_ui(tela)
@@ -114,7 +117,8 @@ def draw_bg():
     pygame.draw.line(tela, (0, 0, 0), (0, 600), (largura_tela, 600))
 
 Musica_played = False
-def play_boss_music(musica_anterior, musica_atual):
+# var global para musica do game (flag)
+def play_boss_music(musica_anterior, musica_atual): # funcao para alterar as musicas durante gameplay
     global Musica_played
     if not Musica_played:
         musica_anterior.fadeout(1200)
@@ -122,7 +126,7 @@ def play_boss_music(musica_anterior, musica_atual):
         musica_atual.play()
         Musica_played = True
 
-def play():
+def play(): # funcao principal do jogo
     pygame.display.set_caption('PLAY')
     
 
@@ -132,7 +136,7 @@ def play():
     fonte = pygame.font.SysFont("Arial", 36)
     white = (255, 255, 255)
 
-    # Movimentações do Player
+    # Movimentações do Player , vars de cooldown e flags
     moving_left = False
     moving_right = False
     shoot = False
@@ -144,10 +148,12 @@ def play():
     update_camera_2 = False
     cam_cooldown = 40
 
+    # instancias dos game objs
     player = player_script.Player(300, 600, 3, gravidade, tela,  3)
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
-    cracha = keycard.Keycard(8700, 300, tela, player)
+    cracha = keycard.Keycard(8500, 300, tela, player)
 
+    # var da camera
     tela_scroll = 0
 
     # Sons
@@ -166,7 +172,7 @@ def play():
     shotgun_img = pygame.transform.scale(shotgun_img, (350, 350))
     shotgun_bullet_img = pygame.image.load('Image\\bullet\shotgun_bullet.png')
     shotgun_bullet_img = pygame.transform.scale(shotgun_bullet_img, (200, 200))
-    inv_wall = pygame.Rect(8800, 0, 230, 830)
+    inv_wall = pygame.Rect(8700, 0, 230, 830)
     Inv_wall_init = pygame.Rect(300, 0, 230, 830)
 
     # criando armas
@@ -199,7 +205,7 @@ def play():
                       inimigo4, inimigo5, inimigo6, 
                       inimigo7, inimigo8, inimigo9)
 
-    boss = Boss(8400, 420)
+    boss = Boss(8200, 420)
     inimigo_group.add(boss)
     
     # Loop Principal do Jogo

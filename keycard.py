@@ -6,7 +6,7 @@ mixer.init()
 claim_card_sound = mixer.Sound('Audio\Arcade_card_Kiev.wav')
 claim_card_sound.set_volume(0.5)
 
-class Keycard(pygame.sprite.Sprite):
+class Keycard(pygame.sprite.Sprite):    #classe do cracha, objeto para ganhar o game
     def __init__(self, x, y, tela, player):
         pygame.sprite.Sprite.__init__(self)
         self.tela = tela
@@ -19,14 +19,14 @@ class Keycard(pygame.sprite.Sprite):
         self.update_tempo = 0
         self.cooldown_animacao = 100
 
-    def update(self, player):
+    def update(self, player):   # se colide com player, self.kill()
         if self.rect.colliderect(player.rect):
-            claim_card_sound.play()
+            claim_card_sound.play() # som de obtencao
             self.kill()
             player.com_keycard = True
             self.render = False
         
-    def draw (self):
+    def draw (self):    # animacao do cracha
         if self.render:
             sprite = self.images[self.frame_index]
             # check se passou tempo suficiente desde o último update

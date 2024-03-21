@@ -12,7 +12,7 @@ mixer.init()
 # carregando sons
 som_missil = mixer.Sound('Audio\Tiros\Som_Missil_Inicio.wav')
 
-class Boss(pygame.sprite.Sprite):
+class Boss(pygame.sprite.Sprite):   #classe do boss
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
         self.vida = 400
@@ -22,12 +22,14 @@ class Boss(pygame.sprite.Sprite):
         self.flip = True
         self.velocidade = 3
         self.vel_y = 0
+        # cooldown dos ataques do boss
         self.shoot_laser_cooldown = 0
         self.shoot_missil_cooldown = 0
         self.laser_beam_cooldown = 0
         self.valor_cooldown_shoot_laser = 80
         self.valor_cooldown_shoot_missil = 1000
         self.valor_cooldown_laser_beam = 2000
+
         self.lista_animacoes = []
         self.frame_index = 0
         self.action = 0
@@ -36,12 +38,12 @@ class Boss(pygame.sprite.Sprite):
         self.music = False
         self.update_time = pygame.time.get_ticks()
 
-        animation_types = ['Idle', 'Run', 'Win', 'Death']
+        animation_types = ['Idle', 'Run', 'Win', 'Death']   # tipos de animacao do boss
         for animation in animation_types:
             lista_temp = []
             num_frames = len(os.listdir(f'Image\Sprites\\boss\{animation}'))
             for i in range(num_frames):
-                img = pygame.image.load(f'Image\Sprites\\boss\{animation}\\boss_{i}.png')
+                img = pygame.image.load(f'Image\Sprites\\boss\{animation}\\boss_{i}.png')   #loop do diretorio
                 img = pygame.transform.scale(img, (img.get_width() * 3.5, img.get_height() * 3.5))
                 lista_temp.append(img) 
             self.lista_animacoes.append(lista_temp)
@@ -49,7 +51,7 @@ class Boss(pygame.sprite.Sprite):
         self.image = self.lista_animacoes[self.action][self.frame_index]
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.lista_animacoes[0][0])
-        self.imagem_mask = self.mask.to_surface()
+        self.imagem_mask = self.mask.to_surface()   #boss possui uma sprite mask para colisoes precisas
         self.imagem_mask.set_colorkey((0, 0, 0))
         self.rect.center = (x, y)
 
@@ -59,7 +61,7 @@ class Boss(pygame.sprite.Sprite):
         self.campo_visao_longe = pygame.Rect(0, 0, 600, 70)
         self.campo_visao_longe.center = self.rect.center
 
-    def move(self, moving_left, moving_right):
+    def move(self, moving_left, moving_right):  #movimentos do boss
         dx = 0
         dy = 0
         if moving_left:
@@ -70,13 +72,13 @@ class Boss(pygame.sprite.Sprite):
             dx = self.velocidade
             self.flip = False
             self.direction = 1
-        #check collision with floor
+        #check colisao com chao
         if self.rect.bottom + dy > 600: # chão settado para 600
             dy = 600 - self.rect.bottom
         self.rect.x += dx
         self.rect.y += dy
 
-    def update(self):
+    def update(self):   # update do estado e cooldown dos ataques
         self.update_animacao()
         self.check_vivo()
         # update cooldown
@@ -126,13 +128,13 @@ class Boss(pygame.sprite.Sprite):
             self.vivo = False
             self.update_action(3)
 
-    def shoot_laser(self):
+    def shoot_laser(self):  # tiro laser
         if self.shoot_laser_cooldown == 0:
             self.shoot_laser_cooldown = self.valor_cooldown_shoot_laser # cooldown do tiro
             laser_bullet = Bullet('bullet_laser', self.rect.centerx + (0.45 * self.rect.size[0] * self.direcao), self.rect.centery - 70, self.direcao, 10)
             inimigo_bullet_group.add(laser_bullet)
 
-    def shoot_missil(self, player):
+    def shoot_missil(self, player): # ataque dos missies, com trajetoria balistica
         if self.shoot_missil_cooldown == 0:
             self.shoot_missil_cooldown = self.valor_cooldown_shoot_missil
             missil1 = Missil((self.rect.x, self.rect.y + 30), (player.rect.x, player.rect.y), 20, 0.7)
@@ -141,7 +143,7 @@ class Boss(pygame.sprite.Sprite):
             missil_group.add(missil1, missil2, missil3)
             som_missil.play()
 
-    def laser_beam(self):
+    def laser_beam(self):   # ataque do raio laser
         if self.laser_beam_cooldown == 0:
             self.laser_beam_cooldown = self.valor_cooldown_laser_beam
             laser = weapons.Laser(self.rect.centerx - 100, self.rect.centery)
@@ -161,9 +163,10 @@ class Boss(pygame.sprite.Sprite):
             self.flip = False 
             self.update_action(0) #ação de idle''' 
         
-    def ai(self, player, tela, tela_scroll):
+    def ai(self, player, tela, tela_scroll):    # ai rudimentar do boss, ativa quando boss e player vivos
         if self.vivo and player.vivo:
             if self.vida >= 100:
+                # cooldown dos ataques
                 self.valor_cooldown_shoot_laser = 60
                 self.valor_cooldown_shoot_missil = 500
                 self.valor_cooldown_laser_beam = 1000
@@ -187,7 +190,7 @@ class Boss(pygame.sprite.Sprite):
                         self.laser_beam()
         
 
-    def draw(self, tela):
+    def draw(self, tela):   # render
         tela.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
 
 

@@ -6,9 +6,9 @@ from pymediainfo import MediaInfo
 from errno import ENOENT
 
 
-class Video:
+class Video:    # classe do video de introducao do game
     def __init__(self, path):
-        if not os.path.exists(path):
+        if not os.path.exists(path):    #checks de existencia de um path valido
             raise FileNotFoundError(ENOENT, os.strerror(ENOENT), path)
         set_loglevel("quiet")
             
@@ -20,6 +20,7 @@ class Video:
         
         info = MediaInfo.parse(path).video_tracks[0]
         
+        #specs do video
         self.frame_rate = float(info.frame_rate)
         self.frame_count = int(info.frame_count)
         self.frame_delay = 1 / self.frame_rate
@@ -32,21 +33,21 @@ class Video:
 
         self.alt_resize = pygame.transform.smoothscale
         
-    def close(self):
+    def close(self):    #debug log
         print('fiz alguma coisa')
         self._video.close_player()
         
-    def restart(self):
+    def restart(self):  #restart do video
         self._video.seek(0, relative=False)
         self._frame_num = 0
         self.frame_surf = None
         self.active = True
         
-    def set_size(self, size: tuple):
+    def set_size(self, size: tuple): #resolucao
         self._video.set_size(*size)
         self.current_size = size
 
-    # volume goes from 0.0 to 1.0
+    # volume vai de 0.0 a 1.0
     def set_volume(self, volume: float): 
         self._video.set_volume(volume)
         
@@ -62,13 +63,14 @@ class Video:
     def resume(self):
         self._video.set_pause(False)
         
-    # gets time in seconds
+    # tempo em segundos
     def get_pos(self) -> float: 
         return self._video.get_pts()
             
     def toggle_pause(self):
         self._video.toggle_pause()
-        
+    
+    # update de frames
     def _update(self): 
         updated = False
         
@@ -91,14 +93,15 @@ class Video:
                     
         return updated
     
-    # seek uses seconds
+    # logica dos frames
     def seek(self, seek_time: int): 
         vid_time = self._video.get_pts()
         if vid_time + seek_time < self.duration and self.active:
             self._video.seek(seek_time)
             while vid_time + seek_time < self._frame_num * self.frame_delay:
                 self._frame_num -= 1
-        
+    
+    # blitar na tela do pygame
     def draw(self, surf: pygame.Surface, pos: tuple, force_draw: bool = True) -> bool:
         if self.active and (self._update() or force_draw):
             surf.blit(self.frame_surf, pos)

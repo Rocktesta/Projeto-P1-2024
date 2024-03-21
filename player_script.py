@@ -15,7 +15,7 @@ bullet_laser_sound = mixer.Sound('Audio\Tiros\\bullet_laser.wav')
 shotgun_sound = mixer.Sound('Audio\Tiros\\shotgun_blast.mp3')
 shotgun_sound.set_volume(0.3)
 
-class Player(pygame.sprite.Sprite):
+class Player(pygame.sprite.Sprite): #classe do player
     def __init__(self, x, y, velocidade, gravidade, tela, escala=3, vida=100, cooldown_animacao=100):
         pygame.sprite.Sprite.__init__(self)
         self.com_keycard = False # pegou ou não o cartão para zerar o jogo
@@ -32,18 +32,18 @@ class Player(pygame.sprite.Sprite):
         self.direcao = 1
         self.jump = False
         self.no_ar = True
-        self.flip = False
+        self.flip = False # inversao de sprites
         self.shotgun_equip = False
         self.shotgun_ammo = 0
         self.lista_animacoes = []
         self.frame_index = 0
-        self.crouch = False
-        self.sprite_sheet = pygame.image.load("Image\Sprites\Sprite_sheet_main.png").convert_alpha()
+        self.crouch = False # agachar flag
+        self.sprite_sheet = pygame.image.load("Image\Sprites\Sprite_sheet_main.png").convert_alpha()    # arquivo com tiles 128x128, com todos os sprites do player
         frames = self.sprite_sheet.get_width() // 128
         linhas = self.sprite_sheet.get_height() // 128
-        # 0 = Idle | 1 = Run | 2 = Jump | 3 = Death
         self.action = 0
         self.update_tempo = pygame.time.get_ticks()
+        # lista de animacoes e frames
         self.idle_t = []
         self.x = x
         self.y = y
@@ -65,6 +65,7 @@ class Player(pygame.sprite.Sprite):
         self.pulo_perna = []
         self.perna_correndo = []
         self.pulo_pistola_torso = []
+        # adicao de frames para a lista
         for i in range(linhas):
             for j in range(frames):
                 imagem = pygame.Surface((128, 128)).convert_alpha()
@@ -112,7 +113,7 @@ class Player(pygame.sprite.Sprite):
                     self.pulo_pistola_torso.append(imagem)
                 if i == 20:
                     self.nada.append(imagem)
-         
+        # rects do player, torso e perna separados  para facilitar a animação
         self.rect = pygame.Rect(x, y , 100, 300)
         self.mask = pygame.mask.from_surface(self.idle_t[0])
         self.imagem_mask = self.mask.to_surface()
@@ -124,15 +125,16 @@ class Player(pygame.sprite.Sprite):
         self.blast = weapons.ShotgunBlast(300, 500)
         print(len(self.idle_t))
 
-    def update(self, x, y, tela):
-        pygame.draw.rect(tela, (255, 0, 0), self.rect, 5)
+    def update(self, x, y, tela):   # updates do player, check de vivo e animacao
+        # mudar de rect se agachar
         if self.crouch == True:
             self.rect = pygame.Rect(x, y + 100, 100, 180)
         else:
             self.rect = pygame.Rect(x, y, 100, 280)
+        # animacao e check vivo
         self.update_animacao()
         self.check_vivo()
-        # update cooldown
+        # update cooldown, check de municao e equip da shotgun
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
         if self.shotgun_cooldown > 0:
@@ -141,7 +143,7 @@ class Player(pygame.sprite.Sprite):
             self.shotgun_equip = False
             pegar_pistola_sound.play()
 
-    def move(self, moving_left, moving_right):
+    def move(self, moving_left, moving_right):  #movimentos do player, gera o tela_scroll(camera)
         # reset as variáveis de movimento
         if self.vivo:
             tela_scroll = 0
@@ -180,23 +182,23 @@ class Player(pygame.sprite.Sprite):
             self.rect.x += dx
             self.rect.y += dy
 
-            if self.rect.right > 1280 - 500 or self.rect.left < 200:
+            if self.rect.right > 1280 - 500 or self.rect.left < 200:    # travas da camera
                 self.rect.x -= dx
                 tela_scroll = -dx
             return tela_scroll
         else:
             return 0
 
-    def shoot(self, bullet_type, tela):
+    def shoot(self, bullet_type, tela): # tiros do player, com group de balas ou sprite collide da shotgun
         if not self.shotgun_equip:
             if self.shoot_cooldown == 0:
                 self.shoot_cooldown = 40
-                if self.direcao == 1:
+                if self.direcao == 1:   #flip
                     bullet = Bullet(bullet_type, self.rect.centerx + 70, self.rect.centery - 150, self.direcao, 7)
-                elif self.direcao == -1:
+                elif self.direcao == -1:    #flip
                     bullet = Bullet(bullet_type, self.rect.centerx - 235, self.rect.centery - 150, self.direcao, 7)
                 player_bullet_group.add(bullet)
-                pistol_sound.play()
+                pistol_sound.play() # som do tiro da pistola
         else:
             if self.direcao  == 1:
                 self.blast.update(self.rect.x + (310 * self.direcao), self.rect.y + 90, inimigo_group)
@@ -206,7 +208,7 @@ class Player(pygame.sprite.Sprite):
                 self.blast.draw(tela, True)
             if self.shotgun_cooldown == 0:
                 self.shotgun_cooldown = 60
-                shotgun_sound.play()
+                shotgun_sound.play()    # som do tiro da shotgun
                 self.shotgun_ammo -= 1    
             
     def update_animacao(self):
@@ -372,7 +374,7 @@ class Player(pygame.sprite.Sprite):
             if self.leg_index >= 8:
                 self.leg_index = 7 
 
-    def update_action(self, nova_acao):
+    def update_action(self, nova_acao): #updates das animcoes com cooldown dos frames
         # checa se a nova ação é deferente da ação anterior
         if nova_acao != self.action:
             self.action = nova_acao
@@ -405,7 +407,7 @@ class Player(pygame.sprite.Sprite):
             self.frame_index = 0
             self.update_tempo = pygame.time.get_ticks()
 
-    def check_vivo(self):
+    def check_vivo(self):   # verifica se o personagem está vivo
         if self.vida <= 0 or self.vivo == False:
             self.vida = 0
             if self.crouch == True:
@@ -415,7 +417,7 @@ class Player(pygame.sprite.Sprite):
             self.vivo = False
             self.update_action(3) # ação de morrer
 
-    def draw(self, tela):
+    def draw(self, tela):   # render do player
         if self.crouch == False:
             tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y - 50))
             tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y - 50))
@@ -424,7 +426,7 @@ class Player(pygame.sprite.Sprite):
             tela.blit(pygame.transform.flip(self.img_player, self.flip, False), (self.rect.x - 120, self.rect.y - 150))
             tela.blit(pygame.transform.flip(self.img_perna, self.flip, False), (self.rect.x - 120, self.rect.y - 150))
 
-class Inimigo(pygame.sprite.Sprite):
+class Inimigo(pygame.sprite.Sprite):   # classe do inimigo
     def __init__(self, char_type, x, y, velocidade, gravidade, escala=100, vida=100):
         pygame.sprite.Sprite.__init__(self)
         self.vivo = True
@@ -440,12 +442,12 @@ class Inimigo(pygame.sprite.Sprite):
         self.cooldown_animacao = 100
 
         self.lista_animacoes = []
-        animacao_tipos = ['Idle', 'Run', 'Shoot', 'Death']
+        animacao_tipos = ['Idle', 'Run', 'Shoot', 'Death']  # tipos de animacao dos inimigos
         for animacao in animacao_tipos:
             temp_list = []
-            num_frames = len(os.listdir(f'Image\Sprites\{self.char_type}\{animacao}'))
+            num_frames = len(os.listdir(f'Image\Sprites\{self.char_type}\{animacao}'))  # num de frames
             for i in range(num_frames):
-                img = pygame.image.load(f'Image\Sprites\{self.char_type}\{animacao}\{i}.png')
+                img = pygame.image.load(f'Image\Sprites\{self.char_type}\{animacao}\{i}.png')   # loop do diretorio
                 img = pygame.transform.scale(img, (img.get_width() * escala, img.get_height() * escala))
                 temp_list.append(img)
             self.lista_animacoes.append(temp_list)
@@ -459,10 +461,11 @@ class Inimigo(pygame.sprite.Sprite):
         self.idling = False
         self.idling_counter = 0
         self.atirando = False
+        # alcance dos inimigos
         self.campo_visao_frente = pygame.Rect(0, 0, 700, 300)
         self.campo_visao_costas = pygame.Rect(0, 0, 400, 100)
     
-    def move(self, moving_left, moving_right):
+    def move(self, moving_left, moving_right):  #movimentacao dos inimigos
         dx = 0
         dy = 0
         if moving_left:
@@ -473,19 +476,19 @@ class Inimigo(pygame.sprite.Sprite):
             dx = self.velocidade
             self.flip = False
             self.direction = 1
-        #check collision with floor
+        #check colisao com chao
         if self.rect.bottom + dy > 570: # chão settado para 550
             dy = 570 - self.rect.bottom
         self.rect.x += dx
         self.rect.y += dy
 
-    def update(self):
+    def update(self):   #update dos inimigos
         self.update_animation()
         self.check_vivo()
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
 
-    def update_animation(self):
+    def update_animation(self): #update das animacoes com cooldowns
         self.image = self.lista_animacoes[self.action][self.frame_index]
         if pygame.time.get_ticks() - self.update_time > self.cooldown_animacao:
             self.update_time = pygame.time.get_ticks()
@@ -494,9 +497,9 @@ class Inimigo(pygame.sprite.Sprite):
             if self.action == 3:
                 self.frame_index = len(self.lista_animacoes[self.action]) - 1
             else:
-                self.frame_index = 0
+                self.frame_index = 0    # se chegar ao fim a animacao recomeca
     
-    def update_action(self, nova_acao):
+    def update_action(self, nova_acao): #update das acoes do inimigo
         if nova_acao != self.action:
             self.action = nova_acao
             self.frame_index = 0
@@ -508,25 +511,25 @@ class Inimigo(pygame.sprite.Sprite):
             elif self.action == 3: # ação de death
                 self.cooldown_animacao = 150
     
-    def shoot(self, bullet_type):
+    def shoot(self, bullet_type):   #  dispara um tiro do inimigo
         if self.shoot_cooldown == 0 and self.frame_index == 5:
-            self.shoot_cooldown = 60
+            self.shoot_cooldown = 60    # cooldwon do tiro
             bullet = Bullet(bullet_type, self.rect.centerx + (215 * self.direcao), self.rect.centery + 15, self.direcao, 7)
-            inimigo_bullet_group.add(bullet)
+            inimigo_bullet_group.add(bullet) # add ou group das balas do inimigos
             bullet_laser_sound.play()
     
-    def check_vivo(self):
+    def check_vivo(self):   # verifica se o inimigo esta vivo
         if self.vida <= 0:
             self.vida = 0
             self.velocidade = 0
             self.vivo = False
             self.update_action(3)
     
-    def draw(self, tela):
+    def draw(self, tela):   # render dos inimigos
         tela.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
 
-    def ai(self, player, tela, tela_scroll):
-        if self.vivo and player.vivo:
+    def ai(self, player, tela, tela_scroll):    # ai rudimentar, para perseguir e atirar no player
+        if self.vivo and player.vivo:   # se o player estiver vivo e o inimigo tambem, ai ativa
             if self.idling == False and numpy.random.randint(1, 100) == 1:
                 self.atirando = False
                 self.update_action(0) # ação de idle
@@ -576,13 +579,13 @@ class Inimigo(pygame.sprite.Sprite):
         elif not player.vivo:
             self.update_action(0) # ação de idle
 
-class Bullet(pygame.sprite.Sprite):
+class Bullet(pygame.sprite.Sprite): # classe das balas
     def __init__(self, bullet_type, x, y, direcao, velocidade):
         pygame.sprite.Sprite.__init__(self)
         self.bullet_type = bullet_type
         self.direcao = direcao
         self.velocidade = velocidade
-        self.image = pygame.image.load(f'Image/bullet/{self.bullet_type}.png')
+        self.image = pygame.image.load(f'Image/bullet/{self.bullet_type}.png') #balas no diretorio, tipos distintos para player e inimigo
         self.image = pygame.transform.scale(self.image, (self.image.get_width() * 2, self.image.get_height() * 2))
         self.mask = pygame.mask.from_surface(self.image)
         if self.direcao == -1:
@@ -590,7 +593,7 @@ class Bullet(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x, y, 40, 40)
         self.rect.center = (x, y)
     
-    def update(self, entrada, entrada_tipo, player):
+    def update(self, entrada, entrada_tipo, player):    # update das balas, pos e colisao
         # mover a bala
         self.rect.x += (self.direcao * self.velocidade)
         # checar se a bala saiu da tela
@@ -616,11 +619,11 @@ class Bullet(pygame.sprite.Sprite):
                         player_bullet_hit_group.add(hit)
                         self.kill()
 
-class BulletHit(pygame.sprite.Sprite):
+class BulletHit(pygame.sprite.Sprite):  # animacao de impacto das balas
     def __init__(self, x, y, flip):
         pygame.sprite.Sprite.__init__(self)
         self.images = []
-        for n in range(len(os.listdir(f'Image\\bullet\\bullet_impact')) - 1):
+        for n in range(len(os.listdir(f'Image\\bullet\\bullet_impact')) - 1):   # loop do diretorio
             img = pygame.image.load(f'Image\\bullet\\bullet_impact\impact{n}.png')
             img = pygame.transform.scale(img, (img.get_width() * 2.5, img.get_height() * 2.5))
             if flip == True:
@@ -634,7 +637,7 @@ class BulletHit(pygame.sprite.Sprite):
         self.count_cooldown = 0
         self.delay = int(1000/self.fps)
 
-    def update(self):
+    def update(self):   # atualização da imagem
         self.count_cooldown += 1
         if self.count_cooldown >= self.delay:
             self.count_cooldown = 0
