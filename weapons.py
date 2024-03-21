@@ -36,7 +36,7 @@ class Shotgun(pygame.sprite.Sprite):
     @staticmethod
     def gerar_shotgun(player, tela_scroll=0):
         shotgun_group = pygame.sprite.Group()
-        if numpy.random.randint(1, 2) == 1:
+        if numpy.random.randint(1, 6) == 1:
             shotgun = Shotgun(player, tela_scroll) 
             shotgun_group.add(shotgun)
         return shotgun_group

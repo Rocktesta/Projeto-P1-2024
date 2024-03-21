@@ -134,7 +134,7 @@ def play():
 
     player = player_script.Player(300, 600, 3, gravidade, tela,  3)
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
-    cracha = keycard.Keycard(3200, 300, tela, player)
+    cracha = keycard.Keycard(9980, 300, tela, player)
 
     tela_scroll = 0
 
@@ -165,12 +165,28 @@ def play():
 
     # inimigos
     inimigo_group = player_script.inimigo_group
-    inimigo1 = player_script.Inimigo('inimigo_robo', 700, 700, 2, gravidade, 3.5)
-    #inimigo2 = player_script.Inimigo('inimigo_robo', 900, 700, 2, gravidade, 3.5)
-    inimigo_group.add(inimigo1)
-    #inimigo_group.add(inimigo2)
+    # primeira tela
+    inimigo1 = player_script.Inimigo('inimigo_robo', 1790, 700, 2, gravidade, 3.5)
+    inimigo2 = player_script.Inimigo('inimigo_robo', 2300, 700, 2, gravidade, 3.5)
+    # segunda tela
+    inimigo3 = player_script.Inimigo('inimigo_robo', 3180, 700, 2, gravidade, 3.5)
+    inimigo4 = player_script.Inimigo('inimigo_robo', 3200, 700, 2, gravidade, 3.5)
+    # terceira tela
+    inimigo5 = player_script.Inimigo('inimigo_robo', 4935, 700, 2, gravidade, 3.5)
+    # inimigo novo x = 4410
+    # quarta tela
+    # inimigo novo x = 5790
+    inimigo6 = player_script.Inimigo('inimigo_robo', 5460, 700, 2, gravidade, 3.5)
+    inimigo7 = player_script.Inimigo('inimigo_robo', 6285, 700, 2, gravidade, 3.5)
+    inimigo8 = player_script.Inimigo('inimigo_robo', 6240, 700, 2, gravidade, 3.5)
+    # inimigo novo x = 6645
+    # inimigo novo x = 7542
+    inimigo9 = player_script.Inimigo('inimigo_robo', 7095, 700, 2, gravidade, 3.5) 
+    inimigo_group.add(inimigo1, inimigo2, inimigo3, 
+                      inimigo4, inimigo5, inimigo6, 
+                      inimigo7, inimigo8, inimigo9)
 
-    boss = Boss(2560, 420)
+    boss = Boss(9270, 420)
     inimigo_group.add(boss)
     
     # Loop Principal do Jogo

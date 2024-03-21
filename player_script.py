@@ -171,7 +171,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.x += dx
             self.rect.y += dy
 
-            if self.rect.right > 1280 - 200 or self.rect.left < 200:
+            if self.rect.right > 1280 - 500 or self.rect.left < 200:
                 self.rect.x -= dx
                 tela_scroll = -dx
             return tela_scroll

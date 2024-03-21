@@ -33,7 +33,18 @@ To Do
 * Math
 > Essa biblioteca fornece acesso a funções matemáticas definidas pelo padrão C. Ela inclui funções para realizar cálculos matemáticos básicos como raízes quadradas, logarítmos e trigonometria, no nosso código foram utilizadas principalmente funções trigonométricas para definir a trajetória dos ataques do boss. 
 ## Organização do Código:
-To DO
+Trata-se de um código modular dividido em três funções principais com os loops do jogo, a função principal com a lógica do jogo (play()), a função que contém o loop do menu do jogo e uma função com o loop para rodar a introdução. A única função que é chamada é a função intro() e a partir delas as outras funções são chamadas.
+Além do módulo principal, o código contém mais 5 módulos que compõem o jogo:
+* player_script
+> esse é o arquivo que contém a classe do player e dos inimigos, ambas muito semelhantes e contando com métodos de update(), draw(), move(), shoot() e a classe dos inimigos contendo o método extra ai(), que dita o movimento automático dos inimigos
+* boss_script
+> esse módulo é bastante semelhante ao player_script, contendo a classe do boss, seus métodos de ataque shoot_laser(), shoot_missil() e laser_beam(), além do seus métodos de update(), draw() e ai()
+* vida_script
+> esse módulo contém tanto a classe da barra de vida do player, quanto a classe do coletável que concede vida para o jogador, a coxinha. Ambas essas classes possuem seus métodos de update() e draw(), e para a classe da coxinha uma função extra, gerar_coxinhas(), que diz se novos itens de cura vão ser gerados com base em uma probabilidade.
+* weapons
+>
+* keycard
+>
 ## Conceitos:
 * Programação Orientada a Objetos
 > POO é um paradigma da programação baseado no conceito de objetos, cada objeto é definido através de uma classe e essa classe contém os atributos e métodos desse objeto. Esse conceito cumpre um papel fundamental da organização do nosso código, uma vez que todos os objetos do jogo foram definidos em suas respectivas classes, o que facilitou bastante para implementar suas funções no loop principal do jogo.
@@ -45,8 +56,13 @@ To DO
 > Podem ser usadas no código apenas se definidas previamente com a sintaxe **def()**, a partir de sua definição podemos chamá-la quantas vezes forem necessárias dentro do código utilizando apenas o nome que foi dado a ela no momento de sua definição. Sendo inprescindível em qualquer programa com um conjunto de comandos que se repita muitas vezes, como é o caso do nosso jogo.
 ## Desafios:
 * Qual foi o maior erro cometido durante o projeto? Como vocês lidaram com ele?
+> Não tivemos nenhum erro majoritário que comprometeu o codigo e desenvolvimento do jogo. Porém, ao implementar o fluxo de animações (houveram  erros nas codições de cada ação, gerando conflito entre elas), bugs no campo de visão (update antes de virar a posição do inimigo) que resultavam no personagem atirar de costas. Erros na coleta de coxinha(+vida) ao ter vida máxima. Erros em posicionar a colisão do jogo principalmente ao agachar, que causou um bug no qual o personagem caia ao morrer. Todos erros foram consertados através da revisão da lógica do código e vários testes de erro e tentativa.
 * Qual foi o maior desafio enfrentado durante o projeto? Como vocês lidaram com ele?
+> Refazer a classe pra se adequar ao sistema de spritesheet
+Adequar-se a disponibilidade do tempo entre os integrantes, muitos trabalhos dependiam uns dos outros.
 * Quais as lições aprendidas durante o projeto?
-
+> AMOR 
+AMIZADE
+COMPAIXÃO
 #
 ###### _Projeto referente a cadeira de Programação 1/CIN-UFPE no período 2023.2._
