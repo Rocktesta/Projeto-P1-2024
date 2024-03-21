@@ -190,10 +190,10 @@ class Player(pygame.sprite.Sprite):
                 pistol_sound.play()
         else:
             if self.direcao  == 1:
-                self.blast.update(self.rect.x + (300 * self.direcao), self.rect.y + 140, inimigo_group)
+                self.blast.update(self.rect.x + (310 * self.direcao), self.rect.y + 90, inimigo_group)
                 self.blast.draw(tela, False)
             else:            
-                self.blast.update(self.rect.x + (300 * self.direcao), self.rect.y + 140, inimigo_group)
+                self.blast.update(self.rect.x + (310 * self.direcao), self.rect.y + 90, inimigo_group)
                 self.blast.draw(tela, True)
             if self.shotgun_cooldown == 0:
                 self.shotgun_cooldown = 60

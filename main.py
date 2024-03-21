@@ -97,6 +97,7 @@ def play():
     player = player_script.Player(300, 600, 3, gravidade, tela,  3)
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
     cracha = keycard.Keycard(3200, 300, tela, player)
+
     tela_scroll = 0
 
     # Sons
@@ -115,6 +116,7 @@ def play():
     shotgun_img = pygame.transform.scale(shotgun_img, (350, 350))
     shotgun_bullet_img = pygame.image.load('Image\\bullet\shotgun_bullet.png')
     shotgun_bullet_img = pygame.transform.scale(shotgun_bullet_img, (200, 200))
+    inv_wall = pygame.Rect(9000, 100, 230, 800)
 
     # criando armas
         #shotgun
@@ -188,6 +190,7 @@ def play():
         laser_group = weapons.laser_group
         laser_group.update(player)
         laser_group.draw(tela)
+        pygame.draw.rect(tela, (0, 0 ,0 ) , inv_wall)
         
         posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
 
@@ -243,6 +246,7 @@ def play():
                     if not update_camera_2 and cam_cooldown == 0:
                         win_sound.play()
                         win_sound.fadeout(9000)
+                        play_boss_music(Musica_boss, Musica_main)
                         tela_scroll -= 800
                         player.rect.x -= 300
                         update_camera_2 = True
@@ -250,9 +254,11 @@ def play():
 
 
 
-            
+            if player.rect.x <= 600 and tela_scroll > 0:
+                tela_scroll = 0
                 
-                
+            if inv_wall.colliderect(player.rect) and tela_scroll < 0:
+                tela_scroll = 0  
 
 
 
@@ -269,6 +275,7 @@ def play():
                 shotgun.rect.x += tela_scroll
             #boss.rect.x += tela_scroll
             cracha.rect.x += tela_scroll
+            inv_wall.x += tela_scroll
         
         elif player.vivo == False:
             player.update_action(3)
