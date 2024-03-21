@@ -25,6 +25,8 @@ background_menu = pygame.transform.scale(background_menu, (background_menu.get_w
 game_over_img = pygame.image.load('Assets\GAME_OVER.png')
 
 
+
+
 #cooldowns
 tempo_ultima_geracao_coxinhas = 0
 cooldown_novas_coxinhas = 5000
@@ -84,11 +86,13 @@ def menu():
         
             manager.process_events(event)  # Processa eventos da GUI
 
+
         # Atualiza e desenha a GUI
         tela.blit(background_menu,(0, 0))
 
         manager.update(fps)
         manager.draw_ui(tela)
+        
 
         pygame.display.update()
 
@@ -150,7 +154,7 @@ def play():
     shotgun_img = pygame.transform.scale(shotgun_img, (350, 350))
     shotgun_bullet_img = pygame.image.load('Image\\bullet\shotgun_bullet.png')
     shotgun_bullet_img = pygame.transform.scale(shotgun_bullet_img, (200, 200))
-    inv_wall = pygame.Rect(9000, 100, 230, 800)
+    inv_wall = pygame.Rect(9000, 0, 230, 830)
 
     # criando armas
         #shotgun
@@ -326,7 +330,12 @@ def play():
                 elif event.key == pygame.K_RETURN:
                     temp_inicial = pygame.time.get_ticks()
                 elif event.key == pygame.K_SPACE and player.vivo == False:
-                    return
+                    running = False
+                    Musica_boss.stop()
+                    boss.kill()
+                    global Musica_played
+                    Musica_played = False
+                    return intro()
 
         # Pressionar teclas no teclado
         if player.vivo:
