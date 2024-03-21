@@ -6,8 +6,8 @@ Kiev teve um longo dia de trabalho; após horas, ele foi o último a sair do CIN
 ## Capturas de Tela
 <div style="display: flex; justify-content: space-around;">
   <img src="Assets\captura_menu.png" alt="Imagem 1">
-  <img src="Assets\captura_jogando.png" alt="Imagem 2" width="410">
-  <img src="Assets\captura_boss.png" alt="Imagem 3" width="410">
+  <img src="Assets\captura_jogando.png" alt="Imagem 2" width="412">
+  <img src="Assets\captura_boss.png" alt="Imagem 3" width="412">
 </div>
 
 ## Membros: 
