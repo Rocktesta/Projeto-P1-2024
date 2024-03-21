@@ -4,9 +4,11 @@
 
 Kiev teve um longo dia de trabalho; após horas, ele foi o último a sair do CIN. No entanto, logo percebeu que estava em perigo. O CIN foi invadido por uma inteligência artificial maligna, que controlava seu exército de robôs. Além disso, Kiev havia perdido seu crachá para fugir do CIN. Mas, com muita sorte, Kiev sempre anda preparado...
 ## Capturas de Tela
-<p align="center">
-  <img src="Assets/captura_menu.png" width="300" height="300" alt="captura de tela menu">
-</p>
+<div style="display: flex; justify-content: space-around;">
+  <img src="Assets\captura_menu.png" alt="Imagem 1" width="300" height="300">
+  <img src="Assets\captura_jogando.png" alt="Imagem 2" width="300" height="300">
+  <img src="Assets\captura_boss.png" alt="Imagem 3" width="300" height="300">
+</div>
 
 ## Membros: 
 * Vinicious Lidignton (vasll)
