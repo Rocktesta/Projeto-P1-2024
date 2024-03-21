@@ -41,33 +41,35 @@ clock = pygame.time.Clock()
 fps = 60
 
 # intro inicial video
-def intro():
+def intro(rodar_intro=True):
+    if rodar_intro == False:
+        menu()
+    else:
+        vid = Video('Assets\INTRODU.mp4')   
+        vid.set_size((1280, 720)) # resolucao
 
-    vid = Video('Assets\INTRODU.mp4')   
-    vid.set_size((1280, 720)) # resolucao
+        tempo_inicial = pygame.time.get_ticks()
 
-    tempo_inicial = pygame.time.get_ticks()
+        while True: # se o video parar, vai para o menu
+            tempo_atual = pygame.time.get_ticks()
+            tempo_decorrido = tempo_atual - tempo_inicial
+            if not vid.active:
+                menu()
+                return
 
-    while True: # se o video parar, vai para o menu
-        tempo_atual = pygame.time.get_ticks()
-        tempo_decorrido = tempo_atual - tempo_inicial
-        if not vid.active:
-            menu()
-            return
-
-        vid.draw(tela, (0, 0), force_draw=True)
-        pygame.display.update()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                return # saindo da função e encerrando o loop do jogo
-            if event.type == pygame.KEYDOWN:
+            vid.draw(tela, (0, 0), force_draw=True)
+            pygame.display.update()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    return # saindo da função e encerrando o loop do jogo
+                if event.type == pygame.KEYDOWN:
+                    vid.close()
+                    menu()
+            if tempo_decorrido == 19000:
+                print('vou fechar')
                 vid.close()
                 menu()
-        if tempo_decorrido == 19000:
-            print('vou fechar')
-            vid.close()
-            menu()
 
 Menu_play = False
 #var global para a musica do menu (flag)
@@ -147,6 +149,7 @@ def play(): # funcao principal do jogo
     update_camera = False
     update_camera_2 = False
     cam_cooldown = 40
+    cooldown_die = 30
 
     # instancias dos game objs
     player = player_script.Player(300, 600, 3, gravidade, tela,  3)
@@ -378,7 +381,7 @@ def play(): # funcao principal do jogo
                     global Menu_play
                     Musica_played = False
                     Menu_play = False
-                    return intro()
+                    return intro(False)
 
         # Pressionar teclas no teclado
         if player.vivo:
