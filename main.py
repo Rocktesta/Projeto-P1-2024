@@ -151,7 +151,7 @@ def play(): # funcao principal do jogo
     # instancias dos game objs
     player = player_script.Player(300, 600, 3, gravidade, tela,  3)
     barra_vida = vida_script.HealthBar(50, 50, 190, 20, 100)
-    cracha = keycard.Keycard(8500, 300, tela, player)
+    cracha = keycard.Keycard(8300, 300, tela, player)
 
     # var da camera
     tela_scroll = 0
@@ -205,7 +205,7 @@ def play(): # funcao principal do jogo
                       inimigo4, inimigo5, inimigo6, 
                       inimigo7, inimigo8, inimigo9)
 
-    boss = Boss(8200, 420)
+    boss = Boss(8000, 420)
     inimigo_group.add(boss)
     
     # Loop Principal do Jogo
@@ -322,7 +322,7 @@ def play(): # funcao principal do jogo
                         win_sound.play()
                         win_sound.fadeout(9000)
                         play_boss_music(Musica_boss, Musica_main)
-                        tela_scroll -= 700
+                        tela_scroll -= 500
                         player.rect.x -= 400
                         update_camera_2 = True
                     
