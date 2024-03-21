@@ -1,4 +1,5 @@
 import pygame
+from pyvidplayer import Video
 import pygame_gui
 import player_script
 import vida_script
@@ -15,10 +16,14 @@ altura_tela = 720
 
 tela = pygame.display.set_mode((largura_tela, altura_tela))
 manager = pygame_gui.UIManager((largura_tela, altura_tela))
-botao_play = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 50, altura_tela//2), (100, 50)),text='Play', manager=manager)
-botao_quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 50, altura_tela//2 + 100), (100, 50)),text='Exit', manager=manager)
+botao_play = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 90, altura_tela//2 + 125), (200, 50)),text='Play', manager=manager)
+botao_quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((largura_tela//2 - 65, altura_tela//2 + 200), (150, 50)),text='Exit', manager=manager)
 background = pygame.image.load("Image\\background.png").convert_alpha()
 background = pygame.transform.scale(background, (background.get_width() * 3, background.get_height() * 3))
+background_menu = pygame.image.load('Assets\TELA_INICIO.jpg')
+background_menu = pygame.transform.scale(background_menu, (background_menu.get_width()*1, background_menu.get_height()*1))
+game_over_img = pygame.image.load('Assets\GAME_OVER.png')
+
 
 #cooldowns
 tempo_ultima_geracao_coxinhas = 0
@@ -30,7 +35,37 @@ cooldown_nova_shotgun = 5000
 clock = pygame.time.Clock()
 fps = 60
 
+
+def intro():
+
+    vid = Video('Assets\INTRODU.mp4')
+    vid.set_size((1280, 720))
+
+    tempo_inicial = pygame.time.get_ticks()
+
+    while True:
+        tempo_atual = pygame.time.get_ticks()
+        tempo_decorrido = tempo_atual - tempo_inicial
+        if not vid.active:
+            menu()
+            return
+
+        vid.draw(tela, (0, 0), force_draw=True)
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                return # saindo da função e encerrando o loop do jogo
+            if event.type == pygame.KEYDOWN:
+                vid.close()
+                menu()
+        if tempo_decorrido == 19000:
+            print('vou fechar')
+            vid.close()
+            menu()
+
 def menu():
+
     running = True
     while running:
         clock.tick(fps)
@@ -46,17 +81,16 @@ def menu():
                     elif event.ui_element == botao_quit:
                         pygame.quit()
                         return
-
-        manager.process_events(event)  # Processa eventos da GUI
+        
+            manager.process_events(event)  # Processa eventos da GUI
 
         # Atualiza e desenha a GUI
-        
+        tela.blit(background_menu,(0, 0))
+
         manager.update(fps)
         manager.draw_ui(tela)
 
         pygame.display.update()
-
-
 
 
 
@@ -279,6 +313,8 @@ def play():
         
         elif player.vivo == False:
             player.update_action(3)
+            tela.blit(game_over_img, (0, 0))
+
         for event in pygame.event.get():   # Loop para lidar com eventos
             if event.type == pygame.QUIT:
                 running = False
@@ -289,6 +325,9 @@ def play():
                     pygame.quit()
                 elif event.key == pygame.K_RETURN:
                     temp_inicial = pygame.time.get_ticks()
+                elif event.key == pygame.K_SPACE and player.vivo == False:
+                    return
+
         # Pressionar teclas no teclado
         if player.vivo:
             if player.shotgun_equip:
@@ -393,8 +432,7 @@ def play():
                 moving_right = False
                 player.crouch = True
             if not teclas[pygame.K_LCTRL]:
-                player.crouch = False
-                
+                player.crouch = False           
             
             
         
@@ -404,4 +442,4 @@ def play():
                         
         pygame.display.update()
 
-menu()
+intro()

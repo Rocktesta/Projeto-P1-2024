@@ -183,9 +183,9 @@ class Player(pygame.sprite.Sprite):
             if self.shoot_cooldown == 0:
                 self.shoot_cooldown = 40
                 if self.direcao == 1:
-                    bullet = Bullet(bullet_type, self.rect.centerx + 70, self.rect.centery - 120, self.direcao, 7)
+                    bullet = Bullet(bullet_type, self.rect.centerx + 70, self.rect.centery - 150, self.direcao, 7)
                 elif self.direcao == -1:
-                    bullet = Bullet(bullet_type, self.rect.centerx - 235, self.rect.centery - 120, self.direcao, 7)
+                    bullet = Bullet(bullet_type, self.rect.centerx - 235, self.rect.centery - 150, self.direcao, 7)
                 player_bullet_group.add(bullet)
                 pistol_sound.play()
         else:

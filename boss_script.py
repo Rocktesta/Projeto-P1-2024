@@ -141,7 +141,13 @@ class Boss(pygame.sprite.Sprite):
             missil_group.add(missil1, missil2, missil3)
             som_missil.play()
 
-    def big_run(self, player):
+    def laser_beam(self):
+        if self.laser_beam_cooldown == 0:
+            self.laser_beam_cooldown = self.valor_cooldown_laser_beam
+            laser = weapons.Laser(self.rect.centerx - 100, self.rect.centery)
+            laser_group.add(laser)
+
+    '''def big_run(self, player):
         self.rect.x -= self.velocidade * self.direcao
         self.update_action(1) # ação de correr
         if self.rect.colliderect(player.rect):
@@ -153,15 +159,8 @@ class Boss(pygame.sprite.Sprite):
         elif self.rect.left <= 0:# borda esqyerda da tela em que está
             self.direcao = -1
             self.flip = False 
-            self.update_action(0) #ação de idle 
+            self.update_action(0) #ação de idle''' 
         
-
-    def laser_beam(self):
-        if self.laser_beam_cooldown == 0:
-            self.laser_beam_cooldown = self.valor_cooldown_laser_beam
-            laser = weapons.Laser(self.rect.centerx - 100, self.rect.centery)
-            laser_group.add(laser)
-    
     def ai(self, player, tela, tela_scroll):
         if self.vivo and player.vivo:
             if self.vida >= 100:
@@ -169,7 +168,6 @@ class Boss(pygame.sprite.Sprite):
                 self.valor_cooldown_shoot_missil = 500
                 self.valor_cooldown_laser_beam = 1000
             self.campo_visao_longe.center = (self.rect.centerx + 500 * self.direcao, self.rect.centery)
-            pygame.draw.rect(tela, (255, 0, 0), self.campo_visao_longe)
             if self.idling == False and numpy.random.randint(1, 150) == 1:
                 self.update_action(0) # ação de idle
                 self.idling = True
