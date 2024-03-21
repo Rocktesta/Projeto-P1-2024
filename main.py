@@ -155,6 +155,7 @@ def play():
     shotgun_bullet_img = pygame.image.load('Image\\bullet\shotgun_bullet.png')
     shotgun_bullet_img = pygame.transform.scale(shotgun_bullet_img, (200, 200))
     inv_wall = pygame.Rect(9000, 0, 230, 830)
+    inv_wall2 = pygame.Rect(300, 0, 230, 830)
 
     # criando armas
         #shotgun
@@ -244,7 +245,7 @@ def play():
         laser_group = weapons.laser_group
         laser_group.update(player)
         laser_group.draw(tela)
-        pygame.draw.rect(tela, (0, 0 ,0 ) , inv_wall)
+        
         
         posicao_player_boss = (boss.rect.centerx - player.rect.centerx, boss.rect.centery - player.rect.centery)
 
@@ -308,10 +309,11 @@ def play():
 
 
 
-            if player.rect.x <= 600 and tela_scroll > 0:
-                tela_scroll = 0
+            
                 
             if inv_wall.colliderect(player.rect) and tela_scroll < 0:
+                tela_scroll = 0  
+            if inv_wall2.colliderect(player.rect) and tela_scroll > 0:
                 tela_scroll = 0  
 
 
@@ -330,6 +332,7 @@ def play():
             #boss.rect.x += tela_scroll
             cracha.rect.x += tela_scroll
             inv_wall.x += tela_scroll
+            inv_wall2.x += tela_scroll
         
         elif player.vivo == False:
             player.update_action(3)
